@@ -1,5 +1,6 @@
 package com.onedrivex.service;
 
+import java.sql.BatchUpdateException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,16 +31,17 @@ public class DbService {
 	 * @return
 	 */
 	public int execBatch(List<String> sqls) {
+		int count = 0;
 		try {
 			String[] sqlArray = new String[sqls.size()];
 			sqls.toArray(sqlArray);
 			int[] rows = Db.use(ds).executeBatch(sqlArray);
-			int count = Arrays.stream(rows).sum();
-			return count;
+			count = Arrays.stream(rows).sum();
+		} catch (BatchUpdateException e) {
 		} catch (SQLException e) {
 			logger.error(e.getMessage(), e);
 		}
-		return 0;
+		return count;
 	}
 	
 	/*
