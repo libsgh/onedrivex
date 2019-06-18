@@ -10,11 +10,6 @@ spring:
   mvc:
     favicon:
       enabled: false
-  datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-    url: ${JDBC_DATABASE_URL}
-    username: ${JDBC_DATABASE_USERNAME}
-    password: ${JDBC_DATABASE_PASSWORD}
 logging:
   level:
     com.onedrivex: DEBUG

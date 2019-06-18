@@ -1,11 +1,13 @@
 package com.onedrivex.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.onedrivex.api.OneDriveApi;
 import com.onedrivex.api.TokenInfo;
+import com.onedrivex.service.DbService;
 import com.onedrivex.util.Constants;
 
 import cn.hutool.cache.CacheUtil;
@@ -19,11 +21,12 @@ public class IndexController {
 	
 	private OneDriveApi api = OneDriveApi.getInstance();
 	
-	TimedCache<String, String> timedCache = CacheUtil.newTimedCache(DateUnit.SECOND.getMillis() * 3600);
-	
+	@Autowired
+	private DbService servive;
+
 	@RequestMapping("/")
 	public String index(Model model) {
-		String tokenInfo = Constants.tokenCache.get(Constants.tokenKey, false);
+		String tokenInfo = servive.getConfig(Constants.tokenKey);
 		if(StrUtil.isBlank(tokenInfo)) {
 			return "redirect:/setup?s=1";
 		}else{
@@ -35,13 +38,13 @@ public class IndexController {
 	@RequestMapping("/setup")
 	public String setup(String s, Model model, String clientId, String clientSecret, String redirectUri) {
 		if(s.equals("1")) {
-			model.addAttribute("appUrl", api.quickStartRegUrl(Constants.redirectUri));
+			model.addAttribute("appUrl", api.quickStartRegUrl(servive.getConfig("redirectUri")));
 			model.addAttribute("redirectUri", Constants.redirectUri);
 			return "setup_1";
 		}else if(s.equals("2")) {
-			Constants.clientId = clientId;
-			Constants.clientSecret = clientSecret;
-			Constants.redirectUri = redirectUri;
+			servive.updateConfig("redirectUri",redirectUri);
+			servive.updateConfig("clientId",clientId);
+			servive.updateConfig("clientSecret",clientSecret);
 			model.addAttribute("oauth2Url",api.oauth2(clientId, redirectUri));
 			return "setup_2";
 		}
@@ -54,7 +57,7 @@ public class IndexController {
 			return "参数不正确";
 		}
 		String tokenInfo = api.getToken(code, Constants.clientId, Constants.clientSecret, Constants.redirectUri);
-		Constants.tokenCache.put(Constants.tokenKey, tokenInfo);
+		servive.updateConfig(Constants.tokenKey, tokenInfo);
 		return "redirect:/";
 	}
 }

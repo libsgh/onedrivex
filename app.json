@@ -1,0 +1,34 @@
+{
+	"name": "onedrivex",
+	"description": "deploy onedrivex to Heroku.",
+	"keywords": [
+		"java",
+		"onedrivex",
+		"onedrive",
+		"oneindex"
+	],
+	"env": {
+		"TZ": {
+			"description": "时区，请勿修改",
+			"value": "Asia/Shanghai"
+		},
+		"LANG": {
+			"description": "编码格式，请勿修改",
+			"value": "en_US.UTF-8"
+		},
+		"DATA_TYPE": {
+			"description": "数据库存储类型，请勿修改",
+			"value": "postgresql"
+		}
+	},
+	"addons": [{
+		"plan": "heroku-postgresql",
+		"options": {
+			"version": "9.5"
+		}
+	}, {
+		"plan": "Wayne"
+	}],
+	"website": "http://pan.noki.tk",
+	"repository": "https://github.com/libsgh/onedrivex"
+}

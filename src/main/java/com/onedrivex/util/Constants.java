@@ -6,9 +6,9 @@ import cn.hutool.core.date.DateUnit;
 
 public class Constants {
 	
+	public static final String tokenKey = "tokenInfo";
+
 	public static String scope = "offline_access files.readwrite.all";
-	
-	public static String tokenKey = "onedrive_token";//redis key
 	
 	public static String redirectUri = "http://localhost:8080/authRedirect";//重定向url
 	
