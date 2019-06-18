@@ -26,8 +26,6 @@
 		"options": {
 			"version": "9.5"
 		}
-	}, {
-		"plan": "Wayne"
 	}],
 	"website": "http://pan.noki.tk",
 	"repository": "https://github.com/libsgh/onedrivex"
