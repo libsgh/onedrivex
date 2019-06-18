@@ -38,8 +38,9 @@ public class IndexController {
 	@RequestMapping("/setup")
 	public String setup(String s, Model model, String clientId, String clientSecret, String redirectUri) {
 		if(s.equals("1")) {
-			model.addAttribute("appUrl", api.quickStartRegUrl(servive.getConfig("redirectUri")));
-			model.addAttribute("redirectUri", Constants.redirectUri);
+			String rdu = servive.getConfig("redirectUri");
+			model.addAttribute("appUrl", api.quickStartRegUrl(rdu));
+			model.addAttribute("redirectUri", rdu);
 			return "setup_1";
 		}else if(s.equals("2")) {
 			servive.updateConfig("redirectUri",redirectUri);
@@ -56,7 +57,10 @@ public class IndexController {
 		if(StrUtil.isBlank(code)) {
 			return "参数不正确";
 		}
-		String tokenInfo = api.getToken(code, Constants.clientId, Constants.clientSecret, Constants.redirectUri);
+		String clientId = servive.getConfig("clientId");
+    	String clientSecret = servive.getConfig("clientSecret");
+    	String redirectUri = servive.getConfig("redirectUri");
+		String tokenInfo = api.getToken(code, clientId, clientSecret, redirectUri);
 		servive.updateConfig(Constants.tokenKey, tokenInfo);
 		return "redirect:/";
 	}

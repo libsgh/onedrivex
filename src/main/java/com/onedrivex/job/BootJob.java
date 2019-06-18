@@ -49,10 +49,13 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			    @Override
 			    public void execute() {
 			    	String tokenJson = servive.getConfig(Constants.tokenKey);
+			    	String clientId = servive.getConfig("clientId");
+			    	String clientSecret = servive.getConfig("clientSecret");
+			    	String redirectUri = servive.getConfig("redirectUri");
 			    	if(StrUtil.isNotBlank(tokenJson)) {
 			    		TokenInfo ti = JSONUtil.toBean(tokenJson, TokenInfo.class);
 			    		OneDriveApi api = OneDriveApi.getInstance();
-			    		String newToken = api.refreshToken(ti.getRefresh_token(), Constants.clientId, Constants.clientSecret, Constants.redirectUri);
+			    		String newToken = api.refreshToken(ti.getRefresh_token(), clientId, clientSecret, redirectUri);
 			    		if(logger.isDebugEnabled()) {
 			    			logger.debug("access_token刷新成功\t{}", newToken);
 			    		}
