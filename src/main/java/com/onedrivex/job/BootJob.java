@@ -1,6 +1,7 @@
 package com.onedrivex.job;
 
 import java.io.File;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 
 import com.onedrivex.api.OneDriveApi;
 import com.onedrivex.api.TokenInfo;
@@ -39,8 +39,10 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 	public void onApplicationEvent(ContextRefreshedEvent cre) {
 		try {
 			//1. 初始化数据库
-			File file = ResourceUtils.getFile("classpath:data/" + dataType.toLowerCase() + "_init.sql");
-			List<String> sqls = FileUtil.readLines(file, Charset.forName("UTF-8"));
+			InputStream stream = getClass().getClassLoader().getResourceAsStream("data/"+dataType.toLowerCase() + "_init.sql");
+			File targetFile = new File(dataType.toLowerCase() + "_init.sql");
+			FileUtil.writeFromStream(stream, targetFile);
+			List<String> sqls = FileUtil.readLines(targetFile, Charset.forName("UTF-8"));
 			logger.info(dataType + "初始化成功，影响行数：" + servive.execBatch(sqls));
 			String cron = servive.getConfig("refreshTokenCron");
 			CronUtil.schedule(cron, new Task() {
