@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,10 +49,11 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			CronUtil.schedule(cron, new Task() {
 			    @Override
 			    public void execute() {
-			    	String tokenJson = servive.getConfig(Constants.tokenKey);
-			    	String clientId = servive.getConfig("clientId");
-			    	String clientSecret = servive.getConfig("clientSecret");
-			    	String redirectUri = servive.getConfig("redirectUri");
+			    	Map<String, String> configMap = servive.getConfigMap();
+					String tokenJson = configMap.get(Constants.tokenKey);
+					String clientId = configMap.get("clientId");
+			    	String clientSecret = configMap.get("clientSecret");
+			    	String redirectUri = configMap.get("redirectUri");
 			    	if(StrUtil.isNotBlank(tokenJson)) {
 			    		TokenInfo ti = JSONUtil.toBean(tokenJson, TokenInfo.class);
 			    		OneDriveApi api = OneDriveApi.getInstance();

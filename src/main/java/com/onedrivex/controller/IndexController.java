@@ -1,5 +1,7 @@
 package com.onedrivex.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -57,9 +59,10 @@ public class IndexController {
 		if(StrUtil.isBlank(code)) {
 			return "参数不正确";
 		}
-		String clientId = servive.getConfig("clientId");
-    	String clientSecret = servive.getConfig("clientSecret");
-    	String redirectUri = servive.getConfig("redirectUri");
+		Map<String, String> configMap = servive.getConfigMap();
+		String clientId = configMap.get("clientId");
+    	String clientSecret = configMap.get("clientSecret");
+    	String redirectUri = configMap.get("redirectUri");
 		String tokenInfo = api.getToken(code, clientId, clientSecret, redirectUri);
 		servive.updateConfig(Constants.tokenKey, tokenInfo);
 		return "redirect:/";

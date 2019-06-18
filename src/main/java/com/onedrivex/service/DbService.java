@@ -2,7 +2,9 @@ package com.onedrivex.service;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.druid.pool.DruidDataSource;
 
 import cn.hutool.db.Db;
+import cn.hutool.db.Entity;
 
 @Service
 public class DbService {
@@ -50,6 +53,22 @@ public class DbService {
 			logger.error(e.getMessage(), e);
 		}
 		return value;
+	}
+	
+	/*
+	 * 获取所有配置信息
+	 */
+	public Map<String, String> getConfigMap() {
+		Map<String, String> map = new HashMap<String,String>();
+		try {
+			List<Entity> list = Db.use(ds).query("select * from config where 1=1");
+			for (Entity entity : list) {
+				map.put(entity.getStr("key"), entity.getStr("value"));
+			}
+		} catch (SQLException e) {
+			logger.error(e.getMessage(), e);
+		}
+		return map;
 	}
 
 	/**
