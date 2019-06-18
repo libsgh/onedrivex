@@ -1,0 +1,20 @@
+spring:
+  freemarker:
+    charset: UTF-8
+    suffix: .html
+    content-type: text/html
+    enabled: true
+    cache: false
+    template-loader-path: classpath:/templates/
+    request-context-attribute: req
+  mvc:
+    favicon:
+      enabled: false
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: ${JDBC_DATABASE_URL}
+    username: ${JDBC_DATABASE_USERNAME}
+    password: ${JDBC_DATABASE_PASSWORD}
+logging:
+  level:
+    com.onedrivex: DEBUG

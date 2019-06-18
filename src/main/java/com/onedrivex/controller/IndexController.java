@@ -1,0 +1,60 @@
+package com.onedrivex.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.onedrivex.api.OneDriveApi;
+import com.onedrivex.api.TokenInfo;
+import com.onedrivex.util.Constants;
+
+import cn.hutool.cache.CacheUtil;
+import cn.hutool.cache.impl.TimedCache;
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
+
+@Controller
+public class IndexController {
+	
+	private OneDriveApi api = OneDriveApi.getInstance();
+	
+	TimedCache<String, String> timedCache = CacheUtil.newTimedCache(DateUnit.SECOND.getMillis() * 3600);
+	
+	@RequestMapping("/")
+	public String index(Model model) {
+		String tokenInfo = Constants.tokenCache.get(Constants.tokenKey, false);
+		if(StrUtil.isBlank(tokenInfo)) {
+			return "redirect:/setup?s=1";
+		}else{
+			TokenInfo ti = JSONUtil.toBean(tokenInfo, TokenInfo.class);
+			model.addAttribute("test", api.getRootDir(ti));
+		}
+		return "index";
+	}
+	@RequestMapping("/setup")
+	public String setup(String s, Model model, String clientId, String clientSecret, String redirectUri) {
+		if(s.equals("1")) {
+			model.addAttribute("appUrl", api.quickStartRegUrl(Constants.redirectUri));
+			model.addAttribute("redirectUri", Constants.redirectUri);
+			return "setup_1";
+		}else if(s.equals("2")) {
+			Constants.clientId = clientId;
+			Constants.clientSecret = clientSecret;
+			Constants.redirectUri = redirectUri;
+			model.addAttribute("oauth2Url",api.oauth2(clientId, redirectUri));
+			return "setup_2";
+		}
+		return "setup_1";
+	}
+	
+	@RequestMapping("/authRedirect")
+	public String authRedirect(String code) {
+		if(StrUtil.isBlank(code)) {
+			return "参数不正确";
+		}
+		String tokenInfo = api.getToken(code, Constants.clientId, Constants.clientSecret, Constants.redirectUri);
+		Constants.tokenCache.put(Constants.tokenKey, tokenInfo);
+		return "redirect:/";
+	}
+}
