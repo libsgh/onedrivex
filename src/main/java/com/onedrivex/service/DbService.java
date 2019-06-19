@@ -32,14 +32,11 @@ public class DbService {
 	 */
 	public int execBatch(List<String> sqls) {
 		int count = 0;
-		try {
-			String[] sqlArray = new String[sqls.size()];
-			sqls.toArray(sqlArray);
-			int[] rows = Db.use(ds).executeBatch(sqlArray);
-			count = Arrays.stream(rows).sum();
-		} catch (BatchUpdateException e) {
-		} catch (SQLException e) {
-			logger.error(e.getMessage(), e);
+		for (String sql : sqls) {
+			try {
+				count += Db.use(ds).execute(sql);
+			} catch (Exception e) {
+			}
 		}
 		return count;
 	}
