@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.libs</groupId>
 	<artifactId>OneDriveX</artifactId>
-	<version>1.0</version>
+	<version>0.0.1</version>
 	<name>OneDriveX</name>
 	<description>基于onedrive的个人网盘</description>
 
