@@ -3,7 +3,6 @@ package com.onedrivex.job;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.sql.BatchUpdateException;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +24,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.task.Task;
 import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 
 @Service
@@ -48,8 +46,10 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			FileUtil.writeFromStream(stream, targetFile);
 			List<String> sqls = FileUtil.readLines(targetFile, Charset.forName("UTF-8"));
 			logger.info(dataType + "初始化成功，影响行数：" + servive.execBatch(sqls));
-			String cron = servive.getConfig("refreshTokenCron");
-			String hkac = servive.getConfig("herokuKeepAliveCron");
+			Map<String, String> configMap = servive.getConfigMap();
+			String cron = configMap.get("refreshTokenCron");
+			String hkac = configMap.get("herokuKeepAliveCron");
+			String hkaa = configMap.get("herokuKeepAliveAddress");
 			CronUtil.schedule(cron, new Task() {
 			    @Override
 			    public void execute() {
@@ -69,15 +69,17 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			    	}
 			    }
 			});
-			CronUtil.schedule(hkac, new Task() {
-				@Override
-				public void execute() {
-					int statusCode = HttpRequest.get("http://localhost:8080").execute().getStatus();
-					if(logger.isDebugEnabled()) {
-						logger.debug("heroku防休眠>>>状态码："+statusCode);
+			if(StrUtil.isNotBlank(hkaa)) {
+				CronUtil.schedule(hkac, new Task() {
+					@Override
+					public void execute() {
+						int statusCode = HttpRequest.get(hkaa).execute().getStatus();
+						if(logger.isDebugEnabled()) {
+							logger.debug("heroku防休眠>>>状态码："+statusCode);
+						}
 					}
-				}
-			});
+				});
+			}
 			CronUtil.start();
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

@@ -4,4 +4,5 @@ INSERT INTO "public"."config" VALUES ('clientSecret', '');
 INSERT INTO "public"."config" VALUES ('redirectUri', 'http://localhost:8080/authRedirect');
 INSERT INTO "public"."config" VALUES ('refreshTokenCron', '0 0/15 * * * ?');
 INSERT INTO "public"."config" VALUES ('tokenInfo', '');
-INSERT INTO "public"."config" VALUES ('herokuKeepAliveCron', '0 0/30 * * * ?');
+INSERT INTO "public"."config" VALUES ('herokuKeepAliveCron', '0 0/25 * * * ?');
+INSERT INTO "public"."config" VALUES ('herokuKeepAliveAddress', '');

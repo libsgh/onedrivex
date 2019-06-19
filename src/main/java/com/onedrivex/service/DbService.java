@@ -1,8 +1,6 @@
 package com.onedrivex.service;
 
-import java.sql.BatchUpdateException;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
