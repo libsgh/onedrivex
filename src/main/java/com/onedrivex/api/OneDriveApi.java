@@ -1,16 +1,23 @@
 package com.onedrivex.api;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
+import com.onedrivex.common.CommonUtil;
 import com.onedrivex.util.Constants;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
 import cn.hutool.http.HttpRequest;
+import cn.hutool.json.JSONUtil;
 
 public class OneDriveApi {
 	
@@ -29,12 +36,10 @@ public class OneDriveApi {
 	
 	public static void main(String[] args) {
 		OneDriveApi oneDrive = new OneDriveApi();
-		/*TokenInfo tokenInfo = new TokenInfo();
-		tokenInfo.setAccess_token("eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFEQ29NcGpKWHJ4VHE5Vkc5dGUtN0ZYelQtWnpGel9KMFk4MWFVdjYzLWltaExzdGhaSVhPMkxIZUVqamtKajdhRFNmRl9Ga2ZMcUpaTjRMNmhWTVczY21zWG1obXE1V005Qnd5dkxVb3ZYQUNBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIiwia2lkIjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIn0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC80NGQ4NzlkYS1mM2VmLTQwMjQtODZlMy1hYmMyZTA3NmU2ODEvIiwiaWF0IjoxNTYwNDI2MTgzLCJuYmYiOjE1NjA0MjYxODMsImV4cCI6MTU2MDQzMDA4MywiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IjQyWmdZRWhzL2hsOElEWHVtbDJlUUt4eVVVdEd4NDNuUzM3YlYwYXhmT1k5SHN1bHNBOEEiLCJhbXIiOlsicHdkIl0sImFwcF9kaXNwbGF5bmFtZSI6Im9uZWluZGV4IiwiYXBwaWQiOiIwODMwYzNmZC02NWFiLTQyNDctOTE0NS04Y2E4ZTMyZWVhNDQiLCJhcHBpZGFjciI6IjEiLCJmYW1pbHlfbmFtZSI6ImlpIiwiZ2l2ZW5fbmFtZSI6ImNtIiwiaXBhZGRyIjoiMTEzLjIwOC4xMTIuMTMwIiwibmFtZSI6ImlpY20iLCJvaWQiOiJkNDE0NmRlNy1jNzI5LTQ5Y2YtYjI2Yy0yYTRiYzQ1N2U4ZTEiLCJwbGF0ZiI6IjMiLCJwdWlkIjoiMTAwMzNGRkZBRjUxNTg2MCIsInNjcCI6IkZpbGVzLlJlYWRXcml0ZSBVc2VyLlJlYWRXcml0ZSBwcm9maWxlIG9wZW5pZCBlbWFpbCIsInNpZ25pbl9zdGF0ZSI6WyJrbXNpIl0sInN1YiI6IjQwbnpxLWJEYkhnSEhva2ZCWFFscWR5TEJZbjB2SVJzenJKQTZJR3hrd1UiLCJ0aWQiOiI0NGQ4NzlkYS1mM2VmLTQwMjQtODZlMy1hYmMyZTA3NmU2ODEiLCJ1bmlxdWVfbmFtZSI6ImlpY21AbWFpbC5ocmthLm5ldCIsInVwbiI6ImlpY21AbWFpbC5ocmthLm5ldCIsInV0aSI6ImxCM0s5by1yMEVLeTRzeWN4aFJkQUEiLCJ2ZXIiOiIxLjAiLCJ4bXNfc3QiOnsic3ViIjoiVEhaN1g1MmM3VXcyQjJSOWxxMkxiemRndEEtWlpjRlY4UXN3NDRuT3ZUayJ9LCJ4bXNfdGNkdCI6MTUyNjEyNzI5OX0.At6Zj5Cef4Q9E1TLJWIaEPJQVNC-ypXe9BQ_D2rA1cVcJ7ifEJfQsnFQOQVHtZw0dayZJD5pRUkWkajlmpYwmkJLDKFKcr49DCshDxCvxGLQFD5nWAGfMCv3ioBgl6-yv-DlfMqyZEIr4CS5d3OEEBTAhZM8cFy-IZEr2Ay3lEkPvnTAysSPutceyqEwZHGaBstMRzU4bf_sz-ZGdjAHw3oRHH9jdNah7sB72-qIoch2NdmlQsEu58E1eSY-oPP5Ichd8zO4Zz1IdKSuUUVGNW2hvpZ9tWbLIwquikACWF3cAwDi4RMaBXNrHTB4uOlH00Bt2S3hch541V89G9Lp3Q\",\"refresh_token\":\"OAQABAAAAAADCoMpjJXrxTq9VG9te-7FX6rsRHVr7hpeC0oIAxbtDGFcskRXub8qLZ_VhcBw72iSXcUAtcGcHzJOZjCW9VEjWUUaXsRP-4QLnSqKVm6JMyGoo-FWZmkBxO6vz4q0Cm2n9Uuf7UW11fA9ngg6kizsG29e0J9ppMOBYcXsHwmYj7TJsEqIj_bjJdv24-P1zllSVRKds9G31AVX2C7PlVvrTlsPFt9KgWq9vQDh0PSP9t84qUEjDt6O4N4qJbXQ5yKad6wbr2mb1ELkqw_qlNOFLX-dthS0Q0iIvPxLUE_TIYz1tPT8cBRuN2VFs_S6U9ZGl2w1h9k1C74Sz6JvcJGL4IIEcPhpTLZ2xr5zsAjTcm6oeeukR8NA86YvRIDexsNM8SJF2hL5_5WNNI41OErv-mPiuisMtKVCQPBPA0aq2nC8WjOerTJ4biAhH3xI5NAJw_gKh7-KAel95M5KqACCFZ37_2y9wtxdBt1D0lFblZBah6rPoWfOeBe3iWzE1Kdm0SyJ0n0rRFqcK-B6dbcrRTOFxxeTaMb7j067q4vCjKqB0xZHOg8xVxmQSsVyeFjc2FI-FRYl7BR4wH9RXgTi3b90fWCw5Yhf_9ItzzRTtAIdMTlMcAma4qNkRQSwmDzwhzbZF8O5b_g36cAHetQ2McuvuVq3W7ohXWMbl654Gb5zv14VHwpxsYmwjXgnDtWn-QMzancMEvvN7rExvO4i-gk2hZiJkZDL_t9jUKBBCfiIbaLLsufr4tmKmP9-f4U_V273mMT2UC0TQCeHlh5CJpckRlUN1DvanfI8WvAsEeCAA");
-		tokenInfo.setToken_type("Bearer");*/
-		//System.out.println(oneDrive.refreshToken("OAQABAAAAAADCoMpjJXrxTq9VG9te-7FXi2Kc-Ydof2AF5c92T8YG6v9fGTc1hqhbTYtqp362azKxKxoR8_Llr1QWYQ5VuZVs7Ks9dBwWgP2EsVxtfxVa-VbqARATbkkmnqtqCkw-NXb5TxN4GNuc_9qZF8oDwBFRcIDSKTg-_Z590piNDrnmD1JsGbEhCYUIDqePj2xPBe07Cj9IhbW0q7SzK6SXIUlF2jKk2fHHEsXOFshqeVlfolLCIr8ONDM1Amfd9SfskbdIIt_WG9TzE4thK8PNcr4Em2DRqe7-odPZb8eGTZ4SaZN7fzqBtCOvE5kpx0dimCuXZ8XZ_Ns1e4_-slmB2TjrJvgrm2f-q8NVaU6zmq-fhhKkLxLZdO--SsNu0RGY4y5THzbEBSyIOc4Eef1w_OSt_J1uzJlQgxcA7VFumVMFzA5WT_a0RqXgFLSykDoIFqCAAgjjnXxEsDrT9v3lnOOxbDCCUUuDTBDK-vXn408pByvLNjYOshK4ihL5Eu7C6LG_Kuac7OdVDQv8ucupMqeKe1hwqVkEnhNfLiyPE33aW0avGVLvv6WQRUvnVTcyw8yI3nvWIQZ4cTsB0VFV47uPyNHDuMP4M0Z_lZE_ZdMc9_OZSzzPmaj6NXhAaI7-MFe_JOuXDtTyGLUy6eyiFge8I4icdo4PcYTBSpjfo4_PM52AUCiVaGKLxKEhhWCx8BA-6MC9GuxxdslsIUKr6OiyccxF2XvXQPEf7dJgYMoGq8V_EJVy8IHiTX_kCwRqQ_BU9aScgU4Zb45ltWim3WXsuPpa-tIM3IJnGvtaZ--7-yAA", "0830c3fd-65ab-4247-9145-8ca8e32eea44", "mdeeMXTEIQT0981=(!gme0{", "http://localhost:8080/authRedirect"));
-		String deepLink = "/quickstart/graphIO?publicClientSupport=false&appName=onedrivex";
-		System.out.println(URLUtil.encodeAll(deepLink, Charset.forName("utf-8")));
+		TokenInfo tokenInfo = new TokenInfo();
+		tokenInfo.setToken_type("Bearer");
+		tokenInfo.setAccess_token("eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFEQ29NcGpKWHJ4VHE5Vkc5dGUtN0ZYNXBnX2VNd0YwVldrZzl4aFNFcmQ5X1p0dVJ4b2VlWWVVbDR2ZDlLa1M2UWswSm5BYzVDa1ZJN2NCem5qMUNXWHBNSjU3akl4RnZNaVRwNndtU3Y4UFNBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIiwia2lkIjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIn0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC80NGQ4NzlkYS1mM2VmLTQwMjQtODZlMy1hYmMyZTA3NmU2ODEvIiwiaWF0IjoxNTYwOTMzNjAwLCJuYmYiOjE1NjA5MzM2MDAsImV4cCI6MTU2MDkzNzUwMCwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IjQyWmdZTGdocWwwcTNyWGVjYjJYckhUdXFiejE1Y0Z5ZnE5dHpLT1Z0TTlVSyt1N1N3TUEiLCJhbXIiOlsicHdkIl0sImFwcF9kaXNwbGF5bmFtZSI6Im9uZWRyaXZleCIsImFwcGlkIjoiNDBhZTY5ZTctYjdkOC00ZjJmLThkNjAtMDgzMWM5YmY5ZDA0IiwiYXBwaWRhY3IiOiIxIiwiZmFtaWx5X25hbWUiOiJpaSIsImdpdmVuX25hbWUiOiJjbSIsImlwYWRkciI6IjExNC4yNDQuMzYuMTMwIiwibmFtZSI6ImlpY20iLCJvaWQiOiJkNDE0NmRlNy1jNzI5LTQ5Y2YtYjI2Yy0yYTRiYzQ1N2U4ZTEiLCJwbGF0ZiI6IjMiLCJwdWlkIjoiMTAwMzNGRkZBRjUxNTg2MCIsInNjcCI6IkZpbGVzLlJlYWRXcml0ZS5BbGwgcHJvZmlsZSBvcGVuaWQgZW1haWwiLCJzaWduaW5fc3RhdGUiOlsia21zaSJdLCJzdWIiOiI0MG56cS1iRGJIZ0hIb2tmQlhRbHFkeUxCWW4wdklSc3pySkE2SUd4a3dVIiwidGlkIjoiNDRkODc5ZGEtZjNlZi00MDI0LTg2ZTMtYWJjMmUwNzZlNjgxIiwidW5pcXVlX25hbWUiOiJpaWNtQG1haWwuaHJrYS5uZXQiLCJ1cG4iOiJpaWNtQG1haWwuaHJrYS5uZXQiLCJ1dGkiOiJiMlQ5RjBnQ0EwQ2JWN05UNDNkU0FBIiwidmVyIjoiMS4wIiwieG1zX3N0Ijp7InN1YiI6Ikl3VmdnWTNILThOMGw1TUFHc3I1SmtFUmFqQzUzazRLT1cxSk12Z2tYM0UifSwieG1zX3RjZHQiOjE1MjYxMjcyOTl9.TXXa1dnu7yAdhXJKYg-tCcEerFoCKE3C2Cn0KqoxVCwVfyM-b0k_cGpjaTOrwIyuS7QU6_JoLIc8WPBY-IaT1E6q6pqqBnWXh743EZI7QqKsDKyHk-ev-U7yCKkEAzaAAWB0qYF6mIJEsGuUlD7gqD2u1p95cPKlZPA_4G5iXDCPhB8Kz8TGzqKypjAL7iLxRTnuCqKPxoAFWA7MEDFr1wiW_JPA4o8cZZHHeh6HDopjVMli35KUbPpZG11quzrA8HzsLiP6xUm9K5b-m0nFs2OR9N1VvVR1k9MFxA8QCVZobdHJE8O7SZ_rRdog7h1PVZ2rwGYeozacnZoypulZQQ");
+		oneDrive.getRootDir(tokenInfo);
 	}
 	
 	public String oauth2(String cliendId, String redirectUri) {
@@ -91,16 +96,55 @@ public class OneDriveApi {
 	}
 	
 	/**
-	 * 获取根目录列表
+	 * 获取目录信息
 	 * @param tokenInfo
 	 * @return
 	 */
-	public String getRootDir(TokenInfo tokenInfo) {
-		return HttpRequest.get(Constants.apiUrl+"/drive/root/children?select=name,size,folder,@microsoft.graph.downloadUrl,lastModifiedDateTime")
-					.header("Authorization", tokenInfo.getAuth())
-					.header("Host", "graph.microsoft.com")
-					.timeout(Constants.timeout)
-					.execute().body();
+	public List<Item> getRootDir(TokenInfo tokenInfo) {
+		HttpRequest request = request("/", "children?select=name,size,folder,@microsoft.graph.downloadUrl,lastModifiedDateTime", tokenInfo);
+		List<Item> items = new ArrayList<Item>();
+		this.dirNextPage(items, request, 0);
+		return items;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void dirNextPage(List<Item> items, HttpRequest request, int retry) {
+		String body = request.execute().body();
+		if(StrUtil.isBlank(body) && retry < 3) {
+			retry++;
+			this.dirNextPage(items, request, retry);
+		}
+		List<Map<String, Object>> list = (List<Map<String, Object>>) JSONUtil.parse(body).getByPath("$.value");
+		for (Map<String, Object> map : list) {
+			String time = DateUtil.formatDateTime(DateUtil.parse(map.get("lastModifiedDateTime").toString()));
+			String name = map.get("name").toString();
+			String downloadUrl = map.get("@microsoft.graph.downloadUrl")!=null?map.get("@microsoft.graph.downloadUrl").toString():null;
+			String size = CommonUtil.getFormatSize(Double.parseDouble(map.get("size").toString()));
+			Object folder = map.get("folder");
+			Integer childCount =0;
+			String ext = null;
+			if(folder != null) {
+				Map<String , Integer> folderMap = (Map<String , Integer>)folder;
+				childCount = (Integer)folderMap.get("childCount");
+			}else {
+				ext = CommonUtil.fileIco(name);
+			}
+			items.add(new Item(name, size, time, (folder==null?false:true), childCount ,downloadUrl, ext));
+		}
+	}
+	
+	/**
+	 * 生成一个带令牌的request
+	 * @param path 路径
+	 * @param query 查询内容
+	 * @param tokenInfo 令牌信息 
+	 * @return
+	 */
+	public static HttpRequest request(String path, String query, TokenInfo tokenInfo) {
+		return HttpRequest.get(Constants.apiUrl + "/me/drive/root" + path + query)
+							.header("Authorization", tokenInfo.getAuth())
+							.header("Host", "graph.microsoft.com")
+							.timeout(Constants.timeout);
 	}
 	
 }

@@ -5,24 +5,32 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.onedrivex.api.OneDriveApi;
 import com.onedrivex.api.TokenInfo;
-import com.onedrivex.service.DbService;
+import com.onedrivex.service.XService;
 import com.onedrivex.util.Constants;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 
 @Controller
+@ControllerAdvice
 public class IndexController {
 	
 	private OneDriveApi api = OneDriveApi.getInstance();
 	
 	@Autowired
-	private DbService servive;
-
+	private XService servive;
+	
+	@ModelAttribute("title")
+	public String getTitle() {
+		return servive.getConfig("title");
+	}
+	
 	@RequestMapping("/")
 	public String index(Model model) {
 		String tokenInfo = servive.getConfig(Constants.tokenKey);
@@ -30,7 +38,7 @@ public class IndexController {
 			return "redirect:/setup?s=1";
 		}else{
 			TokenInfo ti = JSONUtil.toBean(tokenInfo, TokenInfo.class);
-			model.addAttribute("test", api.getRootDir(ti));
+			model.addAttribute("items", api.getRootDir(ti));
 		}
 		return "index";
 	}
@@ -40,15 +48,15 @@ public class IndexController {
 			String rdu = servive.getConfig("redirectUri");
 			model.addAttribute("appUrl", api.quickStartRegUrl(rdu));
 			model.addAttribute("redirectUri", rdu);
-			return "setup_1";
+			return "setup/setup_1";
 		}else if(s.equals("2")) {
 			servive.updateConfig("redirectUri",redirectUri);
 			servive.updateConfig("clientId",clientId);
 			servive.updateConfig("clientSecret",clientSecret);
 			model.addAttribute("oauth2Url",api.oauth2(clientId, redirectUri));
-			return "setup_2";
+			return "setup/setup_2";
 		}
-		return "setup_1";
+		return "setup/setup_1";
 	}
 	
 	@RequestMapping("/authRedirect")

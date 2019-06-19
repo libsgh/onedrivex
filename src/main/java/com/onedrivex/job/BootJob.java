@@ -14,17 +14,13 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 
-import com.onedrivex.api.OneDriveApi;
-import com.onedrivex.api.TokenInfo;
-import com.onedrivex.service.DbService;
-import com.onedrivex.util.Constants;
+import com.onedrivex.service.XService;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.task.Task;
 import cn.hutool.http.HttpRequest;
-import cn.hutool.json.JSONUtil;
 
 @Service
 public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
@@ -35,7 +31,7 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 	private String dataType;
 	
 	@Autowired
-	private DbService servive;
+	private XService servive;
 	
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent cre) {
@@ -50,23 +46,11 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			String cron = configMap.get("refreshTokenCron");
 			String hkac = configMap.get("herokuKeepAliveCron");
 			String hkaa = configMap.get("herokuKeepAliveAddress");
+			servive.refreshJob(configMap);
 			CronUtil.schedule(cron, new Task() {
 			    @Override
 			    public void execute() {
-			    	Map<String, String> configMap = servive.getConfigMap();
-					String tokenJson = configMap.get(Constants.tokenKey);
-					String clientId = configMap.get("clientId");
-			    	String clientSecret = configMap.get("clientSecret");
-			    	String redirectUri = configMap.get("redirectUri");
-			    	if(StrUtil.isNotBlank(tokenJson)) {
-			    		TokenInfo ti = JSONUtil.toBean(tokenJson, TokenInfo.class);
-			    		OneDriveApi api = OneDriveApi.getInstance();
-			    		String newToken = api.refreshToken(ti.getRefresh_token(), clientId, clientSecret, redirectUri);
-			    		if(logger.isDebugEnabled()) {
-			    			logger.debug("access_token刷新成功\t{}", newToken);
-			    		}
-			    		servive.updateConfig(Constants.tokenKey, newToken);
-			    	}
+			    	servive.refreshJob();
 			    }
 			});
 			if(StrUtil.isNotBlank(hkaa)) {

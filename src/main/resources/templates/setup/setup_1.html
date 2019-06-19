@@ -1,5 +1,5 @@
 <#-- 引入布局指令的命名空间 -->
-<#import "../layout/setup.html" as main>
+<#import "../layout/setup_layout.html" as main>
 <#assign ctx=req.getContextPath()>
 <#-- 调用布局指令 -->
 <@main.setup>
@@ -15,7 +15,7 @@
 				<div class="mdui-textfield mdui-textfield-floating-label"> 
 					<i class="mdui-icon material-icons">https</i> 
 					<label class="mdui-textfield-label">应用机密(client secret)</label> 
-					<input type="text" class="mdui-textfield-input" name="clientSecret" required="" value="${clientSecret}" /> 
+					<input type="text" class="mdui-textfield-input" name="clientSecret" required="" value="${clientSecret!}" /> 
 					<div class="mdui-textfield-error">
 					 	应用机密不能为空
 					</div>
@@ -23,24 +23,35 @@
 			 	<br /> 
 				<div class="mdui-textfield mdui-textfield-floating-label"> 
 					<i class="mdui-icon material-icons"></i> 
-					<label class="mdui-textfield-label">应用 ID(client_id)</label> 
-					<input type="text" class="mdui-textfield-input" name="clientId" required="" value="${clientId}" /> 
+					<label class="mdui-textfield-label">应用 ID(client_id)</label>
+					<input type="text" class="mdui-textfield-input" name="clientId" required="" value="${clientId!}" /> 
 			  		<div class="mdui-textfield-error">
 			   			应用 ID不能为空
 			  		</div> 
 				</div> 
 			 	<br /> 
-				<div class="mdui-textfield mdui-textfield-floating-label"> 
+				<div class="mdui-textfield"> 
 			  		<i class="mdui-icon material-icons"></i> 
-			  		<input type="text" class="mdui-textfield-input" name="redirectUri" required="" value="${redirectUri}" /> 
+					<label class="mdui-textfield-label">重定向url(站点访问地址+authRedirect)</label>
+			  		<input id="redirectUri" type="text" class="mdui-textfield-input" name="redirectUri" required="" value="${redirectUri!}" /> 
 			  		<div class="mdui-textfield-error">
 			   			重定向URL不能为空
 			  		</div> 
 			 	</div> 
 			 	<br /> 
-			 	<a class="mdui-btn mdui-btn-raised mdui-float-left" href="?step=0">上一步</a> 
 			 	<button class="mdui-btn mdui-color-theme-accent mdui-ripple mdui-float-right" type="submit">下一步</button> 
 			</form> 
 		</div> 
-	</div>   
+	</div>
+	<script>
+		window.onload  = function(){
+			var curWwwPath = window.location.href;
+			var pathName = window.location.pathname;
+			var pos = curWwwPath.indexOf(pathName);
+			var localhostPath = curWwwPath.substring(0,pos);
+			if('${redirectUri!}'==''){
+				document.getElementById("redirectUri").value = localhostPath+"/authRedirect";
+			}
+	    }
+	</script>
 </@main.setup>
