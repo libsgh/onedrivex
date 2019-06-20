@@ -2,6 +2,8 @@ package com.onedrivex.controller;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,14 +33,15 @@ public class IndexController {
 		return servive.getConfig("title");
 	}
 	
-	@RequestMapping("/")
-	public String index(Model model) {
+	@RequestMapping("/**")
+	public String index(Model model, HttpServletRequest request) {
+		String path = request.getRequestURI();
 		String tokenInfo = servive.getConfig(Constants.tokenKey);
 		if(StrUtil.isBlank(tokenInfo)) {
 			return "redirect:/setup?s=1";
 		}else{
 			TokenInfo ti = JSONUtil.toBean(tokenInfo, TokenInfo.class);
-			model.addAttribute("items", api.getRootDir(ti));
+			model.addAttribute("items", servive.getDir(ti, path));
 		}
 		return "index";
 	}

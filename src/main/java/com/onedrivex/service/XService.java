@@ -8,9 +8,12 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.onedrivex.api.Item;
 import com.onedrivex.api.OneDriveApi;
 import com.onedrivex.api.TokenInfo;
 import com.onedrivex.util.Constants;
@@ -24,6 +27,8 @@ import cn.hutool.json.JSONUtil;
 public class XService {
 	
 	private final static Logger logger = LoggerFactory.getLogger(XService.class);
+	
+	private OneDriveApi api = OneDriveApi.getInstance();
 	
 	@Autowired
 	private DruidDataSource ds;
@@ -123,6 +128,16 @@ public class XService {
 			}
 			this.updateConfig(Constants.tokenKey, newToken);
 		}
+	}
+	
+	@Cacheable(key="#path", value="dir")
+	public List<Item> getDir(TokenInfo tokenInfo, String path){
+		return api.getDir(tokenInfo, path);
+	}
+	
+	@CachePut(key="#path", value="dir")
+	public List<Item> refreshDirCache(TokenInfo tokenInfo, String path){
+		return api.getDir(tokenInfo, path);
 	}
 	
 }

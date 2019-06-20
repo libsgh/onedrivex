@@ -7,3 +7,4 @@ INSERT OR IGNORE INTO "config" VALUES ('tokenInfo', '');
 INSERT OR IGNORE INTO "config" VALUES ('herokuKeepAliveCron', '0 0/25 * * * ?');
 INSERT OR IGNORE INTO "config" VALUES ('herokuKeepAliveAddress', '');
 INSERT OR IGNORE INTO "config" VALUES ('title', 'onedrive-x');
+INSERT OR IGNORE INTO "config" VALUES ('refreshCacheCron', '0 0/10 * * * ?');
