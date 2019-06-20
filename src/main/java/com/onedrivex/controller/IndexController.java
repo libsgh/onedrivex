@@ -46,6 +46,7 @@ public class IndexController {
 			model.addAttribute("items", servive.getDir(ti, path));
 		}
 		model.addAttribute("parentPath", parentPath);
+		model.addAttribute("allPaths", CommonUtil.getAllPaths(request.getRequestURI()));
 		return "index";
 	}
 	@RequestMapping("/setup")

@@ -17,8 +17,14 @@
 	    <div class="mdui-container-fluid">
 	    <div class="mdui-toolbar nexmoe-item">
 			<a href="/">${title}</a>
+			<#list allPaths as p>
+				<#list p?keys as itemKey>
+				     <#if itemKey="phone">
 						<i class="mdui-icon material-icons mdui-icon-dark" style="margin:0;">chevron_right</i>
-			<a href="/">/</a>
+						<a href="${p[itemKey]}">${itemKey}</a>
+				     </#if>
+				</#list>
+			</#list>
 						<!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">refresh</i></a>-->
 		</div>
 		</div>

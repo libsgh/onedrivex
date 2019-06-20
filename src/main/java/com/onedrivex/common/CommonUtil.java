@@ -1,7 +1,11 @@
 package com.onedrivex.common;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cn.hutool.core.text.StrSpliter;
 import cn.hutool.core.util.StrUtil;
@@ -52,7 +56,7 @@ public class CommonUtil {
 			return "insert_drive_file";
 		}	
 	}
-
+	
 	public static String getParentPath(String requestURI) {
 		if(requestURI.equals("/")) {
 		}else {
@@ -66,10 +70,36 @@ public class CommonUtil {
 		}
 		return requestURI;
 	}
+	
+	private static void getAllPaths(String currentPath, List<Map<String, String>> list) {
+		String pPath = getParentPath(currentPath);
+		Map<String, String> map = new HashMap<String, String>();
+		map.put(getNameByPath(pPath), pPath);
+		list.add(map);
+		if(!pPath.equals("/")) {
+			getAllPaths(pPath, list);
+		}
+	}
+	
+	public static List<Map<String, String>> getAllPaths(String currentPath) {
+		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put(getNameByPath(currentPath), currentPath);
+		list.add(map);
+		getAllPaths(currentPath, list);
+		Collections.reverse(list);
+		return list;
+	}
+	
+	public static String getNameByPath(String path){
+		String[] arr = path.split("/");
+		if(arr.length > 0) {
+			return arr[arr.length-1];
+		}else{
+			return path;
+		}
+	}
 	public static void main(String[] args) {
-		System.out.println(getParentPath("/doc/2019"));
-		System.out.println(getParentPath("/doc/2019/10"));
-		System.out.println(getParentPath("/doc/2019/1.txt"));
-		System.out.println(getParentPath("/doc"));
+		System.out.println(getAllPaths("/doc/bigdata").toString());
 	}
 }
