@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.onedrivex.api.OneDriveApi;
 import com.onedrivex.api.TokenInfo;
+import com.onedrivex.common.CommonUtil;
 import com.onedrivex.service.XService;
 import com.onedrivex.util.Constants;
 
@@ -35,6 +36,7 @@ public class IndexController {
 	
 	@RequestMapping("/**")
 	public String index(Model model, HttpServletRequest request) {
+		String parentPath = CommonUtil.getParentPath(request.getRequestURI());
 		String path = request.getRequestURI();
 		String tokenInfo = servive.getConfig(Constants.tokenKey);
 		if(StrUtil.isBlank(tokenInfo)) {
@@ -43,6 +45,7 @@ public class IndexController {
 			TokenInfo ti = JSONUtil.toBean(tokenInfo, TokenInfo.class);
 			model.addAttribute("items", servive.getDir(ti, path));
 		}
+		model.addAttribute("parentPath", parentPath);
 		return "index";
 	}
 	@RequestMapping("/setup")

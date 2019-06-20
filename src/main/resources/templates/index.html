@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<#assign ctx=req.getContextPath()>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no"/>
 	<title>index of / - ${title}</title>
@@ -10,7 +11,6 @@
 	</style>
 	<link rel="icon" href="//cdn.jsdelivr.net/gh/libsgh/onedrive-x/src/main/resources/static/img/favicon.ico" type="image/x-icon" />
     <link rel="shortcut icon" href="//cdn.jsdelivr.net/gh/libsgh/onedrive-x/src/main/resources/static/img/favicon.ico" type="image/x-icon" />
-	<script src="//cdnjs.loli.net/ajax/libs/mdui/0.4.2/js/mdui.min.js"></script>
 <body class="mdui-theme-primary-blue-grey mdui-theme-accent-blue">
 	
 	<div class="mdui-container">
@@ -66,9 +66,21 @@
 		  <div class="mdui-col-sm-3 mdui-text-right">修改时间 <i class="mdui-icon material-icons icon-sort" data-sort="date" data-order="downward">expand_more</i></div>
 		  <div class="mdui-col-sm-2 mdui-text-right">大小 <i class="mdui-icon material-icons icon-sort" data-sort="size" data-order="downward">expand_more</i></div>
 		</li>
+		<#if parentPath!='/'>
+			<li class="mdui-list-item mdui-ripple">
+				<a href="${parentPath}">
+				  <div class="mdui-col-xs-12 mdui-col-sm-7">
+					<i class="mdui-icon material-icons">arrow_upward</i>
+			    	..
+				  </div>
+				  <div class="mdui-col-sm-3 mdui-text-right"></div>
+				  <div class="mdui-col-sm-2 mdui-text-right"></div>
+			  	</a>
+			</li>
+		</#if>
 		<#list items as item>
 			<li class="mdui-list-item mdui-ripple">
-				<a href="/2018/">
+				<a href="${item.path}">
 				  <div class="mdui-col-xs-12 mdui-col-sm-7 mdui-text-truncate">
 					<i class="mdui-icon material-icons">${item.ext!'folder_open'}</i>
 			    	<span>${item.name}</span>
@@ -82,6 +94,7 @@
 </div>
 </div>
 </div>
+<script src="//cdnjs.loli.net/ajax/libs/mdui/0.4.2/js/mdui.min.js"></script>
 <script>
 $ = mdui.JQ;
 

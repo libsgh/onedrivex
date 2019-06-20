@@ -1,6 +1,7 @@
 package com.onedrivex.common;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import cn.hutool.core.text.StrSpliter;
 import cn.hutool.core.util.StrUtil;
@@ -51,5 +52,24 @@ public class CommonUtil {
 			return "insert_drive_file";
 		}	
 	}
-	
+
+	public static String getParentPath(String requestURI) {
+		if(requestURI.equals("/")) {
+		}else {
+			List<String> list = StrSpliter.splitPath(requestURI);
+			if(list.size() == 1) {
+				return "/";
+			}else {
+				list.remove(list.size()-1);
+				return "/"+StrUtil.join("/", list);
+			}
+		}
+		return requestURI;
+	}
+	public static void main(String[] args) {
+		System.out.println(getParentPath("/doc/2019"));
+		System.out.println(getParentPath("/doc/2019/10"));
+		System.out.println(getParentPath("/doc/2019/1.txt"));
+		System.out.println(getParentPath("/doc"));
+	}
 }

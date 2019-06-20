@@ -97,16 +97,16 @@ public class OneDriveApi {
 	public List<Item> getDir(TokenInfo tokenInfo, String path) {
 		HttpRequest request = request(path, "children?select=name,size,folder,@microsoft.graph.downloadUrl,lastModifiedDateTime", tokenInfo);
 		List<Item> items = new ArrayList<Item>();
-		this.dirNextPage(items, request, 0);
+		this.dirNextPage(items, request, 0, path);
 		return items;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void dirNextPage(List<Item> items, HttpRequest request, int retry) {
+	public void dirNextPage(List<Item> items, HttpRequest request, int retry, String path) {
 		String body = request.execute().body();
 		if(StrUtil.isBlank(body) && retry < 3) {
 			retry++;
-			this.dirNextPage(items, request, retry);
+			this.dirNextPage(items, request, retry, path);
 		}
 		List<Map<String, Object>> list = (List<Map<String, Object>>) JSONUtil.parse(body).getByPath("$.value");
 		if(list != null) {
@@ -124,13 +124,13 @@ public class OneDriveApi {
 				}else {
 					ext = CommonUtil.fileIco(name);
 				}
-				items.add(new Item(name, size, time, (folder==null?false:true), childCount ,downloadUrl, ext));
+				items.add(new Item(name, size, time, (folder==null?false:true), childCount ,downloadUrl, ext, path.equals("/")?"/"+name:path+"/"+name));
 			}
 		}
 		Object nextLink = JSONUtil.parse(body).getByPath("$.@odata.nextLink");
 		if(nextLink != null) {
 			 request.setUrl(nextLink.toString());
-			 this.dirNextPage(items, request, 0);
+			 this.dirNextPage(items, request, 0, path);
 		}
 	}
 	

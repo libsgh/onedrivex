@@ -20,12 +20,14 @@ public class Item {
 	private String downloadUrl;//下载地址
 	
 	private String ext;//文件类型
+	
+	private String path;//路径
 
 	public Item() {
 		super();
 	}
 
-	public Item(String name, String size, String lastModifiedDateTime, Boolean folder, Integer childCount, String downloadUrl, String ext) {
+	public Item(String name, String size, String lastModifiedDateTime, Boolean folder, Integer childCount, String downloadUrl, String ext, String path) {
 		super();
 		this.name = name;
 		this.size = size;
@@ -34,6 +36,7 @@ public class Item {
 		this.childCount = childCount;
 		this.downloadUrl = downloadUrl;
 		this.ext = ext;
+		this.path = path;
 	}
 
 	public String getName() {
@@ -90,6 +93,14 @@ public class Item {
 
 	public void setExt(String ext) {
 		this.ext = ext;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 	
 }
