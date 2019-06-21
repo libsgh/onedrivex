@@ -1,6 +1,5 @@
 package com.onedrivex.controller;
 
-import java.util.Enumeration;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +36,14 @@ public class IndexController {
 		return servive.getConfig("title");
 	}
 	
+	public static String getUrl(HttpServletRequest request) {
+		String url = "";
+	    url = request.getScheme() +"://" + request.getServerName()  
+	                    + ":" +request.getServerPort() 
+	                    + request.getServletPath();
+	    return url;
+	}
+    
 	@RequestMapping("/**")
 	public String index(Model model, HttpServletRequest request) {
 		String parentPath = CommonUtil.getParentPath(request.getRequestURI());
@@ -44,6 +51,7 @@ public class IndexController {
 		String tokenInfo = servive.getConfig(Constants.tokenKey);
 		model.addAttribute("parentPath", parentPath);
 		model.addAttribute("allPaths", CommonUtil.getAllPaths(request.getRequestURI()));
+		model.addAttribute("realUrl", getUrl(request));
 		if(StrUtil.isBlank(tokenInfo)) {
 			return "redirect:/setup?s=1";
 		}else{

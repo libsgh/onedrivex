@@ -37,6 +37,8 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 	@Autowired
 	private XService servive;
 	
+	public boolean flag = true;
+	
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent cre) {
 			//1. 初始化数据库
@@ -76,9 +78,12 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 					}
 				});
 			}
-			/*CronUtil.schedule(rcc, new Task() {
+			CronUtil.schedule(rcc, new Task() {
 				@Override
 				public void execute() {
+					if(flag) {
+						flag = false;
+					}
 					try {
 						String tokenJson = servive.getConfig(Constants.tokenKey);
 						if(StrUtil.isNotBlank(tokenJson)) {
@@ -88,6 +93,7 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 					} catch (Exception e) {
 						logger.error(e.getMessage(), e);
 					}
+					flag = true;
 				}
 				private void refreshCache(TokenInfo ti, String path) {
 					List<Item> list = servive.refreshDirCache(ti, path);
@@ -98,7 +104,7 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 					}
 					
 				}
-			});*/
+			});
 			CronUtil.start();
 	}
 

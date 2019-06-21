@@ -135,19 +135,19 @@ public class XService {
 		return api.getDir(tokenInfo, path);
 	}
 	
-	@Cacheable(key="#path", value="file")
+	//@Cacheable(key="#path", value="file")
 	public Item getFile(TokenInfo tokenInfo, String path){
 		return api.getFile(tokenInfo, path);
 	}
-	@Cacheable(key="#path", value="file")
+	/*@Cacheable(key="#path", value="file")
 	public Item refreshFileCache(Item item, String path){
 		return item;
-	}
+	}*/
 	
 	@CachePut(key="#path", value="dir")
 	public List<Item> refreshDirCache(TokenInfo tokenInfo, String path){
 		List<Item> list = api.getDir(tokenInfo, path);
-		list.parallelStream().forEach(r->this.refreshFileCache(r, r.getPath()));
+		//list.parallelStream().forEach(r->this.refreshFileCache(r, r.getPath()));
 		return list;
 	}
 	
