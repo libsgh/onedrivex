@@ -38,9 +38,14 @@ public class IndexController {
 	
 	public static String getUrl(HttpServletRequest request) {
 		String url = "";
-	    url = request.getScheme() +"://" + request.getServerName()  
-	                    + ":" +request.getServerPort() 
-	                    + request.getServletPath();
+		if(request.getServerPort()== 443 ||request.getServerPort() == 80) {
+			url = request.getScheme() +"://" + request.getServerName()
+			+ request.getServletPath();
+		}else {
+			url = request.getScheme() +"://" + request.getServerName()  
+			+ ":" +request.getServerPort() 
+			+ request.getServletPath();
+		}
 	    return url;
 	}
     
