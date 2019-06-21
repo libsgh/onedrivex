@@ -11,6 +11,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
 import cn.hutool.http.HttpRequest;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 
 public class OneDriveApi {
@@ -32,8 +33,9 @@ public class OneDriveApi {
 		OneDriveApi oneDrive = new OneDriveApi();
 		TokenInfo tokenInfo = new TokenInfo();
 		tokenInfo.setToken_type("Bearer");
-		tokenInfo.setAccess_token("eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFEQ29NcGpKWHJ4VHE5Vkc5dGUtN0ZYQmU0YU5qS3Y3QUJ2ck9Wb3F1XzVXWUpmUm9zTzBSMzExM016RDdLZUZDYV9IN1BBMkdGNUdIeTNiay11SldOeHVOWmw0clV6YWV0d1p4ejFySnZDM2lBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIiwia2lkIjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIn0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC80NGQ4NzlkYS1mM2VmLTQwMjQtODZlMy1hYmMyZTA3NmU2ODEvIiwiaWF0IjoxNTYxMDEyOTgyLCJuYmYiOjE1NjEwMTI5ODIsImV4cCI6MTU2MTAxNjg4MiwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IkFTUUEyLzhMQUFBQXpvbFdPazBRMXNKbStWVzBxZFZGcUoza2tvN1BNcUxiOThJcVV2ZTFvOVE9IiwiYW1yIjpbInB3ZCJdLCJhcHBfZGlzcGxheW5hbWUiOiJvbmVkcml2ZXgiLCJhcHBpZCI6IjQwYWU2OWU3LWI3ZDgtNGYyZi04ZDYwLTA4MzFjOWJmOWQwNCIsImFwcGlkYWNyIjoiMSIsImZhbWlseV9uYW1lIjoiaWkiLCJnaXZlbl9uYW1lIjoiY20iLCJpcGFkZHIiOiIxMTQuMjQ0LjM2LjEzMCIsIm5hbWUiOiJpaWNtIiwib2lkIjoiZDQxNDZkZTctYzcyOS00OWNmLWIyNmMtMmE0YmM0NTdlOGUxIiwicGxhdGYiOiIzIiwicHVpZCI6IjEwMDMzRkZGQUY1MTU4NjAiLCJzY3AiOiJGaWxlcy5SZWFkV3JpdGUuQWxsIHByb2ZpbGUgb3BlbmlkIGVtYWlsIiwic2lnbmluX3N0YXRlIjpbImttc2kiXSwic3ViIjoiNDBuenEtYkRiSGdISG9rZkJYUWxxZHlMQlluMHZJUnN6ckpBNklHeGt3VSIsInRpZCI6IjQ0ZDg3OWRhLWYzZWYtNDAyNC04NmUzLWFiYzJlMDc2ZTY4MSIsInVuaXF1ZV9uYW1lIjoiaWljbUBtYWlsLmhya2EubmV0IiwidXBuIjoiaWljbUBtYWlsLmhya2EubmV0IiwidXRpIjoiS1U4UU5YY1R6RUt6anFUWVlQRnNBQSIsInZlciI6IjEuMCIsInhtc19zdCI6eyJzdWIiOiJJd1ZnZ1kzSC04TjBsNU1BR3NyNUprRVJhakM1M2s0S09XMUpNdmdrWDNFIn0sInhtc190Y2R0IjoxNTI2MTI3Mjk5fQ.O_uLlDLIPrSvIBjOw0zY9U_5dH2Fr2ienZ9iqcT0M8DADXLvCCE99-gUxmG0dgaEOoNfKe-G41vz9B1XmMC1IOQuBpvhrlL1u-Vo_hbiISqx2p4bngIGr1PsX2HwbHGFb3DQKnEshcuSuNF_Unr71PDwOUHwLrI3M0bWWX8yU_2zUWCHp235n64OmTnLRZoLNFuBuRQMgUPffK4TpDYhr4t4R-GYgB3nSxK4FVLFi56CWPH6d9VsWXGN0Ar2IkXJC4w_gMRuZ_zcYIoXhLFvJGU2GQpYhHVGmJO2RC2e6GdsNczbJqfUPn6cHzqK2083q9eCWfE8nT8bdxluCR5y0w");
-		oneDrive.getDir(tokenInfo, "/doc/大数据");
+		tokenInfo.setAccess_token("eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFEQ29NcGpKWHJ4VHE5Vkc5dGUtN0ZYYmJEUjl4UlJRdXZvaUFtNThkZFF5TmpiMUFaNVNMQXZHQmxRTER3eUY1LUt6eU0yQjRGWWp6cEhKVGJUOFAtYXlXYzhuR2plUUhLa1JVU21nVkVZQ2lBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIiwia2lkIjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIn0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC80NGQ4NzlkYS1mM2VmLTQwMjQtODZlMy1hYmMyZTA3NmU2ODEvIiwiaWF0IjoxNTYxMDI1NDgyLCJuYmYiOjE1NjEwMjU0ODIsImV4cCI6MTU2MTAyOTM4MiwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IkFTUUEyLzhMQUFBQTVlZnBHQVBNK3BCT2ZIWW9HcURGaHpEai9rRXpxaERkbDdTQUlNTnhKMGM9IiwiYW1yIjpbInB3ZCJdLCJhcHBfZGlzcGxheW5hbWUiOiJvbmVkcml2ZXgiLCJhcHBpZCI6IjIzNWMyZDIzLTMwYmQtNDllZS1hZWZjLWRhYzVjMjE3MTFhNCIsImFwcGlkYWNyIjoiMSIsImZhbWlseV9uYW1lIjoiaWkiLCJnaXZlbl9uYW1lIjoiY20iLCJpcGFkZHIiOiIxMTMuMjA4LjExMi4xMzAiLCJuYW1lIjoiaWljbSIsIm9pZCI6ImQ0MTQ2ZGU3LWM3MjktNDljZi1iMjZjLTJhNGJjNDU3ZThlMSIsInBsYXRmIjoiMyIsInB1aWQiOiIxMDAzM0ZGRkFGNTE1ODYwIiwic2NwIjoiRmlsZXMuUmVhZFdyaXRlLkFsbCBwcm9maWxlIG9wZW5pZCBlbWFpbCIsInNpZ25pbl9zdGF0ZSI6WyJrbXNpIl0sInN1YiI6IjQwbnpxLWJEYkhnSEhva2ZCWFFscWR5TEJZbjB2SVJzenJKQTZJR3hrd1UiLCJ0aWQiOiI0NGQ4NzlkYS1mM2VmLTQwMjQtODZlMy1hYmMyZTA3NmU2ODEiLCJ1bmlxdWVfbmFtZSI6ImlpY21AbWFpbC5ocmthLm5ldCIsInVwbiI6ImlpY21AbWFpbC5ocmthLm5ldCIsInV0aSI6IlBYY3NxY1ZUTzBhYl9kRDdDbUlwQUEiLCJ2ZXIiOiIxLjAiLCJ4bXNfc3QiOnsic3ViIjoiZ25qRnMtdDZuQkl4YjdHRkY0R2VGMW02dTA2ellTN2JIMEhWVlU2MGdOVSJ9LCJ4bXNfdGNkdCI6MTUyNjEyNzI5OX0.Pc5SANFYDYO_nUC54zgv-l2JvdoA0cMc7c_VmD7eMPz5GDesavkgGl8R9g-9tFFEFPcSKUU2eiRqoE53Tc9BDZbOk1p_zAS_fbQjOUIVpYLQAwvVaNH_8qtcNzmWtT5WUgbEzTn5oF6mF2pAhEmiHwr5qKXGIIVS2I9mrv7bDDtf13cth3fupxbsFRRmAai_BvNviG3b3SUKS-5Wlpn0-kbxOrSO3QevUhgZypwJarvW7dfVqOVwNrlXEwYtdkCnMhSaenJUs8LTCehwc1fWTAb7ffGES4S2gOhP5mZtLmgWTxZV2wF04ygaZ-HZuxWAyEAN-tI4J1FuA39D_fo2Wg");
+		//System.out.println(oneDrive.getFile(tokenInfo, "/image/1989362.jpg").toString());
+		System.out.println(oneDrive.getFile(tokenInfo, "/image").toString());
 	}
 	
 	public String oauth2(String cliendId, String redirectUri) {
@@ -95,10 +97,41 @@ public class OneDriveApi {
 	 * @return
 	 */
 	public List<Item> getDir(TokenInfo tokenInfo, String path) {
-		HttpRequest request = request(path, "children?select=name,size,folder,@microsoft.graph.downloadUrl,lastModifiedDateTime", tokenInfo);
+		HttpRequest request = request(path, "children?select=id,name,size,folder,@microsoft.graph.downloadUrl,lastModifiedDateTime", tokenInfo);
 		List<Item> items = new ArrayList<Item>();
 		this.dirNextPage(items, request, 0, path);
 		return items;
+	}
+	
+	/**
+	 * 获取文件信息
+	 * @param tokenInfo
+	 * @param path
+	 * @return
+	 */
+	public Item getFile(TokenInfo tokenInfo, String path) {
+		String body = HttpRequest.get(Constants.apiUrl + "/me/drive/root:" + path)
+					.header("Authorization", tokenInfo.getAuth())
+					.header("Host", "graph.microsoft.com")
+					.timeout(Constants.timeout).execute().body();
+		JSONObject json = JSONUtil.parseObj(body);
+		String name = json.getStr("name");
+		if(name == null) {
+			return null;
+		}
+		String time = DateUtil.formatDateTime(DateUtil.parse(json.getStr("lastModifiedDateTime").toString()));
+		String downloadUrl = json.getStr("@microsoft.graph.downloadUrl")!=null?json.getStr("@microsoft.graph.downloadUrl").toString():null;
+		String size = CommonUtil.getFormatSize(Double.parseDouble(json.getStr("size").toString()));
+		String ext = null;
+		Boolean folder = json.get("folder")==null?false:true;
+		Integer childCount = 0;
+		if(folder) {
+			Map<String , Integer> folderMap = (Map<String , Integer>)json.get("folder");
+			childCount = (Integer)folderMap.get("childCount");
+		}else {
+			ext = CommonUtil.fileIco(name);
+		}
+		return new Item(name, size, time, folder, childCount ,downloadUrl, ext, path);
 	}
 	
 	@SuppressWarnings("unchecked")

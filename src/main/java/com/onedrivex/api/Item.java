@@ -102,5 +102,11 @@ public class Item {
 	public void setPath(String path) {
 		this.path = path;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Item [name=" + name + ", size=" + size + ", lastModifiedDateTime=" + lastModifiedDateTime + ", folder="
+				+ folder + ", childCount=" + childCount + ", downloadUrl=" + downloadUrl + ", ext=" + ext + ", path="
+				+ path + "]";
+	}
 }

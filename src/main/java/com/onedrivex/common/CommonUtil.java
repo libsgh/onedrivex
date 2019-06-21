@@ -9,11 +9,15 @@ import java.util.Map;
 
 import cn.hutool.core.text.StrSpliter;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.URLUtil;
 
 public class CommonUtil {
 	
 	public static String getFormatSize(double size) {  
-        double kiloByte = size/1024;  
+        double kiloByte = size/1024;
+        if(kiloByte == 0.0) {
+        	return 0 + "B";
+        }
         if(kiloByte < 1) {  
             return size + "B";  
         }  
@@ -45,7 +49,7 @@ public class CommonUtil {
 	 * @return
 	 */
 	public static String fileIco(String name) {
-		String ext = StrSpliter.split(name, ".", true, true).get(1).toLowerCase();
+		String ext = StrUtil.subAfter(name, ".", true).toLowerCase();
 		if(StrUtil.equalsAny(ext, new String[] {"bmp","jpg","jpeg","png","gif"})) {
 			return "image";
 		}else if(StrUtil.equalsAny(ext, new String[] {"mp4","mkv","webm","avi","mpg", "mpeg", "rm", "rmvb", "mov", "wmv", "mkv", "asf"})) {
@@ -86,7 +90,9 @@ public class CommonUtil {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put(getNameByPath(currentPath), currentPath);
 		list.add(map);
-		getAllPaths(currentPath, list);
+		if(!currentPath.equals("/")) {
+			getAllPaths(currentPath, list);
+		}
 		Collections.reverse(list);
 		return list;
 	}
@@ -94,12 +100,12 @@ public class CommonUtil {
 	public static String getNameByPath(String path){
 		String[] arr = path.split("/");
 		if(arr.length > 0) {
-			return arr[arr.length-1];
+			return URLUtil.decode(arr[arr.length-1]);
 		}else{
-			return path;
+			return URLUtil.decode(path);
 		}
 	}
 	public static void main(String[] args) {
-		System.out.println(getAllPaths("/doc/bigdata").toString());
+		System.out.println(getAllPaths("/").toString());
 	}
 }

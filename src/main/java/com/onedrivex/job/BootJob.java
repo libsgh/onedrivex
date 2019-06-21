@@ -39,7 +39,6 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 	
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent cre) {
-		try {
 			//1. 初始化数据库
 			InputStream stream = getClass().getClassLoader().getResourceAsStream("data/"+dataType.toLowerCase() + "_init.sql");
 			File targetFile = new File(dataType.toLowerCase() + "_init.sql");
@@ -55,45 +54,52 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			CronUtil.schedule(cron, new Task() {
 			    @Override
 			    public void execute() {
-			    	servive.refreshJob();
+			    	try {
+			    		servive.refreshJob();
+					} catch (Exception e) {
+						logger.error(e.getMessage(), e);
+					}
 			    }
 			});
 			if(StrUtil.isNotBlank(hkaa)) {
 				CronUtil.schedule(hkac, new Task() {
 					@Override
 					public void execute() {
-						int statusCode = HttpRequest.get(hkaa).execute().getStatus();
-						if(logger.isDebugEnabled()) {
-							logger.debug("heroku防休眠>>>状态码："+statusCode);
+						try {
+							int statusCode = HttpRequest.get(hkaa).execute().getStatus();
+							if(logger.isDebugEnabled()) {
+								logger.debug("heroku防休眠>>>状态码："+statusCode);
+							}
+						} catch (Exception e) {
+							logger.error(e.getMessage(), e);
 						}
 					}
 				});
 			}
-			CronUtil.schedule(rcc, new Task() {
+			/*CronUtil.schedule(rcc, new Task() {
 				@Override
 				public void execute() {
-					String tokenJson = servive.getConfig(Constants.tokenKey);
-					if(StrUtil.isNotBlank(tokenJson)) {
-			    		TokenInfo ti = JSONUtil.toBean(tokenJson, TokenInfo.class);
-			    		this.refreshCache(ti, "/");
-			    	}
+					try {
+						String tokenJson = servive.getConfig(Constants.tokenKey);
+						if(StrUtil.isNotBlank(tokenJson)) {
+							TokenInfo ti = JSONUtil.toBean(tokenJson, TokenInfo.class);
+							this.refreshCache(ti, "/");
+						}
+					} catch (Exception e) {
+						logger.error(e.getMessage(), e);
+					}
 				}
-
 				private void refreshCache(TokenInfo ti, String path) {
 					List<Item> list = servive.refreshDirCache(ti, path);
 					for (Item item : list) {
 						if(item.getFolder()) {
-							path = item.getName( )+ "/";
-							this.refreshCache(ti, path);
+							this.refreshCache(ti, item.getPath());
 						}
 					}
 					
 				}
-			});
+			});*/
 			CronUtil.start();
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
 	}
 
 }

@@ -1,0 +1,39 @@
+<#-- 引入布局指令的命名空间 -->
+<#import "../layout.html" as main>
+<#assign ctx=req.getContextPath()>
+<#-- 调用布局指令 -->
+<@main.nexmoe>
+<div class="mdui-container-fluid">
+    <div class="nexmoe-item">
+	<img class="mdui-img-fluid mdui-center" src="${item.downloadUrl}" />
+	
+	<div class="mdui-textfield">
+	  <label class="mdui-textfield-label">下载地址</label>
+	  <input id="dUrl" class="mdui-textfield-input" type="text" value="${item.path}"/>
+	</div>
+	<div class="mdui-textfield">
+	  <label class="mdui-textfield-label">HTML 引用地址</label>
+	  <input id="hUrl" class="mdui-textfield-input" type="text" value="<img src='${item.path}' />"/>
+	</div>
+    <div class="mdui-textfield">
+	  <label class="mdui-textfield-label">Markdown 引用地址</label>
+	  <input id="mUrl" class="mdui-textfield-input" type="text" value="![](${item.path})"/>
+	</div>
+       
+    </div>
+</div>
+
+<a href="${item.downloadUrl}" class="mdui-fab mdui-fab-fixed mdui-ripple mdui-color-theme-accent"><i class="mdui-icon material-icons">file_download</i></a>
+<script>
+$ = mdui.JQ;
+window.onload  = function(){
+	var curWwwPath = window.location.href;
+	var pathName = window.location.pathname;
+	var pos = curWwwPath.indexOf(pathName);
+	var localhostPath = curWwwPath.substring(0,pos);
+	$('#dUrl').val(curWwwPath);
+	$('#hUrl').val("<img src='"+curWwwPath+"' />");
+	$('#mUrl').val("![]("+curWwwPath+")");
+}
+</script>
+</@main.nexmoe>
