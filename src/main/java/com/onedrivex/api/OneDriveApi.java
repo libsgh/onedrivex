@@ -33,9 +33,10 @@ public class OneDriveApi {
 		OneDriveApi oneDrive = new OneDriveApi();
 		TokenInfo tokenInfo = new TokenInfo();
 		tokenInfo.setToken_type("Bearer");
-		tokenInfo.setAccess_token("eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFEQ29NcGpKWHJ4VHE5Vkc5dGUtN0ZYNFVPekZWMkNldDN4N3pMcmtMcFNGLThrbF9HMGo5NlF2WGdtd1hYTTVKOWhtYjN6Z0k5aWZJZnRCcG5uMmpMdFFaUWhQZzN4QVphZjBCQk1oUDY3QXlBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIiwia2lkIjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIn0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC80NGQ4NzlkYS1mM2VmLTQwMjQtODZlMy1hYmMyZTA3NmU2ODEvIiwiaWF0IjoxNTYxMzQxMTM1LCJuYmYiOjE1NjEzNDExMzUsImV4cCI6MTU2MTM0NTAzNSwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IkFTUUEyLzhMQUFBQTBnT0JlTkJpbjdXLzE5T0VtOCtFanR5a1RXVTJNTzZuTkkzdXk0SG5JZUk9IiwiYW1yIjpbInB3ZCJdLCJhcHBfZGlzcGxheW5hbWUiOiJvbmVkcml2ZXgiLCJhcHBpZCI6IjIzNWMyZDIzLTMwYmQtNDllZS1hZWZjLWRhYzVjMjE3MTFhNCIsImFwcGlkYWNyIjoiMSIsImZhbWlseV9uYW1lIjoiaWkiLCJnaXZlbl9uYW1lIjoiY20iLCJpcGFkZHIiOiIxMTMuMjA4LjExMi4xMzAiLCJuYW1lIjoiaWljbSIsIm9pZCI6ImQ0MTQ2ZGU3LWM3MjktNDljZi1iMjZjLTJhNGJjNDU3ZThlMSIsInBsYXRmIjoiMyIsInB1aWQiOiIxMDAzM0ZGRkFGNTE1ODYwIiwic2NwIjoiRmlsZXMuUmVhZFdyaXRlLkFsbCBwcm9maWxlIG9wZW5pZCBlbWFpbCIsInNpZ25pbl9zdGF0ZSI6WyJrbXNpIl0sInN1YiI6IjQwbnpxLWJEYkhnSEhva2ZCWFFscWR5TEJZbjB2SVJzenJKQTZJR3hrd1UiLCJ0aWQiOiI0NGQ4NzlkYS1mM2VmLTQwMjQtODZlMy1hYmMyZTA3NmU2ODEiLCJ1bmlxdWVfbmFtZSI6ImlpY21AbWFpbC5ocmthLm5ldCIsInVwbiI6ImlpY21AbWFpbC5ocmthLm5ldCIsInV0aSI6InAtdWVqNHUzXzBLN3hvb0UzRFFuQUEiLCJ2ZXIiOiIxLjAiLCJ4bXNfc3QiOnsic3ViIjoiZ25qRnMtdDZuQkl4YjdHRkY0R2VGMW02dTA2ellTN2JIMEhWVlU2MGdOVSJ9LCJ4bXNfdGNkdCI6MTUyNjEyNzI5OX0.M_O0Vn_Ob04EA0MFF-4R7SUfaNX_hKM7unscU9YVvfeWtxRT41sjJLH-7JAoO4bmdvlvx_Xv65y_z7gP4qY3AntyNKCOnOeIxlWOUpLO2MuWTiFaA92CETkLdy5otAekPbLspdRg1-fWpQHITrYnUl4LmDgTvIaoXxMpaaie1OQ1fT0kRS4Be1g0ljtAoQuFe8qZ-eY2x9H40cxVJM-F51ptMoGdHTQCA1RBiEUYs-jnx60izr1Ug9DuhWj3rJQaUBSYaoNmtJOWEI23syE-X_VW6EfP9BLPYCJ7ZG-irx-88icZA9oz_oVXMlPTLp2qNoUWzaDujex0fI8aEu3dsA");
+		tokenInfo.setAccess_token("eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFEQ29NcGpKWHJ4VHE5Vkc5dGUtN0ZYY04zVGdjZWFPSjRheHBRMnRrZFpWSm5QZDUyV2ZfUXhJVXM0c0pMZ0tEX1pJSmJES1hrc0hRTzFMOWxzb0taa0hOVElfdnp5NnFSVVd0YWlBbHdFWFNBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIiwia2lkIjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIn0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC80NGQ4NzlkYS1mM2VmLTQwMjQtODZlMy1hYmMyZTA3NmU2ODEvIiwiaWF0IjoxNTYxMzU4NDAwLCJuYmYiOjE1NjEzNTg0MDAsImV4cCI6MTU2MTM2MjMwMCwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IjQyWmdZTGljTkROVTBEYVM3UmRUNW9YVkRTdE9haW4vbDFLMWNKdldzMHlyUE9tWDExOEEiLCJhbXIiOlsicHdkIl0sImFwcF9kaXNwbGF5bmFtZSI6Im9uZWRyaXZleCIsImFwcGlkIjoiMjM1YzJkMjMtMzBiZC00OWVlLWFlZmMtZGFjNWMyMTcxMWE0IiwiYXBwaWRhY3IiOiIxIiwiZmFtaWx5X25hbWUiOiJpaSIsImdpdmVuX25hbWUiOiJjbSIsImlwYWRkciI6IjExMy4yMDguMTEyLjEzMCIsIm5hbWUiOiJpaWNtIiwib2lkIjoiZDQxNDZkZTctYzcyOS00OWNmLWIyNmMtMmE0YmM0NTdlOGUxIiwicGxhdGYiOiIzIiwicHVpZCI6IjEwMDMzRkZGQUY1MTU4NjAiLCJzY3AiOiJGaWxlcy5SZWFkV3JpdGUuQWxsIHByb2ZpbGUgb3BlbmlkIGVtYWlsIiwic2lnbmluX3N0YXRlIjpbImttc2kiXSwic3ViIjoiNDBuenEtYkRiSGdISG9rZkJYUWxxZHlMQlluMHZJUnN6ckpBNklHeGt3VSIsInRpZCI6IjQ0ZDg3OWRhLWYzZWYtNDAyNC04NmUzLWFiYzJlMDc2ZTY4MSIsInVuaXF1ZV9uYW1lIjoiaWljbUBtYWlsLmhya2EubmV0IiwidXBuIjoiaWljbUBtYWlsLmhya2EubmV0IiwidXRpIjoiRUlKTVBxS0VCa1dncVZPeFd5TTFBQSIsInZlciI6IjEuMCIsInhtc19zdCI6eyJzdWIiOiJnbmpGcy10Nm5CSXhiN0dGRjRHZUYxbTZ1MDZ6WVM3YkgwSFZWVTYwZ05VIn0sInhtc190Y2R0IjoxNTI2MTI3Mjk5fQ.amx1KpX9sMWh5rl3bUcvRbLCNnHAAfpOefYAWZ_XkI6OWFTuaKq_Cev21HD7KsYpK1ahmXET8Ce9-cG1V5pTxXq4HvR9iTlIgGuyjd_LJx_UEX1uSspYNuUds4-DB01bW3yDKc5hxp8FOi8gmTsm-VGt9QGdEiqSpkkzVu0D78UAdmF_e5XD5HFd8LYQg9SPzlpV4_MYZndLgZL42vblJmrtV10kYaLK41Nb9-quaqUs1bjFvB3f3aUX89u7bmO6wk2FcrsddTclxR_TahFGAV0Ol2Bx43-yxDejIfHa3QDmZIOr4z466_RsPazcVXcL-xX9TFvBNdVCAVy_ZpnH1Q");
 		//System.out.println(oneDrive.getFile(tokenInfo, "/image/1989362.jpg").toString());
-		System.out.println(oneDrive.getFile(tokenInfo, "/video/蚁人.mkv").toString());
+		Item item = oneDrive.getFile(tokenInfo, "/test/doc.php");
+		System.out.println(JSONUtil.toJsonPrettyStr(item));
 	}
 	
 	public String oauth2(String cliendId, String redirectUri) {
@@ -122,6 +123,7 @@ public class OneDriveApi {
 		String time = DateUtil.formatDateTime(DateUtil.parse(json.getStr("lastModifiedDateTime").toString()));
 		String downloadUrl = json.getStr("@microsoft.graph.downloadUrl")!=null?json.getStr("@microsoft.graph.downloadUrl").toString():null;
 		String size = CommonUtil.getFormatSize(Double.parseDouble(json.getStr("size").toString()));
+		String icon = null;
 		String ext = null;
 		Boolean folder = json.get("folder")==null?false:true;
 		Integer childCount = 0;
@@ -132,7 +134,8 @@ public class OneDriveApi {
 			childCount = (Integer)folderMap.get("childCount");
 		}else {
 			fileType = ((String)json.getByPath("$.file.mimeType")).split("/")[0];
-			ext = CommonUtil.fileIco(name);
+			ext = CommonUtil.fileType(name);
+			icon = CommonUtil.fileIco(name);
 			if(fileType.equals("audio")) {
 				t = StrUtil.subBefore(thumbnail(tokenInfo, path, "large"), "&width=", true);
 			}else{
@@ -140,7 +143,7 @@ public class OneDriveApi {
 			}
 		}
 		//String t = thumbnail(tokenInfo, path, "large");
-		return new Item(name, size, time, folder, childCount ,downloadUrl, ext, path, t, fileType);
+		return new Item(name, size, time, folder, childCount ,downloadUrl, ext, icon, path, t, fileType);
 	}
 	
 	/**
@@ -173,13 +176,15 @@ public class OneDriveApi {
 				Object folder = map.get("folder");
 				Integer childCount =0;
 				String ext = null;
+				String icon = null;
 				if(folder != null) {
 					Map<String , Integer> folderMap = (Map<String , Integer>)folder;
 					childCount = (Integer)folderMap.get("childCount");
 				}else {
-					ext = CommonUtil.fileIco(name);
+					ext = CommonUtil.fileType(name);
+					icon = CommonUtil.fileIco(name);
 				}
-				items.add(new Item(name, size, time, (folder==null?false:true), childCount ,downloadUrl, ext, path.equals("/")?"/"+name:path+"/"+name, null, null));
+				items.add(new Item(name, size, time, (folder==null?false:true), childCount ,downloadUrl, ext, icon, path.equals("/")?"/"+name:path+"/"+name, null, null));
 			}
 		}
 		Object nextLink = JSONUtil.parse(body).getByPath("$.@odata.nextLink");

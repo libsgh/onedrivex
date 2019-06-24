@@ -1,0 +1,23 @@
+<#-- 引入布局指令的命名空间 -->
+<#import "setup_layout.html" as main>
+<#assign ctx=req.getContextPath()>
+<#-- 调用布局指令 -->
+<@main.setup>
+<div class="mdui-container">
+	<div class="mdui-container-fluid">
+		<div class="mdui-typo">
+		  <h1>程序安装 <small>完成安装</small></h1>
+		</div>
+		<#if ti.refresh_token??>
+			<h1 class='mdui-text-color-green'>程序安装成功!</h1>
+			<br><br>
+			<a class="mdui-btn mdui-color-theme-accent mdui-ripple mdui-float-left" href="${ctx}/admin/" ><i class="mdui-icon material-icons">&#xe8b8;</i> 管理后台</a>(初始密码:ondrive-x)
+			<a class="mdui-btn mdui-color-theme-accent mdui-ripple mdui-float-right" href="${ctx}/"><i class="mdui-icon material-icons">&#xe2c7;</i> 访问网站</a>
+		<#else>
+			<h1  class='mdui-text-color-red'>程序安装失败!</h1>
+			<br><br>
+			<a class="mdui-btn mdui-btn-raised mdui-float-left" href="${ctx}/setup?s=2">重新绑定</a>
+		</#if>
+	</div>
+</div>
+</@main.setup>

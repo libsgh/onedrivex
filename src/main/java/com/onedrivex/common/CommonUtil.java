@@ -7,9 +7,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.ui.Model;
+
+import com.onedrivex.api.CodeType;
+import com.onedrivex.api.Item;
+import com.onedrivex.api.OneDriveApi;
+import com.onedrivex.api.TokenInfo;
+
 import cn.hutool.core.text.StrSpliter;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
+import cn.hutool.http.HttpUtil;
 
 public class CommonUtil {
 	
@@ -56,13 +64,27 @@ public class CommonUtil {
 			return "ondemand_video";
 		}else if(StrUtil.equalsAny(ext, new String[] {"ogg","mp3","wav"})) {
 			return "audiotrack";
+		}else if(StrUtil.equalsAny(ext, new String[] {"pdf"})) {
+			return "picture_as_pdf";
+		}else if(StrUtil.containsAny(ext,
+				new String[] {"html","htm","php","css","go","java","js","json","txt","sh","md"})) {
+			return "code";
 		}else{
 			return "insert_drive_file";
 		}	
 	}
+	/**
+	 * 获取文件类型（后缀）
+	 * @param name
+	 * @return
+	 */
+	public static String fileType(String name) {
+		return StrUtil.subAfter(name, ".", true).toLowerCase();
+	}
 	
 	public static String getParentPath(String requestURI) {
 		if(requestURI.equals("/")) {
+			return "";
 		}else {
 			List<String> list = StrSpliter.splitPath(requestURI);
 			if(list.size() == 1) {
@@ -72,7 +94,6 @@ public class CommonUtil {
 				return "/"+StrUtil.join("/", list);
 			}
 		}
-		return requestURI;
 	}
 	
 	private static void getAllPaths(String currentPath, List<Map<String, String>> list) {
@@ -105,7 +126,24 @@ public class CommonUtil {
 			return URLUtil.decode(path);
 		}
 	}
-	public static void main(String[] args) {
-		System.out.println(getAllPaths("/").toString());
+
+	public static String showORedirect(Model model, Item item, String theme, TokenInfo ti, Integer t) {
+		if(t != null) {
+			return "redirect:"+ StrUtil.subBefore(item.getThumb(), "&width=", true)+"&width="+t+"&height="+t;
+		}
+		if(item.getFileType().equals("video")
+				|| item.getFileType().equals("audio")
+				|| item.getFileType().equals("image")) {
+			return theme+"/show/"+item.getFileType();
+		}else if(StrUtil.containsAny(item.getExt(),
+				new String[] {"html","htm","php","css","go","java","js","json","txt","sh","md"})) {
+			String content = HttpUtil.downloadString(item.getDownloadUrl(), "UTF-8");
+			model.addAttribute("codeType",CodeType.get(item.getExt()));
+			model.addAttribute("content", content);
+			return theme+"/show/code";
+		}else if(StrUtil.containsAny(item.getExt(),"pdf")) {
+			return theme+"/show/pdf";
+		}
+		return "redirect:"+item.getDownloadUrl();
 	}
 }

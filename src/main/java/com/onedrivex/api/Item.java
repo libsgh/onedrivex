@@ -19,7 +19,9 @@ public class Item {
 	
 	private String downloadUrl;//下载地址
 	
-	private String ext;//文件类型
+	private String ext;//文件类型（后缀）
+	
+	private String icon;//文件列表图标标识
 	
 	private String path;//路径
 	
@@ -31,7 +33,7 @@ public class Item {
 		super();
 	}
 
-	public Item(String name, String size, String lastModifiedDateTime, Boolean folder, Integer childCount, String downloadUrl, String ext, String path, String thumb, String fileType) {
+	public Item(String name, String size, String lastModifiedDateTime, Boolean folder, Integer childCount, String downloadUrl, String ext, String icon, String path, String thumb, String fileType) {
 		super();
 		this.name = name;
 		this.size = size;
@@ -40,6 +42,7 @@ public class Item {
 		this.childCount = childCount;
 		this.downloadUrl = downloadUrl;
 		this.ext = ext;
+		this.icon = icon;
 		this.path = path;
 		this.thumb = thumb;
 		this.fileType = fileType;
@@ -125,11 +128,19 @@ public class Item {
 		this.fileType = fileType;
 	}
 
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
+
 	@Override
 	public String toString() {
 		return "Item [name=" + name + ", size=" + size + ", lastModifiedDateTime=" + lastModifiedDateTime + ", folder="
-				+ folder + ", childCount=" + childCount + ", downloadUrl=" + downloadUrl + ", ext=" + ext + ", path="
-				+ path + ", thumb=" + thumb + ", fileType=" + fileType + "]";
+				+ folder + ", childCount=" + childCount + ", downloadUrl=" + downloadUrl + ", ext=" + ext + ", icon="
+				+ icon + ", path=" + path + ", thumb=" + thumb + ", fileType=" + fileType + "]";
 	}
 
 }

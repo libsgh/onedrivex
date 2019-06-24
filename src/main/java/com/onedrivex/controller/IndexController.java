@@ -1,6 +1,9 @@
 package com.onedrivex.controller;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,7 +23,9 @@ import com.onedrivex.util.Constants;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
+import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
+import freemarker.template.utility.StringUtil;
 
 @Controller
 @ControllerAdvice
@@ -50,7 +55,7 @@ public class IndexController {
 	}
     
 	@RequestMapping("/**")
-	public String index(Model model, HttpServletRequest request) {
+	public String index(Model model, HttpServletRequest request, Integer t, String password) {
 		String parentPath = CommonUtil.getParentPath(request.getRequestURI());
 		String path = URLUtil.decode(request.getRequestURI());
 		String tokenInfo = servive.getConfig(Constants.tokenKey);
@@ -63,13 +68,23 @@ public class IndexController {
 			TokenInfo ti = JSONUtil.toBean(tokenInfo, TokenInfo.class);
 			Item item = servive.getFile(ti, path);
 			if(item == null || item.getFolder()) {
-				model.addAttribute("items", servive.getDir(ti, path));
+				List<Item> items = servive.getDir(ti, path);
+				int count = items.size();
+				items = items.parallelStream().filter(r->!r.getName().trim().equals(".password")).collect(Collectors.toList());
+				if(count > items.size()) {
+					String pwd = HttpUtil.downloadString(servive.getFile(ti, path+"/.password").getDownloadUrl(), "UTF-8");
+					//需要密码
+					if(StrUtil.isBlank(password) || !password.trim().equals(pwd.trim())) {
+						return "nexmoe/password";
+					}
+				}
+				model.addAttribute("items", items);
 			}else{
 				//文件
 				String sfs = request.getHeader("Referer");
 				if(StrUtil.isNotBlank(sfs)) {
 					model.addAttribute("item", item);
-					return "nexmoe/show/"+item.getFileType();
+					return CommonUtil.showORedirect(model, item, "nexmoe", ti, t);
 				}else{
 					//下载
 					return "redirect:"+item.getDownloadUrl();
@@ -81,16 +96,24 @@ public class IndexController {
 	@RequestMapping("/setup")
 	public String setup(String s, Model model, String clientId, String clientSecret, String redirectUri) {
 		if(s.equals("1")) {
+			//获取并输入cliendId secret
 			String rdu = servive.getConfig("redirectUri");
 			model.addAttribute("appUrl", api.quickStartRegUrl(rdu));
 			model.addAttribute("redirectUri", rdu);
 			return "classic/setup/setup_1";
 		}else if(s.equals("2")) {
+			//oauth2跳转授权
 			servive.updateConfig("redirectUri",redirectUri);
 			servive.updateConfig("clientId",clientId);
 			servive.updateConfig("clientSecret",clientSecret);
 			model.addAttribute("oauth2Url",api.oauth2(clientId, redirectUri));
-			return "setup/setup_2";
+			return "classic/setup/setup_2";
+		}else if(s.equals("3")) {
+			//安装结果
+			String tokenInfo = servive.getConfig(Constants.tokenKey);
+			TokenInfo ti = JSONUtil.toBean(tokenInfo, TokenInfo.class);
+			model.addAttribute("ti", ti);
+			return "classic/setup/setup_3";
 		}
 		return "classic/setup/setup_1";
 	}
@@ -106,6 +129,6 @@ public class IndexController {
     	String redirectUri = configMap.get("redirectUri");
 		String tokenInfo = api.getToken(code, clientId, clientSecret, redirectUri);
 		servive.updateConfig(Constants.tokenKey, tokenInfo);
-		return "redirect:/";
+		return "redirect:/setup?s=3";
 	}
 }

@@ -54,7 +54,7 @@
         大小 
         <i class="mdui-icon material-icons icon-sort" data-sort="size" data-order="downward">expand_more</i>
        </div> </li> 
-       <#if parentPath!='/'>
+       <#if parentPath!=''>
 			<li class="mdui-list-item mdui-ripple">
 				<a href="${parentPath}">
 				  <div class="mdui-col-xs-12 mdui-col-sm-7">
@@ -70,7 +70,7 @@
 			<li class="mdui-list-item mdui-ripple">
 				<a href="${item.path}">
 				  <div class="mdui-col-xs-12 mdui-col-sm-7 mdui-text-truncate">
-					<i class="mdui-icon material-icons">${item.ext!'folder_open'}</i>
+					<i class="mdui-icon material-icons mdui-text-color-theme-icon">${item.icon!'folder_open'}</i>
 			    	<span>${item.name}</span>
 				  </div>
 				  <div class="mdui-col-sm-3 mdui-text-right">${item.lastModifiedDateTime}</div>
@@ -134,17 +134,24 @@
 			$('.mdui-fab i').text("apps");
 			$('.nexmoe-item').addClass('thumb');
 			$('.mdui-col-xs-12 i.mdui-icon').each(function(){
+				console.log($(this).text());
 				if($(this).text() == "image" || $(this).text() == "ondemand_video"){
 					var href = $(this).parent().parent().attr('href');
 					var thumb =(href.indexOf('?') == -1)?'?t=220':'&t=220';
 					$(this).hide();
-					$(this).parent().parent().parent().css("background","url("+href+thumb+")  no-repeat center top");
+					$(this).parent().parent().parent().attr("style","background: url("+encodeURI(href+thumb).replace(/\(/g, '%28').  
+						    replace(/\)/g, '%29')+")  no-repeat center top");
 				}
 			});
 		}
 	
 	}	
-	
+	function urlencode (str) {  
+	    str = (str + '').toString();   
+
+	    return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').  
+	    replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');  
+	}
 	$(function(){
 		$('.file a').each(function(){
 			$(this).on('click', function () {
