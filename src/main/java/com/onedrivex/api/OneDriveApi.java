@@ -123,16 +123,22 @@ public class OneDriveApi {
 		String downloadUrl = json.getStr("@microsoft.graph.downloadUrl")!=null?json.getStr("@microsoft.graph.downloadUrl").toString():null;
 		String size = CommonUtil.getFormatSize(Double.parseDouble(json.getStr("size").toString()));
 		String ext = null;
-		String fileType = ((String)json.getByPath("$.file.mimeType")).split("/")[0];
 		Boolean folder = json.get("folder")==null?false:true;
 		Integer childCount = 0;
+		String t = null;
+		String fileType = "folder";
 		if(folder) {
 			Map<String , Integer> folderMap = (Map<String , Integer>)json.get("folder");
 			childCount = (Integer)folderMap.get("childCount");
 		}else {
+			fileType = ((String)json.getByPath("$.file.mimeType")).split("/")[0];
 			ext = CommonUtil.fileIco(name);
+			if(fileType.equals("audio")) {
+				t = StrUtil.subBefore(thumbnail(tokenInfo, path, "large"), "&width=", true);
+			}else{
+				t = thumbnail(tokenInfo, path, "large");
+			}
 		}
-		String t = StrUtil.subBefore(thumbnail(tokenInfo, path, "large"), "&width=", true);
 		//String t = thumbnail(tokenInfo, path, "large");
 		return new Item(name, size, time, folder, childCount ,downloadUrl, ext, path, t, fileType);
 	}

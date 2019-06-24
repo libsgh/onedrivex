@@ -1,0 +1,35 @@
+<#-- 引入布局指令的命名空间 -->
+<#import "../layout.html" as main>
+<#assign ctx=req.getContextPath()>
+<#-- 调用布局指令 -->
+<@main.nexmoe>
+<link class="dplayer-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer/dist/DPlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/dplayer/dist/DPlayer.min.js"></script>
+<div class="mdui-container-fluid">
+	<div class="nexmoe-item">
+	<div class="mdui-center" id="dplayer"></div>
+	
+	<!-- 固定标签 -->
+	<div class="mdui-textfield">
+	  <label class="mdui-textfield-label">下载地址</label>
+	  <input class="mdui-textfield-input" type="text" value="${realUrl}"/>
+	</div>
+	<div class="mdui-textfield">
+	  <label class="mdui-textfield-label">引用地址</label>
+	  <textarea class="mdui-textfield-input"><video><source src="${realUrl}" type="video/mp4"></video></textarea>
+	</div>
+	</div>
+</div>
+<script>
+const dp = new DPlayer({
+	container: document.getElementById('dplayer'),
+	lang:'zh-cn',
+	video: {
+	    url: '${item.downloadUrl}',
+	    pic: '${item.thumb}',
+	    type: 'auto'
+	}
+});
+</script>
+<a href="${item.downloadUrl}" class="mdui-fab mdui-fab-fixed mdui-ripple mdui-color-theme-accent"><i class="mdui-icon material-icons">file_download</i></a>
+</@main.nexmoe>
