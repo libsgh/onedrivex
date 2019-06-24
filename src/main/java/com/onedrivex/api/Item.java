@@ -42,7 +42,7 @@ public class Item {
 		this.ext = ext;
 		this.path = path;
 		this.thumb = thumb;
-		this.thumb = fileType;
+		this.fileType = fileType;
 	}
 
 	public String getName() {

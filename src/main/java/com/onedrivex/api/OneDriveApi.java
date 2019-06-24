@@ -132,8 +132,8 @@ public class OneDriveApi {
 		}else {
 			ext = CommonUtil.fileIco(name);
 		}
-		//String t = StrUtil.subBefore(thumbnail(tokenInfo, path, "large"), "&width=", true);
-		String t = thumbnail(tokenInfo, path, "large");
+		String t = StrUtil.subBefore(thumbnail(tokenInfo, path, "large"), "&width=", true);
+		//String t = thumbnail(tokenInfo, path, "large");
 		return new Item(name, size, time, folder, childCount ,downloadUrl, ext, path, t, fileType);
 	}
 	
