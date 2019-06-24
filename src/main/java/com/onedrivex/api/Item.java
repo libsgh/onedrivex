@@ -22,12 +22,16 @@ public class Item {
 	private String ext;//文件类型
 	
 	private String path;//路径
+	
+	private String thumb;//略缩图
+	
+	private String fileType;//文件类型
 
 	public Item() {
 		super();
 	}
 
-	public Item(String name, String size, String lastModifiedDateTime, Boolean folder, Integer childCount, String downloadUrl, String ext, String path) {
+	public Item(String name, String size, String lastModifiedDateTime, Boolean folder, Integer childCount, String downloadUrl, String ext, String path, String thumb, String fileType) {
 		super();
 		this.name = name;
 		this.size = size;
@@ -37,6 +41,8 @@ public class Item {
 		this.downloadUrl = downloadUrl;
 		this.ext = ext;
 		this.path = path;
+		this.thumb = thumb;
+		this.thumb = fileType;
 	}
 
 	public String getName() {
@@ -103,10 +109,27 @@ public class Item {
 		this.path = path;
 	}
 
+	public String getThumb() {
+		return thumb;
+	}
+
+	public void setThumb(String thumb) {
+		this.thumb = thumb;
+	}
+
+	public String getFileType() {
+		return fileType;
+	}
+
+	public void setFileType(String fileType) {
+		this.fileType = fileType;
+	}
+
 	@Override
 	public String toString() {
 		return "Item [name=" + name + ", size=" + size + ", lastModifiedDateTime=" + lastModifiedDateTime + ", folder="
 				+ folder + ", childCount=" + childCount + ", downloadUrl=" + downloadUrl + ", ext=" + ext + ", path="
-				+ path + "]";
+				+ path + ", thumb=" + thumb + ", fileType=" + fileType + "]";
 	}
+
 }

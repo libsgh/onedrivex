@@ -33,9 +33,9 @@ public class OneDriveApi {
 		OneDriveApi oneDrive = new OneDriveApi();
 		TokenInfo tokenInfo = new TokenInfo();
 		tokenInfo.setToken_type("Bearer");
-		tokenInfo.setAccess_token("eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFEQ29NcGpKWHJ4VHE5Vkc5dGUtN0ZYYmJEUjl4UlJRdXZvaUFtNThkZFF5TmpiMUFaNVNMQXZHQmxRTER3eUY1LUt6eU0yQjRGWWp6cEhKVGJUOFAtYXlXYzhuR2plUUhLa1JVU21nVkVZQ2lBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIiwia2lkIjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIn0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC80NGQ4NzlkYS1mM2VmLTQwMjQtODZlMy1hYmMyZTA3NmU2ODEvIiwiaWF0IjoxNTYxMDI1NDgyLCJuYmYiOjE1NjEwMjU0ODIsImV4cCI6MTU2MTAyOTM4MiwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IkFTUUEyLzhMQUFBQTVlZnBHQVBNK3BCT2ZIWW9HcURGaHpEai9rRXpxaERkbDdTQUlNTnhKMGM9IiwiYW1yIjpbInB3ZCJdLCJhcHBfZGlzcGxheW5hbWUiOiJvbmVkcml2ZXgiLCJhcHBpZCI6IjIzNWMyZDIzLTMwYmQtNDllZS1hZWZjLWRhYzVjMjE3MTFhNCIsImFwcGlkYWNyIjoiMSIsImZhbWlseV9uYW1lIjoiaWkiLCJnaXZlbl9uYW1lIjoiY20iLCJpcGFkZHIiOiIxMTMuMjA4LjExMi4xMzAiLCJuYW1lIjoiaWljbSIsIm9pZCI6ImQ0MTQ2ZGU3LWM3MjktNDljZi1iMjZjLTJhNGJjNDU3ZThlMSIsInBsYXRmIjoiMyIsInB1aWQiOiIxMDAzM0ZGRkFGNTE1ODYwIiwic2NwIjoiRmlsZXMuUmVhZFdyaXRlLkFsbCBwcm9maWxlIG9wZW5pZCBlbWFpbCIsInNpZ25pbl9zdGF0ZSI6WyJrbXNpIl0sInN1YiI6IjQwbnpxLWJEYkhnSEhva2ZCWFFscWR5TEJZbjB2SVJzenJKQTZJR3hrd1UiLCJ0aWQiOiI0NGQ4NzlkYS1mM2VmLTQwMjQtODZlMy1hYmMyZTA3NmU2ODEiLCJ1bmlxdWVfbmFtZSI6ImlpY21AbWFpbC5ocmthLm5ldCIsInVwbiI6ImlpY21AbWFpbC5ocmthLm5ldCIsInV0aSI6IlBYY3NxY1ZUTzBhYl9kRDdDbUlwQUEiLCJ2ZXIiOiIxLjAiLCJ4bXNfc3QiOnsic3ViIjoiZ25qRnMtdDZuQkl4YjdHRkY0R2VGMW02dTA2ellTN2JIMEhWVlU2MGdOVSJ9LCJ4bXNfdGNkdCI6MTUyNjEyNzI5OX0.Pc5SANFYDYO_nUC54zgv-l2JvdoA0cMc7c_VmD7eMPz5GDesavkgGl8R9g-9tFFEFPcSKUU2eiRqoE53Tc9BDZbOk1p_zAS_fbQjOUIVpYLQAwvVaNH_8qtcNzmWtT5WUgbEzTn5oF6mF2pAhEmiHwr5qKXGIIVS2I9mrv7bDDtf13cth3fupxbsFRRmAai_BvNviG3b3SUKS-5Wlpn0-kbxOrSO3QevUhgZypwJarvW7dfVqOVwNrlXEwYtdkCnMhSaenJUs8LTCehwc1fWTAb7ffGES4S2gOhP5mZtLmgWTxZV2wF04ygaZ-HZuxWAyEAN-tI4J1FuA39D_fo2Wg");
+		tokenInfo.setAccess_token("eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFEQ29NcGpKWHJ4VHE5Vkc5dGUtN0ZYNFVPekZWMkNldDN4N3pMcmtMcFNGLThrbF9HMGo5NlF2WGdtd1hYTTVKOWhtYjN6Z0k5aWZJZnRCcG5uMmpMdFFaUWhQZzN4QVphZjBCQk1oUDY3QXlBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIiwia2lkIjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIn0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC80NGQ4NzlkYS1mM2VmLTQwMjQtODZlMy1hYmMyZTA3NmU2ODEvIiwiaWF0IjoxNTYxMzQxMTM1LCJuYmYiOjE1NjEzNDExMzUsImV4cCI6MTU2MTM0NTAzNSwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IkFTUUEyLzhMQUFBQTBnT0JlTkJpbjdXLzE5T0VtOCtFanR5a1RXVTJNTzZuTkkzdXk0SG5JZUk9IiwiYW1yIjpbInB3ZCJdLCJhcHBfZGlzcGxheW5hbWUiOiJvbmVkcml2ZXgiLCJhcHBpZCI6IjIzNWMyZDIzLTMwYmQtNDllZS1hZWZjLWRhYzVjMjE3MTFhNCIsImFwcGlkYWNyIjoiMSIsImZhbWlseV9uYW1lIjoiaWkiLCJnaXZlbl9uYW1lIjoiY20iLCJpcGFkZHIiOiIxMTMuMjA4LjExMi4xMzAiLCJuYW1lIjoiaWljbSIsIm9pZCI6ImQ0MTQ2ZGU3LWM3MjktNDljZi1iMjZjLTJhNGJjNDU3ZThlMSIsInBsYXRmIjoiMyIsInB1aWQiOiIxMDAzM0ZGRkFGNTE1ODYwIiwic2NwIjoiRmlsZXMuUmVhZFdyaXRlLkFsbCBwcm9maWxlIG9wZW5pZCBlbWFpbCIsInNpZ25pbl9zdGF0ZSI6WyJrbXNpIl0sInN1YiI6IjQwbnpxLWJEYkhnSEhva2ZCWFFscWR5TEJZbjB2SVJzenJKQTZJR3hrd1UiLCJ0aWQiOiI0NGQ4NzlkYS1mM2VmLTQwMjQtODZlMy1hYmMyZTA3NmU2ODEiLCJ1bmlxdWVfbmFtZSI6ImlpY21AbWFpbC5ocmthLm5ldCIsInVwbiI6ImlpY21AbWFpbC5ocmthLm5ldCIsInV0aSI6InAtdWVqNHUzXzBLN3hvb0UzRFFuQUEiLCJ2ZXIiOiIxLjAiLCJ4bXNfc3QiOnsic3ViIjoiZ25qRnMtdDZuQkl4YjdHRkY0R2VGMW02dTA2ellTN2JIMEhWVlU2MGdOVSJ9LCJ4bXNfdGNkdCI6MTUyNjEyNzI5OX0.M_O0Vn_Ob04EA0MFF-4R7SUfaNX_hKM7unscU9YVvfeWtxRT41sjJLH-7JAoO4bmdvlvx_Xv65y_z7gP4qY3AntyNKCOnOeIxlWOUpLO2MuWTiFaA92CETkLdy5otAekPbLspdRg1-fWpQHITrYnUl4LmDgTvIaoXxMpaaie1OQ1fT0kRS4Be1g0ljtAoQuFe8qZ-eY2x9H40cxVJM-F51ptMoGdHTQCA1RBiEUYs-jnx60izr1Ug9DuhWj3rJQaUBSYaoNmtJOWEI23syE-X_VW6EfP9BLPYCJ7ZG-irx-88icZA9oz_oVXMlPTLp2qNoUWzaDujex0fI8aEu3dsA");
 		//System.out.println(oneDrive.getFile(tokenInfo, "/image/1989362.jpg").toString());
-		System.out.println(oneDrive.getFile(tokenInfo, "/image").toString());
+		System.out.println(oneDrive.getFile(tokenInfo, "/video/蚁人.mkv").toString());
 	}
 	
 	public String oauth2(String cliendId, String redirectUri) {
@@ -123,6 +123,7 @@ public class OneDriveApi {
 		String downloadUrl = json.getStr("@microsoft.graph.downloadUrl")!=null?json.getStr("@microsoft.graph.downloadUrl").toString():null;
 		String size = CommonUtil.getFormatSize(Double.parseDouble(json.getStr("size").toString()));
 		String ext = null;
+		String fileType = ((String)json.getByPath("$.file.mimeType")).split("/")[0];
 		Boolean folder = json.get("folder")==null?false:true;
 		Integer childCount = 0;
 		if(folder) {
@@ -131,7 +132,22 @@ public class OneDriveApi {
 		}else {
 			ext = CommonUtil.fileIco(name);
 		}
-		return new Item(name, size, time, folder, childCount ,downloadUrl, ext, path);
+		//String t = StrUtil.subBefore(thumbnail(tokenInfo, path, "large"), "&width=", true);
+		String t = thumbnail(tokenInfo, path, "large");
+		return new Item(name, size, time, folder, childCount ,downloadUrl, ext, path, t, fileType);
+	}
+	
+	/**
+	 * 获取文件略缩图
+	 * @param tokenInfo
+	 * @param path 文件路径
+	 * @param size small、medium、large
+	 * @return
+	 */
+	public String thumbnail(TokenInfo tokenInfo, String path, String size) {
+		String body = request(path, "thumbnails/0?select="+size,tokenInfo).execute().body();
+		JSONObject json = JSONUtil.parseObj(body);
+		return (String)json.getByPath("$."+size+".url");
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -157,7 +173,7 @@ public class OneDriveApi {
 				}else {
 					ext = CommonUtil.fileIco(name);
 				}
-				items.add(new Item(name, size, time, (folder==null?false:true), childCount ,downloadUrl, ext, path.equals("/")?"/"+name:path+"/"+name));
+				items.add(new Item(name, size, time, (folder==null?false:true), childCount ,downloadUrl, ext, path.equals("/")?"/"+name:path+"/"+name, null, null));
 			}
 		}
 		Object nextLink = JSONUtil.parse(body).getByPath("$.@odata.nextLink");

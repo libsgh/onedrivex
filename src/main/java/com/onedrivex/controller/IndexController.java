@@ -69,7 +69,7 @@ public class IndexController {
 				String sfs = request.getHeader("Referer");
 				if(StrUtil.isNotBlank(sfs)) {
 					model.addAttribute("item", item);
-					return "nexmoe/show/image";
+					return "nexmoe/show/"+item.getFileType();
 				}else{
 					//下载
 					return "redirect:"+item.getDownloadUrl();

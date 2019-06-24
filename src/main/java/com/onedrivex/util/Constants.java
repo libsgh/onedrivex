@@ -16,6 +16,6 @@ public class Constants {
 	
 	public static String apiUrl = "https://graph.microsoft.com/v1.0";//客户端id
 
-	public static int timeout = 5000;//http连接请求超时时间
+	public static int timeout = 50000;//http连接请求超时时间
 	
 }
