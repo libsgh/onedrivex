@@ -11,7 +11,7 @@
 <div class="mdui-container-fluid">
     <div class="nexmoe-item">
 
-        <pre id="editor" ></pre>
+        <pre id="editor" >${content}</pre>
 
         <div class="mdui-textfield">
 	        <label class="mdui-textfield-label">下载地址</label>
@@ -21,21 +21,21 @@
     </div>
 </div>
 <a href="${item.downloadUrl}" class="mdui-fab mdui-fab-fixed mdui-ripple mdui-color-theme-accent"><i class="mdui-icon material-icons">file_download</i></a>
-
-<script src="//cdn.bootcss.com/ace/1.2.9/ace.js"></script>
-<script src="//cdn.bootcss.com/ace/1.2.9/ext-language_tools.js"></script>
+<script src="https://cdn.bootcss.com/ace/1.4.5/ace.js"></script>
+<script src="https://cdn.bootcss.com/ace/1.4.5/ext-language_tools.js"></script>
 <script>
     var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/ambiance");
+    editor.setTheme("ace/theme/monokai");
     editor.setFontSize(18);
     editor.session.setMode("ace/mode/${codeType}");
-    editor.setReadOnly(true); 
-   //Autocompletion
+    
+    //Autocompletion
     editor.setOptions({
         enableBasicAutocompletion: true,
         enableSnippets: true,
         enableLiveAutocompletion: true,
-        maxLines: Infinity
+        maxLines: Infinity,
+        readOnly:true
     });
 </script>
 </@main.nexmoe>

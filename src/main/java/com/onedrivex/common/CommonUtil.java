@@ -11,10 +11,10 @@ import org.springframework.ui.Model;
 
 import com.onedrivex.api.CodeType;
 import com.onedrivex.api.Item;
-import com.onedrivex.api.OneDriveApi;
 import com.onedrivex.api.TokenInfo;
 
 import cn.hutool.core.text.StrSpliter;
+import cn.hutool.core.util.EscapeUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
 import cn.hutool.http.HttpUtil;
@@ -139,7 +139,7 @@ public class CommonUtil {
 				new String[] {"html","htm","php","css","go","java","js","json","txt","sh","md"})) {
 			String content = HttpUtil.downloadString(item.getDownloadUrl(), "UTF-8");
 			model.addAttribute("codeType",CodeType.get(item.getExt()));
-			model.addAttribute("content", content);
+			model.addAttribute("content", EscapeUtil.escapeHtml4(content));
 			return theme+"/show/code";
 		}else if(StrUtil.containsAny(item.getExt(),"pdf")) {
 			return theme+"/show/pdf";
