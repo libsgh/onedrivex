@@ -70,7 +70,12 @@
 			<li class="mdui-list-item mdui-ripple">
 				<a href="${item.path}">
 				  <div class="mdui-col-xs-12 mdui-col-sm-7 mdui-text-truncate">
-					<i class="mdui-icon material-icons mdui-text-color-theme-icon">${item.icon!'folder_open'}</i>
+			       <#if item.folder>
+					<i class="mdui-icon iconfont icon-file_folder"></i>
+			       	<#else>
+							${item.icon}
+			       </#if>
+					<!-- <i class="mdui-icon material-icons mdui-text-color-theme-icon">${item.icon!'folder_open'}</i> -->
 			    	<span>${item.name}</span>
 				  </div>
 				  <div class="mdui-col-sm-3 mdui-text-right">${item.lastModifiedDateTime}</div>
@@ -123,7 +128,7 @@
 	     a.click() // 模拟点击
 	     a.remove();
 	}
-	
+
 	function thumb(){
 		if($('.mdui-fab i').text() == "apps"){
 			$('.mdui-fab i').text("format_list_bulleted");
@@ -134,8 +139,16 @@
 			$('.mdui-fab i').text("apps");
 			$('.nexmoe-item').addClass('thumb');
 			$('.mdui-col-xs-12 i.mdui-icon').each(function(){
-				console.log($(this).text());
-				if($(this).text() == "image" || $(this).text() == "ondemand_video"){
+				var arrA = ["avi","flv",
+					"mp4","pdf","png","psd","svg","jpg"];
+				var flag = false;
+				for(var i=0;i<arrA.length;i++){
+					if($(this).attr("class").indexOf(arrA[i])>-1){
+						flag = true;
+						break;
+					}
+				}
+				if(flag || $(this).text() == "image" || $(this).text() == "ondemand_video"){
 					var href = $(this).parent().parent().attr('href');
 					var thumb =(href.indexOf('?') == -1)?'?t=220':'&t=220';
 					$(this).hide();

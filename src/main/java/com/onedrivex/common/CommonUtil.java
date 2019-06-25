@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.ui.Model;
 
 import com.onedrivex.api.CodeType;
@@ -58,19 +61,33 @@ public class CommonUtil {
 	 */
 	public static String fileIco(String name) {
 		String ext = StrUtil.subAfter(name, ".", true).toLowerCase();
+		if(StrUtil.equalsAny(ext, new String[] {"7z","txt","ai","avi","eps","exe","flv",
+				"gif","mov","html","mp4","pdf","mp3","png","psd","rar","svg","swf","rp",
+				"tif","jpg","tar","xsl","zip","js","json","csv"})) {
+			return "<i class=\"mdui-icon iconfont icon-file_"+ext+"\"></i>";
+		}
 		if(StrUtil.equalsAny(ext, new String[] {"bmp","jpg","jpeg","png","gif"})) {
-			return "image";
+			return "<i class=\"mdui-icon material-icons mdui-text-color-theme-icon\">image</i>";
 		}else if(StrUtil.equalsAny(ext, new String[] {"mp4","mkv","webm","avi","mpg", "mpeg", "rm", "rmvb", "mov", "wmv", "mkv", "asf"})) {
-			return "ondemand_video";
+			return "<i class=\"mdui-icon material-icons mdui-text-color-theme-icon\">ondemand_video</i>";
 		}else if(StrUtil.equalsAny(ext, new String[] {"ogg","mp3","wav"})) {
-			return "audiotrack";
+			return "<i class=\"mdui-icon material-icons mdui-text-color-theme-icon\">audiotrack</i>";
 		}else if(StrUtil.equalsAny(ext, new String[] {"pdf"})) {
-			return "picture_as_pdf";
+			return "<i class=\"mdui-icon material-icons mdui-text-color-theme-icon\">picture_as_pdf</i>";
 		}else if(StrUtil.containsAny(ext,
 				new String[] {"html","htm","php","css","go","java","js","json","txt","sh","md"})) {
-			return "code";
+			return "<i class=\"mdui-icon material-icons mdui-text-color-theme-icon\">code</i>";
+		}else if(StrUtil.containsAny(ext,
+				new String[] {"doc","docx"})) {
+			return "<i class=\"mdui-icon iconfont icon-file_doc\"></i>";
+		}else if(StrUtil.containsAny(ext,
+				new String[] {"ppt", "pptx"})) {
+			return "<i class=\"mdui-icon iconfont icon-file_ppt\"></i>";
+		}else if(StrUtil.containsAny(ext,
+				new String[] {"xls", "xlsx"})) {
+			return "<i class=\"mdui-icon iconfont icon-file_excel\"></i>";
 		}else{
-			return "insert_drive_file";
+			return "<i class=\"mdui-icon iconfont icon-file_multiple\"></i>";
 		}	
 	}
 	/**
@@ -146,4 +163,18 @@ public class CommonUtil {
 		}
 		return "redirect:"+item.getDownloadUrl();
 	}
+	
+	public static String getCookie(HttpServletRequest request, String cookieName){
+
+	        Cookie[] cookies =  request.getCookies();
+	        if(cookies != null){
+	            for(Cookie cookie : cookies){
+	                if(cookie.getName().equals(cookieName)){
+	                    return cookie.getValue();
+	                }
+	            }
+	        }
+	        return null;
+	 }
+	
 }

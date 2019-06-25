@@ -1,11 +1,12 @@
 package com.onedrivex.controller;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,9 +24,9 @@ import com.onedrivex.util.Constants;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
+import cn.hutool.crypto.SecureUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
-import freemarker.template.utility.StringUtil;
 
 @Controller
 @ControllerAdvice
@@ -55,7 +56,7 @@ public class IndexController {
 	}
     
 	@RequestMapping("/**")
-	public String index(Model model, HttpServletRequest request, Integer t, String password) {
+	public String index(Model model, HttpServletRequest request, HttpServletResponse response, Integer t, String password) {
 		String parentPath = CommonUtil.getParentPath(request.getRequestURI());
 		String path = URLUtil.decode(request.getRequestURI());
 		String tokenInfo = servive.getConfig(Constants.tokenKey);
@@ -73,9 +74,19 @@ public class IndexController {
 				items = items.parallelStream().filter(r->!r.getName().trim().equals(".password")).collect(Collectors.toList());
 				if(count > items.size()) {
 					String pwd = HttpUtil.downloadString(servive.getFile(ti, path+"/.password").getDownloadUrl(), "UTF-8");
-					//需要密码
-					if(StrUtil.isBlank(password) || !password.trim().equals(pwd.trim())) {
-						return "nexmoe/password";
+					String pwdMd5 = CommonUtil.getCookie(request, path.replaceAll("/", ""));
+					if(StrUtil.isBlank(pwdMd5) || !pwdMd5.equals(SecureUtil.md5(pwd))) {
+						//密码cookie不存在
+						//1.重定向到密码输入页面
+						//2.密码提交-》写入cookie
+						if(StrUtil.isBlank(password) || !password.trim().equals(pwd.trim())) {
+							return "nexmoe/password";
+						}else{
+							//cookie写入密码
+							Cookie cookie = new Cookie(path.replaceAll("/", ""), SecureUtil.md5(pwd));
+							cookie.setMaxAge(30*24*60*60);
+							response.addCookie(cookie);
+						}
 					}
 				}
 				model.addAttribute("items", items);
