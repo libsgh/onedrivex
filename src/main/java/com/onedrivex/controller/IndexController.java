@@ -68,7 +68,7 @@ public class IndexController {
 		}else{
 			TokenInfo ti = JSONUtil.toBean(tokenInfo, TokenInfo.class);
 			Item item = servive.getFile(ti, path);
-			if(item != null && item.getFolder()) {
+			if((item != null && item.getFolder())||path.equals("/")) {
 				List<Item> items = servive.getDir(ti, path);
 				int count = items.size();
 				items = items.parallelStream().filter(r->!r.getName().trim().equals(".password")).collect(Collectors.toList());
