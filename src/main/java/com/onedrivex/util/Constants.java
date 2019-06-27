@@ -1,5 +1,8 @@
 package com.onedrivex.util;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.date.DateUnit;
@@ -17,5 +20,7 @@ public class Constants {
 	public static String apiUrl = "https://graph.microsoft.com/v1.0";//客户端id
 
 	public static int timeout = 50000;//http连接请求超时时间
+	
+	public static Map<String, String> globalConfig = new ConcurrentHashMap<String, String>();
 	
 }

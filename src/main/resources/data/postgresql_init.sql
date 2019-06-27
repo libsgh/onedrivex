@@ -8,3 +8,4 @@ INSERT INTO "public"."config" VALUES ('herokuKeepAliveCron', '0 0/25 * * * ?');
 INSERT INTO "public"."config" VALUES ('herokuKeepAliveAddress', '');
 INSERT INTO "public"."config" VALUES ('title', 'onedrive-x');
 INSERT INTO "public"."config" VALUES ('refreshCacheCron', '0 0/10 * * * ?');
+INSERT INTO "public"."config" VALUES ('theme', 'nexmoe');

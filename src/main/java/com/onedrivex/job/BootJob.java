@@ -48,6 +48,7 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			List<String> sqls = FileUtil.readLines(targetFile, Charset.forName("UTF-8"));
 			logger.info(dataType + "初始化成功，影响行数：" + servive.execBatch(sqls));
 			Map<String, String> configMap = servive.getConfigMap();
+			Constants.globalConfig = configMap;
 			String cron = configMap.get("refreshTokenCron");//令牌刷新cron
 			String hkac = configMap.get("herokuKeepAliveCron");//heroku防休眠cron
 			String hkaa = configMap.get("herokuKeepAliveAddress");//heroku防休眠地址

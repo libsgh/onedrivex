@@ -54,7 +54,7 @@ public class IndexController {
 		}
 	    return url;
 	}
-    
+	
 	@RequestMapping("/**")
 	public String index(Model model, HttpServletRequest request, HttpServletResponse response, Integer t, String password) {
 		String parentPath = CommonUtil.getParentPath(request.getRequestURI());
@@ -68,7 +68,7 @@ public class IndexController {
 		}else{
 			TokenInfo ti = JSONUtil.toBean(tokenInfo, TokenInfo.class);
 			Item item = servive.getFile(ti, path);
-			if(item == null || item.getFolder()) {
+			if(item != null && item.getFolder()) {
 				List<Item> items = servive.getDir(ti, path);
 				int count = items.size();
 				items = items.parallelStream().filter(r->!r.getName().trim().equals(".password")).collect(Collectors.toList());
@@ -80,7 +80,7 @@ public class IndexController {
 						//1.重定向到密码输入页面
 						//2.密码提交-》写入cookie
 						if(StrUtil.isBlank(password) || !password.trim().equals(pwd.trim())) {
-							return "nexmoe/password";
+							return Constants.globalConfig.get("theme")+"/password";
 						}else{
 							//cookie写入密码
 							Cookie cookie = new Cookie(path.replaceAll("/", ""), SecureUtil.md5(pwd));
@@ -90,19 +90,21 @@ public class IndexController {
 					}
 				}
 				model.addAttribute("items", items);
-			}else{
+			}else if(item != null && !item.getFolder()){
 				//文件
 				String sfs = request.getHeader("Referer");
 				if(StrUtil.isNotBlank(sfs)) {
 					model.addAttribute("item", item);
-					return CommonUtil.showORedirect(model, item, "nexmoe", ti, t);
+					return CommonUtil.showORedirect(model, item, Constants.globalConfig.get("theme"), ti, t);
 				}else{
 					//下载
 					return "redirect:"+item.getDownloadUrl();
 				}
+			}else {
+				return Constants.globalConfig.get("theme")+"/404";
 			}
 		}
-		return "nexmoe/list";
+		return Constants.globalConfig.get("theme")+"/list";
 	}
 	@RequestMapping("/setup")
 	public String setup(String s, Model model, String clientId, String clientSecret, String redirectUri) {
