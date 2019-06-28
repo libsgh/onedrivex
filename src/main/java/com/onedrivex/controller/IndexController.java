@@ -37,9 +37,9 @@ public class IndexController {
 	@Autowired
 	private XService servive;
 	
-	@ModelAttribute("title")
-	public String getTitle() {
-		return servive.getConfig("title");
+	@ModelAttribute("siteName")
+	public String getSiteName() {
+		return servive.getConfig("siteName");
 	}
 	
 	public static String getUrl(HttpServletRequest request) {
@@ -63,6 +63,7 @@ public class IndexController {
 		model.addAttribute("parentPath", parentPath);
 		model.addAttribute("allPaths", CommonUtil.getAllPaths(request.getRequestURI()));
 		model.addAttribute("realUrl", getUrl(request));
+		model.addAttribute("path", path);
 		if(StrUtil.isBlank(tokenInfo)) {
 			return "redirect:/setup?s=1";
 		}else{
@@ -88,6 +89,12 @@ public class IndexController {
 							response.addCookie(cookie);
 						}
 					}
+				}
+				int countList = items.size();
+				items = items.parallelStream().filter(r->!r.getName().trim().equals("README.md")).collect(Collectors.toList());
+				if(countList > items.size()) {
+					String readme = HttpUtil.downloadString(servive.getFile(ti, path+"/README.md").getDownloadUrl(), "UTF-8");
+					model.addAttribute("readme", readme);
 				}
 				model.addAttribute("items", items);
 			}else if(item != null && !item.getFolder()){

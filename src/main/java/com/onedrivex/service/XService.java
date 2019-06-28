@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.tomcat.util.bcel.Const;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.druid.pool.DruidDataSource;
@@ -94,7 +96,7 @@ public class XService {
 	/**
 	 * 令牌刷新任务
 	 */
-	public void refreshJob(Map<String, String> configMap) {
+	public String refreshJob(Map<String, String> configMap) {
 		String tokenJson = configMap.get(Constants.tokenKey);
 		String clientId = configMap.get("clientId");
     	String clientSecret = configMap.get("clientSecret");
@@ -104,10 +106,12 @@ public class XService {
     		OneDriveApi api = OneDriveApi.getInstance();
     		String newToken = api.refreshToken(ti.getRefresh_token(), clientId, clientSecret, redirectUri);
     		if(logger.isDebugEnabled()) {
-    			logger.debug("access_token刷新成功\t{}", newToken);
+    			logger.debug("access_token刷新成功！");
     		}
     		this.updateConfig(Constants.tokenKey, newToken);
+    		return newToken;
     	}
+    	return "";
 	}
 	
 	/**
@@ -130,25 +134,53 @@ public class XService {
 		}
 	}
 	
-	@Cacheable(key="#path", value="dir")
+	//@Cacheable(key="#path", value="dir")
+	@SuppressWarnings("unchecked")
 	public List<Item> getDir(TokenInfo tokenInfo, String path){
-		return api.getDir(tokenInfo, path);
+		List<Item> list = (List<Item>)Constants.timedCache.get(Constants.dirCachePrefix+path);
+		if(list != null) {
+			logger.info("从缓存中读取文件夹数据\t{}", Constants.dirCachePrefix+path);
+			return list;
+		}else{
+			return api.getDir(tokenInfo, path);
+		}
 	}
 	
-	//@Cacheable(key="#path", value="file")
 	public Item getFile(TokenInfo tokenInfo, String path){
-		return api.getFile(tokenInfo, path);
+		Item item = (Item)Constants.timedCache.get(Constants.fileCachePrefix+path);
+		if(item != null) {
+			logger.info("从缓存中读取文件数据\t{}", Constants.fileCachePrefix+path);
+			return item;
+		}else{
+			return api.getFile(tokenInfo, path);
+		}
 	}
-	/*@Cacheable(key="#path", value="file")
-	public Item refreshFileCache(Item item, String path){
-		return item;
-	}*/
 	
-	@CachePut(key="#path", value="dir")
-	public List<Item> refreshDirCache(TokenInfo tokenInfo, String path){
-		List<Item> list = api.getDir(tokenInfo, path);
-		//list.parallelStream().forEach(r->this.refreshFileCache(r, r.getPath()));
+	public List<Item> refreshDirCache(TokenInfo ti, String path){
+		List<Item> list = api.getDir(ti, path);
+		list.parallelStream().forEach(r->{
+			Constants.timedCache.put(Constants.fileCachePrefix+r.getPath(), r);
+		});
+		logger.info("刷新缓存："+ path);
+		Constants.timedCache.put(Constants.dirCachePrefix+path, list);
 		return list;
+	}
+	
+	@Async
+	public void refreshAllCache(String token) {
+		if(StrUtil.isNotBlank(token)) {
+			TokenInfo ti = JSONUtil.toBean(token, TokenInfo.class);
+			this.refreshCache(ti, "/");
+		}
+	}
+	
+	private void refreshCache(TokenInfo ti, String path) {
+		List<Item> list = this.refreshDirCache(ti, path);
+		for (Item item : list) {
+			if(item.getFolder()) {
+				this.refreshCache(ti, item.getPath());
+			}
+		}
 	}
 	
 }

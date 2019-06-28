@@ -85,8 +85,18 @@
 		</#list>
      </ul> 
     </div> 
-   </div> 
-  </div> 
+   </div>
+   <#if readme??>
+	   <div id="content" class="mdui-typo mdui-shadow-3" style="padding: 20px;margin: 20px; 0">
+			<div class="mdui-chip">
+			  <span class="mdui-chip-icon"><i class="mdui-icon material-icons">face</i></span>
+			  <span class="mdui-chip-title">README.md</span>
+			</div>
+			<input id="readme" type="hidden" value="${readme}" />
+		</div>
+   </#if>
+  </div>
+  <script src="//cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
 	$ = mdui.JQ;
 	
@@ -190,6 +200,9 @@
 	    });
 	
 	});
+	<#if readme??>
+		 $("#content").append(marked($("#readme").val()));
+	</#if>
 	</script> 
   <a href="javascript:thumb();" class="mdui-fab mdui-fab-fixed mdui-ripple mdui-color-theme-accent"><i class="mdui-icon material-icons">format_list_bulleted</i></a> 
 </@main.nexmoe>

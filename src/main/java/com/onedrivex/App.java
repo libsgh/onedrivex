@@ -9,6 +9,7 @@ import org.springframework.boot.system.ApplicationHome;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
@@ -16,6 +17,7 @@ import cn.hutool.core.io.FileUtil;
 
 @SpringBootApplication
 @EnableCaching
+@EnableAsync
 public class App {
 	
 	@Value("${DATA_TYPE:sqlite}")
