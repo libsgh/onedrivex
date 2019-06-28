@@ -14,8 +14,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 
-import com.onedrivex.api.Item;
-import com.onedrivex.api.TokenInfo;
 import com.onedrivex.service.XService;
 import com.onedrivex.util.Constants;
 
@@ -24,7 +22,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.task.Task;
 import cn.hutool.http.HttpRequest;
-import cn.hutool.json.JSONUtil;
 
 @Service
 public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
@@ -52,8 +49,8 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			String cron = configMap.get("refreshTokenCron");//令牌刷新cron
 			String hkac = configMap.get("herokuKeepAliveCron");//heroku防休眠cron
 			String hkaa = configMap.get("herokuKeepAliveAddress");//heroku防休眠地址
-			String rcc = configMap.get("refreshCacheCron");//刷新缓存cron
-			String token = servive.refreshJob(configMap);
+			//String rcc = configMap.get("refreshCacheCron");//刷新缓存cron
+			servive.refreshJob(configMap);
 			CronUtil.schedule(cron, new Task() {
 			    @Override
 			    public void execute() {
@@ -81,7 +78,7 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			}
 			//刷新所有缓存
 			//servive.refreshAllCache(token);
-			CronUtil.schedule(rcc, new Task() {
+			/*CronUtil.schedule(rcc, new Task() {
 				@Override
 				public void execute() {
 					if(flag) {
@@ -106,7 +103,7 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 						}
 					}
 				}
-			});
+			});*/
 			CronUtil.start();
 	}
 

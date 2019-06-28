@@ -138,20 +138,22 @@ public class XService {
 		List<Item> list = (List<Item>)Constants.timedCache.get(Constants.dirCachePrefix+path);
 		if(list != null) {
 			logger.info("从缓存中读取文件夹数据\t{}", Constants.dirCachePrefix+path);
-			return list;
 		}else{
-			return api.getDir(tokenInfo, path);
+			list = api.getDir(tokenInfo, path);
+			Constants.timedCache.put(Constants.dirCachePrefix+path, list);
 		}
+		return list;
 	}
 	
 	public Item getFile(TokenInfo tokenInfo, String path){
 		Item item = (Item)Constants.timedCache.get(Constants.fileCachePrefix+path);
 		if(item != null) {
 			logger.info("从缓存中读取文件数据\t{}", Constants.fileCachePrefix+path);
-			return item;
 		}else{
-			return api.getFile(tokenInfo, path);
+			item = api.getFile(tokenInfo, path);
+			Constants.timedCache.put(Constants.fileCachePrefix+path, item);
 		}
+		return item;
 	}
 	
 	public List<Item> refreshDirCache(TokenInfo ti, String path){
