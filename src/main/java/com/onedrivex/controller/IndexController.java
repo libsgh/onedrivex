@@ -93,8 +93,7 @@ public class IndexController {
 				int countList = items.size();
 				items = items.parallelStream().filter(r->!r.getName().trim().equals("README.md")).collect(Collectors.toList());
 				if(countList > items.size()) {
-					String readme = HttpUtil.downloadString(servive.getFile(ti, path+"/README.md").getDownloadUrl(), "UTF-8");
-					model.addAttribute("readme", readme);
+					model.addAttribute("readme", servive.getReadme(ti, path+"/README.md"));
 				}
 				model.addAttribute("items", items);
 			}else if(item != null && !item.getFolder()){

@@ -5,12 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.tomcat.util.bcel.Const;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +20,7 @@ import com.onedrivex.util.Constants;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.Db;
 import cn.hutool.db.Entity;
+import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 
 @Service
@@ -181,6 +179,17 @@ public class XService {
 				this.refreshCache(ti, item.getPath());
 			}
 		}
+	}
+
+	public Object getReadme(TokenInfo ti, String path) {
+		String c = (String)Constants.timedCache.get(Constants.contentCachePrefix+path);
+		if(StrUtil.isNotBlank(c)) {
+			return c;
+		}else {
+			c = HttpUtil.downloadString(this.getFile(ti, path).getDownloadUrl(), "UTF-8");
+			Constants.timedCache.put(Constants.contentCachePrefix+path, c);
+		}
+		return c;
 	}
 	
 }

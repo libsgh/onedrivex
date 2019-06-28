@@ -27,6 +27,8 @@ public class Constants {
 	
 	public static String dirCachePrefix = "dir_";
 	
+	public static String contentCachePrefix = "c_";
+	
 	public static String fileCachePrefix = "file_";
 	
 }
