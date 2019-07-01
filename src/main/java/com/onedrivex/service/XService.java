@@ -147,14 +147,13 @@ public class XService {
 		list = list.parallelStream().map(r->{
 			String t = null;
 			if(!r.getFolder() && r.getFileType().equals("audio")) {
-				t = StrUtil.subBefore(api.thumbnail(tokenInfo, path, "large"), "&width=", true);
+				t = StrUtil.subBefore(api.thumbnail(tokenInfo, r.getPath(), "large"), "&width=", true);
 			}else if(!r.getFolder() && !r.getFileType().equals("audio")){
-				t = api.thumbnail(tokenInfo, path, "large");
+				t = api.thumbnail(tokenInfo, r.getPath(), "large");
 			}
 			r.setThumb(t);
 			return r;
 		}).collect(Collectors.toList());
-		logger.info(list.toString());
 		return list;
 	}
 	
