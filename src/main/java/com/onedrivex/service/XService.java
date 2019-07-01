@@ -144,7 +144,7 @@ public class XService {
 			list = api.getDir(tokenInfo, path);
 			Constants.timedCache.put(Constants.dirCachePrefix+path, list);
 		}
-		return list.parallelStream().map(r->{
+		list = list.parallelStream().map(r->{
 			String t = null;
 			if(!r.getFolder() && r.getFileType().equals("audio")) {
 				t = StrUtil.subBefore(api.thumbnail(tokenInfo, path, "large"), "&width=", true);
@@ -154,6 +154,8 @@ public class XService {
 			r.setThumb(t);
 			return r;
 		}).collect(Collectors.toList());
+		logger.info(list.toString());
+		return list;
 	}
 	
 	public Item getFile(TokenInfo tokenInfo, String path){
