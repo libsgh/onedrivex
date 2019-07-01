@@ -77,7 +77,7 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 				});
 			}
 			//刷新所有缓存
-			servive.refreshAllCache(token);
+			//servive.refreshAllCache(token);
 			CronUtil.schedule(rcc, new Task() {
 				@Override
 				public void execute() {
