@@ -23,7 +23,7 @@ public class Constants {
 	
 	public static Map<String, String> globalConfig = new ConcurrentHashMap<String, String>();
 	
-	public static TimedCache<String, Object> timedCache = CacheUtil.newTimedCache(10*60*1000);
+	public static TimedCache<String, Object> timedCache = CacheUtil.newTimedCache(-1);
 	
 	public static String dirCachePrefix = "dir_";
 	

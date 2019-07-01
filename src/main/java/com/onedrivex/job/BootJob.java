@@ -49,8 +49,8 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			String cron = configMap.get("refreshTokenCron");//令牌刷新cron
 			String hkac = configMap.get("herokuKeepAliveCron");//heroku防休眠cron
 			String hkaa = configMap.get("herokuKeepAliveAddress");//heroku防休眠地址
-			//String rcc = configMap.get("refreshCacheCron");//刷新缓存cron
-			servive.refreshJob(configMap);
+			String rcc = configMap.get("refreshCacheCron");//刷新缓存cron
+			String token = servive.refreshJob(configMap);
 			CronUtil.schedule(cron, new Task() {
 			    @Override
 			    public void execute() {
@@ -77,8 +77,8 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 				});
 			}
 			//刷新所有缓存
-			//servive.refreshAllCache(token);
-			/*CronUtil.schedule(rcc, new Task() {
+			servive.refreshAllCache(token);
+			CronUtil.schedule(rcc, new Task() {
 				@Override
 				public void execute() {
 					if(flag) {
@@ -86,24 +86,13 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 					}
 					try {
 						String tokenJson = servive.getConfig(Constants.tokenKey);
-						if(StrUtil.isNotBlank(tokenJson)) {
-							TokenInfo ti = JSONUtil.toBean(tokenJson, TokenInfo.class);
-							this.refreshCache(ti, "/");
-						}
+						servive.refreshCacheJob(tokenJson);
 					} catch (Exception e) {
 						logger.error(e.getMessage(), e);
 					}
 					flag = true;
 				}
-				private void refreshCache(TokenInfo ti, String path) {
-					List<Item> list = servive.refreshDirCache(ti, path);
-					for (Item item : list) {
-						if(item.getFolder()) {
-							this.refreshCache(ti, item.getPath());
-						}
-					}
-				}
-			});*/
+			});
 			CronUtil.start();
 	}
 

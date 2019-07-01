@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.onedrivex.api.Item;
 import com.onedrivex.api.OneDriveApi;
 import com.onedrivex.api.TokenInfo;
+import com.onedrivex.common.CommonUtil;
 import com.onedrivex.util.Constants;
 
 import cn.hutool.core.util.StrUtil;
@@ -142,7 +144,16 @@ public class XService {
 			list = api.getDir(tokenInfo, path);
 			Constants.timedCache.put(Constants.dirCachePrefix+path, list);
 		}
-		return list;
+		return list.parallelStream().map(r->{
+			String t = null;
+			if(!r.getFolder() && r.getFileType().equals("audio")) {
+				t = StrUtil.subBefore(api.thumbnail(tokenInfo, path, "large"), "&width=", true);
+			}else if(!r.getFolder() && !r.getFileType().equals("audio")){
+				t = api.thumbnail(tokenInfo, path, "large");
+			}
+			r.setThumb(t);
+			return r;
+		}).collect(Collectors.toList());
 	}
 	
 	public Item getFile(TokenInfo tokenInfo, String path){
@@ -168,6 +179,12 @@ public class XService {
 	
 	@Async
 	public void refreshAllCache(String token) {
+		if(StrUtil.isNotBlank(token)) {
+			TokenInfo ti = JSONUtil.toBean(token, TokenInfo.class);
+			this.refreshCache(ti, "/");
+		}
+	}
+	public void refreshCacheJob(String token) {
 		if(StrUtil.isNotBlank(token)) {
 			TokenInfo ti = JSONUtil.toBean(token, TokenInfo.class);
 			this.refreshCache(ti, "/");
