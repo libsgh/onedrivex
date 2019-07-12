@@ -14,3 +14,4 @@ INSERT INTO "public"."config" VALUES ('onedriveRoot', '/');
 INSERT INTO "public"."config" VALUES ('onedriveHide', '');
 INSERT INTO "public"."config" VALUES ('onedriveHotlink', '');
 INSERT INTO "public"."config" VALUES ('cacheExpireTime', '3600');
+INSERT INTO "public"."config" VALUES ('openCache', '0');
