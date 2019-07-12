@@ -1,5 +1,6 @@
 package com.onedrivex.controller;
 
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -7,13 +8,20 @@ import java.util.stream.Collectors;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.onedrivex.api.Item;
 import com.onedrivex.api.OneDriveApi;
@@ -24,6 +32,8 @@ import com.onedrivex.util.Constants;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
+import cn.hutool.cron.CronUtil;
+import cn.hutool.cron.task.Task;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
@@ -34,12 +44,90 @@ public class IndexController {
 	
 	private OneDriveApi api = OneDriveApi.getInstance();
 	
+	private AntPathMatcher urlMatcher = new AntPathMatcher();
+	
 	@Autowired
 	private XService servive;
 	
 	@ModelAttribute("siteName")
 	public String getSiteName() {
 		return servive.getConfig("siteName");
+	}
+	
+	/**
+	 * 系统管理（基本配置）
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/admin")
+	public String admin(Model model, @RequestParam(required = false) Map<String, String> config) {
+		if(config.size() > 0) {
+			servive.updateConfig(config);
+			model.addAttribute("message", "修改成功");
+		}
+		model.addAttribute("config", Constants.globalConfig);
+		return "classic/admin/settings";
+	}
+	
+	/**
+	 * 系统管理（设置密码）
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/admin/setpass")
+	public String setpass(Model model, HttpServletRequest request, String old_pass, String password, String password2) {
+		if(old_pass == null && password == null && password2 == null) {
+		}else{
+			String msg = servive.updatePass(old_pass, password, password2);
+			model.addAttribute("message", msg);
+			if(msg.equals("密码修改成功")) {
+				HttpSession session = request.getSession();
+				session.removeAttribute("isLogin");
+			}
+		}
+		return "classic/admin/setpass";
+	}
+	
+	/**
+	 * 系统管理（缓存设置）
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/admin/cache")
+	public String setcache(Model model, @RequestParam(required = false) Map<String, String> config) {
+		if(config.size() > 0) {
+			if(StrUtil.isBlank(config.get("openCache"))) {
+				config.put("openCache", "1");
+			}
+			servive.updateConfig(config);
+			//cron有修改
+			CronUtil.remove(Constants.refreshCacheTaskId);
+			Constants.refreshCacheTaskId = CronUtil.schedule(Constants.globalConfig.get("refreshCacheCron"), new Task() {
+				@Override
+				public void execute() {
+					try {
+						servive.refreshJob();
+					} catch (Exception e) {
+					}
+				}
+			});
+			CronUtil.restart();
+			Constants.timedCache.schedulePrune(Long.parseLong(Constants.globalConfig.get("cacheExpireTime"))*1000);
+			model.addAttribute("message", "修改成功");
+		}
+		model.addAttribute("config", Constants.globalConfig);
+		return "classic/admin/cache";
+	}
+	
+	/**
+	 * 手动清理缓存
+	 * @return
+	 */
+	@RequestMapping("/admin/clearCache")
+	@ResponseBody
+	public String clearCache() {
+		Constants.timedCache.clear();
+		return "缓存清空成功";
 	}
 	
 	public static String getUrl(HttpServletRequest request) {
@@ -55,10 +143,51 @@ public class IndexController {
 	    return url;
 	}
 	
+	/**
+	 * 密码登陆后台
+	 * @param password
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/login")
+	public String login(String password, HttpServletRequest request, HttpServletResponse response, Model model) {
+		 HttpSession session = request.getSession();
+		 String pwd = Constants.globalConfig.get("password");
+		 if(StrUtil.isNotBlank(password) && password.equals(pwd)) {
+			session.setMaxInactiveInterval(24*60*60);
+			session.setAttribute("isLogin", true);
+			Cookie c=new Cookie("JSESSIONID", session.getId());
+			c.setPath(request.getContextPath());
+			c.setMaxAge(604800);
+			response.addCookie(c);
+			return "redirect:/admin";
+		 }else if(StrUtil.isNotBlank(password) && !password.equals(pwd)) {
+			 model.addAttribute("message", "密码不正确");
+			 return "classic/admin/login";
+		 }else {
+			 return "classic/admin/login";
+		 }
+	}
+	
+	/**
+	 * 退出登陆
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/logout")
+	public String logout(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		session.removeAttribute("isLogin");
+		return "redirect:/admin";
+	}
+	
 	@RequestMapping("/**")
 	public String index(Model model, HttpServletRequest request, HttpServletResponse response, Integer t, String password) {
 		String parentPath = CommonUtil.getParentPath(request.getRequestURI());
 		String path = URLUtil.decode(request.getRequestURI());
+		if(path.equals("/") && !Constants.globalConfig.get("onedriveRoot").equals("/")) {
+			return "redirect:"+Constants.globalConfig.get("onedriveRoot");
+		}
 		String tokenInfo = servive.getConfig(Constants.tokenKey);
 		model.addAttribute("parentPath", parentPath);
 		model.addAttribute("allPaths", CommonUtil.getAllPaths(request.getRequestURI()));
@@ -95,23 +224,60 @@ public class IndexController {
 				if(countList > items.size()) {
 					model.addAttribute("readme", servive.getReadme(ti, path+"/README.md"));
 				}
+				items = items.parallelStream().filter(r->!Constants.globalConfig.get("onedriveHide").contains(r.getPath())).collect(Collectors.toList());
 				model.addAttribute("items", items);
 			}else if(item != null && !item.getFolder()){
-				//文件
-				String sfs = request.getHeader("Referer");
-				if(StrUtil.isNotBlank(sfs)) {
-					model.addAttribute("item", item);
-					return CommonUtil.showORedirect(model, item, Constants.globalConfig.get("theme"), ti, t);
-				}else{
-					//下载
+				String referer = request.getHeader("Referer");
+				String host = request.getServerName();
+				if(StrUtil.isBlank(referer)) {
 					return "redirect:"+item.getDownloadUrl();
 				}
+				java.net.URL url = null;
+	            try {
+	                url = new java.net.URL(referer);
+	            } catch (MalformedURLException e) {
+	            }
+	            if (host.equals(url.getHost())) {
+	            	model.addAttribute("item", item);
+	            	return CommonUtil.showORedirect(model, item, Constants.globalConfig.get("theme"), ti, t);
+	            }else{
+	            	if(checkWhiteList(Constants.globalConfig.get("onedriveHotlink"), url.getHost())){
+	            		//下载
+	            		return "redirect:"+item.getDownloadUrl();
+	            	}else{
+	            		return "redirect:/unauthorized";
+	            	}
+	            }
 			}else {
 				return Constants.globalConfig.get("theme")+"/404";
 			}
 		}
 		return Constants.globalConfig.get("theme")+"/list";
 	}
+	
+	/**
+	 * 403未授权的访问
+	 * @return
+	 */
+	@RequestMapping(value = "/unauthorized", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<HttpStatus> sendViaResponseEntity() {
+	    return new ResponseEntity<HttpStatus>(HttpStatus.FORBIDDEN);
+	}
+	
+	private Boolean checkWhiteList(String whiteList, String host) {
+		if (StrUtil.isNotBlank(whiteList)) {
+            for (String p : StrUtil.split(whiteList, ";")) {
+            	if(urlMatcher.match(p, host)){
+					//通过校验
+					return true;
+				}
+            }
+            
+        }
+        return false;
+	}
+
 	@RequestMapping("/setup")
 	public String setup(String s, Model model, String clientId, String clientSecret, String redirectUri) {
 		if(s.equals("1")) {

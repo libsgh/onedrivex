@@ -9,3 +9,8 @@ INSERT INTO "public"."config" VALUES ('herokuKeepAliveAddress', '');
 INSERT INTO "public"."config" VALUES ('siteName', 'onedrive-x');
 INSERT INTO "public"."config" VALUES ('refreshCacheCron', '0 0/10 * * * ?');
 INSERT INTO "public"."config" VALUES ('theme', 'nexmoe');
+INSERT INTO "public"."config" VALUES ('password', 'onedrive-x');
+INSERT INTO "public"."config" VALUES ('onedriveRoot', '/');
+INSERT INTO "public"."config" VALUES ('onedriveHide', '');
+INSERT INTO "public"."config" VALUES ('onedriveHotlink', '');
+INSERT INTO "public"."config" VALUES ('cacheExpireTime', '3600');

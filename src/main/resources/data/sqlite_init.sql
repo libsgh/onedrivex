@@ -9,3 +9,8 @@ INSERT OR IGNORE INTO "config" VALUES ('herokuKeepAliveAddress', '');
 INSERT OR IGNORE INTO "config" VALUES ('siteName', 'onedrive-x');
 INSERT OR IGNORE INTO "config" VALUES ('refreshCacheCron', '0 0/10 * * * ?');
 INSERT OR IGNORE INTO "config" VALUES ('theme', 'nexmoe');
+INSERT OR IGNORE INTO "config" VALUES ('password', 'onedrive-x');
+INSERT OR IGNORE INTO "config" VALUES ('onedriveRoot', '/');
+INSERT OR IGNORE INTO "config" VALUES ('onedriveHide', '');
+INSERT OR IGNORE INTO "config" VALUES ('onedriveHotlink', '');
+INSERT OR IGNORE INTO "config" VALUES ('cacheExpireTime', '3600');

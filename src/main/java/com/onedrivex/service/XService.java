@@ -16,7 +16,6 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.onedrivex.api.Item;
 import com.onedrivex.api.OneDriveApi;
 import com.onedrivex.api.TokenInfo;
-import com.onedrivex.common.CommonUtil;
 import com.onedrivex.util.Constants;
 
 import cn.hutool.core.util.StrUtil;
@@ -139,7 +138,7 @@ public class XService {
 	public List<Item> getDir(TokenInfo tokenInfo, String path){
 		List<Item> list = (List<Item>)Constants.timedCache.get(Constants.dirCachePrefix+path);
 		if(list != null) {
-			logger.info("从缓存中读取文件夹数据\t{}", Constants.dirCachePrefix+path);
+			logger.debug("从缓存中读取文件夹数据\t{}", Constants.dirCachePrefix+path);
 		}else{
 			list = api.getDir(tokenInfo, path);
 			Constants.timedCache.put(Constants.dirCachePrefix+path, list);
@@ -160,7 +159,7 @@ public class XService {
 	public Item getFile(TokenInfo tokenInfo, String path){
 		Item item = (Item)Constants.timedCache.get(Constants.fileCachePrefix+path);
 		if(item != null) {
-			logger.info("从缓存中读取文件数据\t{}", Constants.fileCachePrefix+path);
+			logger.debug("从缓存中读取文件数据\t{}", Constants.fileCachePrefix+path);
 		}else{
 			item = api.getFile(tokenInfo, path);
 			Constants.timedCache.put(Constants.fileCachePrefix+path, item);
@@ -170,10 +169,10 @@ public class XService {
 	
 	public List<Item> refreshDirCache(TokenInfo ti, String path){
 		List<Item> list = api.getDir(ti, path);
-		list.parallelStream().forEach(r->{
+		list.stream().parallel().forEach(r->{
 			Constants.timedCache.put(Constants.fileCachePrefix+r.getPath(), r);
 		});
-		logger.info("刷新缓存："+ path);
+		//logger.info("刷新缓存："+ path);
 		Constants.timedCache.put(Constants.dirCachePrefix+path, list);
 		return list;
 	}
@@ -186,16 +185,19 @@ public class XService {
 		}
 	}
 	public void refreshCacheJob(String token) {
+		logger.info("缓存刷新开始");
+		Long start = System.currentTimeMillis();
 		if(StrUtil.isNotBlank(token)) {
 			TokenInfo ti = JSONUtil.toBean(token, TokenInfo.class);
 			this.refreshCache(ti, "/");
 		}
+		logger.info("缓存刷新完成，耗时："+(System.currentTimeMillis()-start)+"毫秒，缓存"+Constants.timedCache.size()+"个对象");
 	}
 	
 	private void refreshCache(TokenInfo ti, String path) {
 		List<Item> list = this.refreshDirCache(ti, path);
 		for (Item item : list) {
-			if(item.getFolder()) {
+			if(item.getFolder() && !Constants.globalConfig.get("onedriveHide").contains(item.getPath())) {
 				this.refreshCache(ti, item.getPath());
 			}
 		}
@@ -208,6 +210,49 @@ public class XService {
 		}else {
 			c = HttpUtil.downloadString(this.getFile(ti, path).getDownloadUrl(), "UTF-8");
 			Constants.timedCache.put(Constants.contentCachePrefix+path, c);
+		}
+		return c;
+	}
+
+	public String updatePass(String old_pass, String password, String password2) {
+		Map<String, String> config = new HashMap<String, String>();
+		if(StrUtil.isBlank(old_pass)) {
+			return "请输入原始密码";
+		}
+		if(StrUtil.isBlank(password)) {
+			return "请输入修改密码";
+		}
+		if(StrUtil.isBlank(password2)) {
+			return "请输入确认密码";
+		}
+		if(!password2.equals(password)) {
+			return "两次输入的密码不一致";
+		}
+		if(!old_pass.equals(getConfig("password"))) {
+			return "请输入正确的原始密码";
+		}
+		config.put("password", password);
+		int c = updateConfig(config);
+		if(c > 0) {
+			return "密码修改成功";
+		}
+		return "密码修改失败";
+	}
+	
+	public int updateConfig(Map<String, String> config) {
+		int c = config.keySet().parallelStream().map(key->{
+			String value = config.get(key);
+			try {
+				if(StrUtil.isNotBlank(key)) {
+					return Db.use(ds).execute("update config set value =? where key = ?", value, key);
+				}
+			} catch (SQLException e) {
+			}
+			return 0;
+		}).collect(Collectors.summingInt(r->r));
+		if(c > 0) {
+			//更新全局变量
+			Constants.globalConfig = this.getConfigMap();
 		}
 		return c;
 	}

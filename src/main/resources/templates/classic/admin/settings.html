@@ -1,0 +1,57 @@
+<#-- 引入布局指令的命名空间 -->
+<#import "layout.html" as main>
+<#assign ctx=req.getContextPath()>
+<#-- 调用布局指令 -->
+<@main.admin>
+<div class="mdui-container-fluid">
+
+	<div class="mdui-typo">
+	  <h1> 基本设置 <small>设置onedrive-x基本参数</small></h1>
+	</div>
+	<form action="" method="post">
+		<div class="mdui-textfield">
+		  <h4>网站名称</h4>
+		  <input class="mdui-textfield-input" type="text" name="siteName" value="${config['siteName']}" required="required" />
+		</div>
+
+		<div class="mdui-textfield">
+		  <h4>网站主题<small></small></h4>
+		  <select name="theme" class="mdui-select">
+			 <option value="classic" <#if config['theme'] == 'classic'> selected</#if>>classic</option>
+			 <option value="material" <#if config['theme'] == 'material'> selected</#if>>material</option>
+			 <option value="nexmoe" <#if config['theme'] == 'nexmoe'> selected</#if>>nexmoe</option>
+		  </select>
+		</div>
+
+		<div class="mdui-textfield">
+		  <h4>OneDrive起始目录(/为根目录)<small>例：仅共享share目录 /share</small></h4>
+		  <input class="mdui-textfield-input" type="text" name="onedriveRoot" value="${config['onedriveRoot']}" required="required" />
+		</div>
+
+
+		<div class="mdui-textfield">
+		  <h4>需要隐藏的目录<small> 不需要列出的目录(一行一个) 清空缓存后生效</small></h4>
+		  <textarea class="mdui-textfield-input" placeholder="输入后回车换行" name="onedriveHide">${config['onedriveHide']}</textarea>
+		  <small>这里是通配识别，就是存在以上字符文件夹一律会隐藏</small>
+		</div>
+
+		<div class="mdui-textfield">
+		  <h4>防盗链(白名单)<small> 不填写则不启用, 多个用英文 <code>;</code> 分割</small></h4>
+		  <input class="mdui-textfield-input" name="onedriveHotlink" value="${config['onedriveHotlink']}"/>
+		  <small>支持通配符 例: <code>*.domain.com</code></small>
+		</div>
+		<div class="mdui-textfield mdui-textfield-has-bottom">
+		  <h4>heroku防休眠地址<small> 程序访问地址，为空则不进行定时访问</small></h4>
+		  <input class="mdui-textfield-input" type="text" name="herokuKeepAliveAddress" value="${config['herokuKeepAliveAddress']}" />
+		</div>
+		<div class="mdui-textfield mdui-textfield-has-bottom">
+		  <h4>heroku防休眠cron</h4>
+		  <input class="mdui-textfield-input" type="text" name="herokuKeepAliveCron" value="${config['herokuKeepAliveCron']}" />
+		  <div class="mdui-textfield-helper"><a target="_blank" href="http://cron.qqe2.com/">cron表达式生成器</a></div>
+		</div>
+	   <button type="submit" class="mdui-btn mdui-color-theme-accent mdui-ripple mdui-float-right">
+	   	<i class="mdui-icon material-icons">&#xe161;</i> 保存
+	   </button>
+	</form>
+</div>
+</@main.admin>

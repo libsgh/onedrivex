@@ -31,4 +31,6 @@ public class Constants {
 	
 	public static String fileCachePrefix = "file_";
 	
+	public static String refreshCacheTaskId = "";
+	
 }

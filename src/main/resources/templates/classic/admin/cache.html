@@ -1,0 +1,53 @@
+<#-- 引入布局指令的命名空间 -->
+<#import "layout.html" as main>
+<#assign ctx=req.getContextPath()>
+<#-- 调用布局指令 -->
+<@main.admin>
+<div class="mdui-container-fluid">
+
+	<div class="mdui-typo">
+	  <h1> 页面缓存 <small>定时刷新缓存能提高页面访问性能</small></h1>
+	</div>
+	<br>
+	<br>
+	<br>
+	<form action="" method="post">
+		<div class="mdui-textfield">
+		  <h4>是否定时刷新缓存</h4>
+		  <label class="mdui-textfield-label"></label>
+		  <label class="mdui-switch">
+			  &nbsp;<input type="checkbox" name="openCache" value="${config['openCache']}" <#if config['openCache']='0'>checked="checked"</#if> />
+			  <i class="mdui-switch-icon"></i>
+		  </label>
+		</div>
+		<div class="mdui-textfield mdui-textfield-has-bottom">
+		  <h4>定时刷新cron</h4>
+		  <input class="mdui-textfield-input" type="text" name="refreshCacheCron" value="${config['refreshCacheCron']}" />
+		  <div class="mdui-textfield-helper"><a target="_blank" href="http://cron.qqe2.com/">cron表达式生成器</a></div>
+		</div>
+		<div class="mdui-textfield">
+		  <h4>缓存过期时间(秒)</h4>
+		  <input class="mdui-textfield-input" type="text" name="cacheExpireTime" value="${config['cacheExpireTime']}"/>
+		</div>
+		<button type="button" name="clear" class="mdui-btn mdui-color-deep-purple mdui-ripple mdui-float-left">
+	   	 <i class="mdui-icon material-icons">&#xe86a;</i> 清除缓存
+	    </button>
+		<button type="submit" class="mdui-btn mdui-color-theme-accent mdui-ripple mdui-float-right">
+	   	 <i class="mdui-icon material-icons">&#xe161;</i> 保存
+	    </button>
+	</form>
+</div>
+<script>
+$('button[name=clear]').on('click',function(){
+	$.ajax({
+		  method: 'POST',
+		  url: '${ctx}/admin/clearCache',
+		  success: function (data) {
+			mdui.snackbar({
+			  message: data, timeout:10000
+			});
+		  }
+	});
+});
+</script>
+</@main.admin>

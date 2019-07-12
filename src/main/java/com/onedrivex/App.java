@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.system.ApplicationHome;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -18,6 +19,7 @@ import cn.hutool.core.io.FileUtil;
 @SpringBootApplication
 @EnableCaching
 @EnableAsync
+@ServletComponentScan
 public class App {
 	
 	@Value("${DATA_TYPE:sqlite}")
