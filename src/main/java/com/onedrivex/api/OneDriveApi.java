@@ -1,16 +1,22 @@
 package com.onedrivex.api;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.onedrivex.common.CommonUtil;
+import com.onedrivex.util.CommonUtil;
 import com.onedrivex.util.Constants;
+import com.onedrivex.util.SplitFile;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
+import cn.hutool.http.HtmlUtil;
 import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 
@@ -27,16 +33,6 @@ public class OneDriveApi {
             }
         }
         return api;
-	}
-	
-	public static void main(String[] args) {
-		OneDriveApi oneDrive = new OneDriveApi();
-		TokenInfo tokenInfo = new TokenInfo();
-		tokenInfo.setToken_type("Bearer");
-		tokenInfo.setAccess_token("eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFEQ29NcGpKWHJ4VHE5Vkc5dGUtN0ZYdHYwalZCT1B0YndwQThWOXlkWl9YZEt4SDNOdDhlTi1Uc1VqNFZxZ0Q4QUZhUTZDcWlBRm5jVW5kSHhvN2dSdHM3c0VfOWZXelc3ZVB0alo4dEw3TGlBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIiwia2lkIjoiQ3RmUUM4TGUtOE5zQzdvQzJ6UWtacGNyZk9jIn0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC80NGQ4NzlkYS1mM2VmLTQwMjQtODZlMy1hYmMyZTA3NmU2ODEvIiwiaWF0IjoxNTYxNjk1NDg3LCJuYmYiOjE1NjE2OTU0ODcsImV4cCI6MTU2MTY5OTM4NywiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IjQyWmdZUEEwKzMrZloyNk9TdVNCdllxSjdpZlZoTXgvVjk5N1dCTXVkK0h6YTJHbTIxWUEiLCJhbXIiOlsicHdkIl0sImFwcF9kaXNwbGF5bmFtZSI6Im9uZWRyaXZleCIsImFwcGlkIjoiMjM1YzJkMjMtMzBiZC00OWVlLWFlZmMtZGFjNWMyMTcxMWE0IiwiYXBwaWRhY3IiOiIxIiwiZmFtaWx5X25hbWUiOiJpaSIsImdpdmVuX25hbWUiOiJjbSIsImlwYWRkciI6IjExNC4yNDQuMzYuMTMwIiwibmFtZSI6ImlpY20iLCJvaWQiOiJkNDE0NmRlNy1jNzI5LTQ5Y2YtYjI2Yy0yYTRiYzQ1N2U4ZTEiLCJwbGF0ZiI6IjMiLCJwdWlkIjoiMTAwMzNGRkZBRjUxNTg2MCIsInNjcCI6IkZpbGVzLlJlYWRXcml0ZS5BbGwgcHJvZmlsZSBvcGVuaWQgZW1haWwiLCJzaWduaW5fc3RhdGUiOlsia21zaSJdLCJzdWIiOiI0MG56cS1iRGJIZ0hIb2tmQlhRbHFkeUxCWW4wdklSc3pySkE2SUd4a3dVIiwidGlkIjoiNDRkODc5ZGEtZjNlZi00MDI0LTg2ZTMtYWJjMmUwNzZlNjgxIiwidW5pcXVlX25hbWUiOiJpaWNtQG1haWwuaHJrYS5uZXQiLCJ1cG4iOiJpaWNtQG1haWwuaHJrYS5uZXQiLCJ1dGkiOiJJSGJCbm9UZGJFdVl6b3pvYlZoNUFBIiwidmVyIjoiMS4wIiwieG1zX3N0Ijp7InN1YiI6ImduakZzLXQ2bkJJeGI3R0ZGNEdlRjFtNnUwNnpZUzdiSDBIVlZVNjBnTlUifSwieG1zX3RjZHQiOjE1MjYxMjcyOTl9.XPDMyQD62elZsTZTq2WZtyqO6YvYzuTqluJCPJoDDmMb92n6E1ILxDx2Y8iCYQCdP8oa69hruVJG-4sD-e3kuUePrcKhBCNqgaCNpeXvfUV3hTkFYEJV5VqVcd_3ObIRaAMR_TaPTEeoOlHYJlo4BBDJY9QFbMf0lgIVzRmY4CSzThveyPjLTEAgW2ae9-KXYeGWqU7ycGUntTp_ZG6Vsm_vy_u_F8cM2HJL_8COMDZQM6jbLdadBi8jwO_D97BRAmZHkYz97WX0rv29mE0hsLBOEwT9ymmhiQSRFbyCH5ZOzqMeF3gDDMr_I15EUKqd5TTB98XXJ-NFZ4c-18Zrew");
-		//System.out.println(oneDrive.getFile(tokenInfo, "/image/1989362.jpg").toString());
-		List<Item> items = oneDrive.getDir(tokenInfo, "/private");
-		System.out.println(JSONUtil.toJsonPrettyStr(items));
 	}
 	
 	public String oauth2(String cliendId, String redirectUri) {
@@ -124,12 +120,14 @@ public class OneDriveApi {
 		String downloadUrl = json.getStr("@microsoft.graph.downloadUrl")!=null?json.getStr("@microsoft.graph.downloadUrl").toString():null;
 		String size = CommonUtil.getFormatSize(Double.parseDouble(json.getStr("size").toString()));
 		String icon = null;
+		String id = json.getStr("id");
 		String ext = null;
 		Boolean folder = json.get("folder")==null?false:true;
 		Integer childCount = 0;
 		String t = null;
 		String fileType = "folder";
 		if(folder) {
+			@SuppressWarnings("unchecked")
 			Map<String , Integer> folderMap = (Map<String , Integer>)json.get("folder");
 			childCount = (Integer)folderMap.get("childCount");
 		}else {
@@ -143,7 +141,7 @@ public class OneDriveApi {
 			}
 		}
 		//String t = thumbnail(tokenInfo, path, "large");
-		return new Item(name, size, time, folder, childCount ,downloadUrl, ext, icon, path, t, fileType);
+		return new Item(id, name, size, time, folder, childCount ,downloadUrl, ext, icon, path, t, fileType);
 	}
 	
 	/**
@@ -171,6 +169,7 @@ public class OneDriveApi {
 			for (Map<String, Object> map : list) {
 				String time = DateUtil.formatDateTime(DateUtil.parse(map.get("lastModifiedDateTime").toString()));
 				String name = map.get("name").toString();
+				String id = map.get("id").toString();
 				String downloadUrl = map.get("@microsoft.graph.downloadUrl")!=null?map.get("@microsoft.graph.downloadUrl").toString():null;
 				String size = CommonUtil.getFormatSize(Double.parseDouble(map.get("size").toString()));
 				Object folder = map.get("folder");
@@ -192,7 +191,7 @@ public class OneDriveApi {
 						t = thumbnail(tokenInfo, path, "large");
 					}*/
 				}
-				items.add(new Item(name, size, time, (folder==null?false:true), childCount ,downloadUrl, ext, icon, path.equals("/")?"/"+name:path+"/"+name, t, fileType));
+				items.add(new Item(id, name, size, time, (folder==null?false:true), childCount ,downloadUrl, ext, icon, path.equals("/")?"/"+name:path+"/"+name, t, fileType));
 			}
 		}
 		Object nextLink = JSONUtil.parse(body).getByPath("$.@odata.nextLink");
@@ -221,4 +220,81 @@ public class OneDriveApi {
 							.timeout(Constants.timeout);
 	}
 	
+	/**
+	 * 创建上传会话，获取上传url
+	 * @param path
+	 * @param tokenInfo
+	 * @return
+	 */
+	public String createUploadSession(String path, TokenInfo tokenInfo) {
+		HttpResponse rep = HttpRequest.post(Constants.apiUrl + "/me/drive/root:"+path+":/createUploadSession")
+							.header("Authorization", tokenInfo.getAuth())
+							.header("Host", "graph.microsoft.com")
+							.timeout(Constants.timeout)
+							.contentType("Content-Type")
+							.execute();
+		if(rep.getStatus() == 409) {
+			return null;
+		}else {
+			JSONObject json = JSONUtil.parseObj(rep.body());
+			return json.getStr("uploadUrl");
+		}
+	}
+	
+	/**
+	 * 取消上传会话
+	 * @param uploadUrl
+	 * @return
+	 */
+	public Boolean delUploadSession(String uploadUrl) {
+		HttpResponse rep = HttpRequest.delete(uploadUrl).execute();
+		if(rep.getStatus() == 204) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * 获取上传状态
+	 * @param uploadUrl
+	 * @return
+	 */
+	public String getUploadStatus(String uploadUrl) {
+		String body = HttpRequest.get(uploadUrl).execute().body();
+		return body;
+	}
+	
+	/**
+	 * 创建上传会话，获取上传url
+	 * @param path
+	 * @param tokenInfo
+	 * @return
+	 */
+	public String upload(UploadInfo uploadInfo, String uploadUrl, TokenInfo tokenInfo, long totalSize) {
+		String body = HttpRequest.put(uploadUrl)
+				.header("Content-Length", totalSize+"")
+				.header("Content-Range","bytes "+uploadInfo.getBegin()+"-"+uploadInfo.getEnd()+"/"+totalSize)
+				.body(uploadInfo.getBytes())
+				.execute().body();
+		JSONObject json = JSONUtil.parseObj(body);
+		return json.toStringPretty();
+	}
+
+	public static void main(String[] args) {
+		/*OneDriveApi oneDrive = new OneDriveApi();
+		TokenInfo tokenInfo = new TokenInfo();
+		tokenInfo.setToken_type("Bearer");
+		tokenInfo.setAccess_token("eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFBUDB3TGxxZExWVG9PcEE0a3d6U254MEVDdkNJZThHa2pPeUFYNXRwNU56ZmlwUG9FZnB0aTU1WjFsRHphVWc5X2lmbDV0QWY4RzhOY2tzYk9ESnNfOExmU3R3XzdSZW1GXzRON3JCcHBmVWlBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoidTRPZk5GUEh3RUJvc0hqdHJhdU9iVjg0TG5ZIiwia2lkIjoidTRPZk5GUEh3RUJvc0hqdHJhdU9iVjg0TG5ZIn0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC80NGQ4NzlkYS1mM2VmLTQwMjQtODZlMy1hYmMyZTA3NmU2ODEvIiwiaWF0IjoxNTYzMTgxODAwLCJuYmYiOjE1NjMxODE4MDAsImV4cCI6MTU2MzE4NTcwMCwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IjQyRmdZRmp2eWM4V2NIRGliTU9GcDFZNnJwQUl5eW51emRWeW5yM1Zjc2w4WGJOOUZ5UUIiLCJhbXIiOlsicHdkIl0sImFwcF9kaXNwbGF5bmFtZSI6Im9uZWRyaXZleCIsImFwcGlkIjoiNDBhZTY5ZTctYjdkOC00ZjJmLThkNjAtMDgzMWM5YmY5ZDA0IiwiYXBwaWRhY3IiOiIxIiwiZmFtaWx5X25hbWUiOiJpaSIsImdpdmVuX25hbWUiOiJjbSIsImlwYWRkciI6IjExNC4yNDQuMzYuMTMwIiwibmFtZSI6ImlpY20iLCJvaWQiOiJkNDE0NmRlNy1jNzI5LTQ5Y2YtYjI2Yy0yYTRiYzQ1N2U4ZTEiLCJwbGF0ZiI6IjMiLCJwdWlkIjoiMTAwMzNGRkZBRjUxNTg2MCIsInNjcCI6IkZpbGVzLlJlYWRXcml0ZS5BbGwgcHJvZmlsZSBvcGVuaWQgZW1haWwiLCJzaWduaW5fc3RhdGUiOlsia21zaSJdLCJzdWIiOiI0MG56cS1iRGJIZ0hIb2tmQlhRbHFkeUxCWW4wdklSc3pySkE2SUd4a3dVIiwidGlkIjoiNDRkODc5ZGEtZjNlZi00MDI0LTg2ZTMtYWJjMmUwNzZlNjgxIiwidW5pcXVlX25hbWUiOiJpaWNtQG1haWwuaHJrYS5uZXQiLCJ1cG4iOiJpaWNtQG1haWwuaHJrYS5uZXQiLCJ1dGkiOiJ5RE1YOGJfTHJFYThZTTFSY1BOR0FBIiwidmVyIjoiMS4wIiwieG1zX3N0Ijp7InN1YiI6Ikl3VmdnWTNILThOMGw1TUFHc3I1SmtFUmFqQzUzazRLT1cxSk12Z2tYM0UifSwieG1zX3RjZHQiOjE1MjYxMjcyOTl9.MRt3m19YUpPFGxIXQAdOmesSOZ35jiBVtNyB-l_x1UDXrkr_SaxUctU4sKk566OxTxyveB747trh_9Nt9ZBVLNvkCpjAvwkVx-l5BcHmhNPfIu6vDHC-3GmTSkcBlQlMg9Jj-ZxT5M3zQErpIQVcv3XExipI7Kf5QhhYzVTZJsCjMzpI4K44W4wZ19u5kHgHKExrC_QZoEtBhfrwTOBMLZ19bZypzp5PvHDt61oo5zAv9kOkLk7u2V-IobG2KZEtO-3AYHkjumGYs_DxsBBXKY76h6rfqF1h0KJtX3O3x5n99vT_JVU24mZtTsxsRJcgJZh3fpE-VcXv4fwkH1l9pw");
+		//System.out.println(oneDrive.getFile(tokenInfo, "/test").toString());
+		File file = new File("D:\\data\\split\\Instagram_v101.0.0.15.120_apkpure.com.apk");
+		SplitFile sc = new SplitFile(file, Constants.splitFileSize);//15.625MB
+	    sc.init();
+	    List<UploadInfo> list = sc.spiltfile("D:\\data\\split\\");
+	    String upLoadUrl = oneDrive.createUploadSession("/test"+"/"+file.getName(), tokenInfo);
+	    long length = FileUtil.size(file);
+	    System.out.println(length);
+	    for (UploadInfo uploadInfo : list) {
+	    	System.out.println(oneDrive.upload(uploadInfo, upLoadUrl, tokenInfo, length));
+		}*/
+	}
 }

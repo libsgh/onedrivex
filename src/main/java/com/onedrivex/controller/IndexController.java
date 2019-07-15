@@ -1,5 +1,10 @@
 package com.onedrivex.controller;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
@@ -22,14 +27,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.onedrivex.api.Item;
 import com.onedrivex.api.OneDriveApi;
 import com.onedrivex.api.TokenInfo;
-import com.onedrivex.common.CommonUtil;
 import com.onedrivex.service.XService;
+import com.onedrivex.util.CommonUtil;
 import com.onedrivex.util.Constants;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
 import cn.hutool.cron.CronUtil;
@@ -179,6 +186,38 @@ public class IndexController {
 		HttpSession session = request.getSession();
 		session.removeAttribute("isLogin");
 		return "redirect:/admin";
+	}
+	
+	/**
+	 * 退出登陆
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/file/upload")
+	@ResponseBody
+	public String upload(@RequestParam("file") MultipartFile file) {
+		String path = Constants.globalConfig.get("uploadPath");
+        if (!file.isEmpty()) {
+            try {
+            	if(!FileUtil.exist(path)) {
+            		FileUtil.mkdir(path);
+            	}
+                BufferedOutputStream out = new BufferedOutputStream(
+                        new FileOutputStream(new File(path+File.separator+file.getOriginalFilename())));
+                out.write(file.getBytes());
+                out.flush();
+                out.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return "上传失败," + e.getMessage();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "上传失败," + e.getMessage();
+            }
+            return "上传成功";
+        } else {
+            return "上传失败，因为文件是空的.";
+        }
 	}
 	
 	@RequestMapping("/**")

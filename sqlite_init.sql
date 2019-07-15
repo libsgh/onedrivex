@@ -14,3 +14,5 @@ INSERT OR IGNORE INTO "config" VALUES ('onedriveRoot', '/');
 INSERT OR IGNORE INTO "config" VALUES ('onedriveHide', '');
 INSERT OR IGNORE INTO "config" VALUES ('onedriveHotlink', '');
 INSERT OR IGNORE INTO "config" VALUES ('cacheExpireTime', '3600');
+INSERT OR IGNORE INTO "config" VALUES ('openCache', '0');
+INSERT OR IGNORE INTO "config" VALUES ('uploadPath', '/app/upload')

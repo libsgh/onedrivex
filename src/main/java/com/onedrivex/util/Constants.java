@@ -33,4 +33,6 @@ public class Constants {
 	
 	public static String refreshCacheTaskId = "";
 	
+	public static long splitFileSize = 16384000;
+	
 }
