@@ -14,7 +14,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 
-import com.onedrivex.api.OneDriveApi;
 import com.onedrivex.service.XService;
 import com.onedrivex.util.Constants;
 
@@ -36,6 +35,8 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 	private XService servive;
 	
 	public boolean flag = false;
+	
+	public boolean u_flag = false;
 	
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent cre) {
@@ -99,7 +100,17 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			CronUtil.schedule("0 0/1 * * * ?", new Task() {
 				@Override
 				public void execute() {
-					servive.upload();
+					if(u_flag) {
+						return;
+					}
+					try {
+						u_flag = true;
+						servive.upload();
+					} catch (Exception e) {
+						logger.error(e.getMessage(), e);
+					}finally {
+						u_flag = false;
+					}
 				}
 			});
 			CronUtil.start();

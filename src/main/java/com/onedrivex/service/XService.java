@@ -275,11 +275,11 @@ public class XService {
 			    	FileUtil.mkdir(splitPath);
 			    }
 			    List<UploadInfo> uis = sc.spiltfile(splitPath);
-			    String upLoadUrl = api.createUploadSession(rootPath+File.separator+file.getName(), ti);
+			    String upLoadUrl = api.createUploadSession(file.getParent()+File.separator+file.getName(), ti);
 			    long length = FileUtil.size(file);
 			    for (UploadInfo uploadInfo : uis) {
 			    	//分片上传文件
-			    	System.out.println(api.upload(uploadInfo, upLoadUrl, ti, length));
+			    	api.upload(uploadInfo, upLoadUrl, ti, length);
 				}
 			    //上传成功删除文件
 			    uis.parallelStream().forEach(f->{
