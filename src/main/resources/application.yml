@@ -9,6 +9,12 @@ spring:
     cache: false
     template-loader-path: classpath:/templates/
     request-context-attribute: req
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100Mb
+      max-request-size: 100Mb
+      file-size-threshold: 0
 logging:
   level:
     com.onedrivex: DEBUG
