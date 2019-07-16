@@ -266,27 +266,29 @@ public class XService {
 		if(StrUtil.isNotBlank(rootPath) && FileUtil.isNotEmpty(new File(rootPath))) {
 			List<File> list = FileUtil.loopFiles(rootPath);
 			list.stream().forEach(file->{
-				String tokenJson = Constants.globalConfig.get(Constants.tokenKey);
-				TokenInfo ti = JSONUtil.toBean(tokenJson, TokenInfo.class);
-				SplitFile sc = new SplitFile(file, Constants.splitFileSize);//15.625MB
-			    sc.init();
-			    String splitPath = rootPath + File.separator + "split";
-			    if(FileUtil.exist(splitPath)) {
-			    	FileUtil.mkdir(splitPath);
-			    }
-			    List<UploadInfo> uis = sc.spiltfile(splitPath);
-			    logger.debug("文件名称："+file.getParent()+File.separator+file.getName());
-			    String upLoadUrl = api.createUploadSession(file.getParent()+File.separator+file.getName(), ti);
-			    long length = FileUtil.size(file);
-			    for (UploadInfo uploadInfo : uis) {
-			    	//分片上传文件
-			    	api.upload(uploadInfo, upLoadUrl, ti, length);
+				String splitPath = rootPath + File.separator + "split";
+				if(!file.getParent().equals(splitPath)) {
+					String tokenJson = Constants.globalConfig.get(Constants.tokenKey);
+					TokenInfo ti = JSONUtil.toBean(tokenJson, TokenInfo.class);
+					SplitFile sc = new SplitFile(file, Constants.splitFileSize);//15.625MB
+					sc.init();
+					if(FileUtil.exist(splitPath)) {
+						FileUtil.mkdir(splitPath);
+					}
+					List<UploadInfo> uis = sc.spiltfile(splitPath);
+					logger.debug("文件名称："+file.getParent()+File.separator+file.getName());
+					String upLoadUrl = api.createUploadSession(file.getParent()+File.separator+file.getName(), ti);
+					long length = FileUtil.size(file);
+					for (UploadInfo uploadInfo : uis) {
+						//分片上传文件
+						api.upload(uploadInfo, upLoadUrl, ti, length);
+					}
+					//上传成功删除文件
+					uis.parallelStream().forEach(f->{
+						FileUtil.del(f.getFile());
+					});
+					FileUtil.del(file);
 				}
-			    //上传成功删除文件
-			    uis.parallelStream().forEach(f->{
-			    	FileUtil.del(f.getFile());
-			    });
-			    FileUtil.del(file);
 			});
 		}
 	}
