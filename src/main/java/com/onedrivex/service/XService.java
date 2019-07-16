@@ -275,7 +275,7 @@ public class XService {
 			    	FileUtil.mkdir(splitPath);
 			    }
 			    List<UploadInfo> uis = sc.spiltfile(splitPath);
-			    System.out.println(file.getParent()+File.separator+file.getName());
+			    logger.debug("文件名称："+file.getParent()+File.separator+file.getName());
 			    String upLoadUrl = api.createUploadSession(file.getParent()+File.separator+file.getName(), ti);
 			    long length = FileUtil.size(file);
 			    for (UploadInfo uploadInfo : uis) {
