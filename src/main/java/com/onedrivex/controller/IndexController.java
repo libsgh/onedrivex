@@ -195,15 +195,14 @@ public class IndexController {
 	 */
 	@RequestMapping("/file/upload")
 	@ResponseBody
-	public String upload(@RequestParam("file") MultipartFile file) {
-		String path = Constants.globalConfig.get("uploadPath");
+	public String upload(@RequestParam("file") MultipartFile file, @RequestParam(value="uploadPath", required = false) String uploadPath) {
         if (!file.isEmpty()) {
             try {
-            	if(!FileUtil.exist(path)) {
-            		FileUtil.mkdir(path);
+            	if(!FileUtil.exist(uploadPath)) {
+            		FileUtil.mkdir(uploadPath);
             	}
                 BufferedOutputStream out = new BufferedOutputStream(
-                        new FileOutputStream(new File(path+File.separator+file.getOriginalFilename())));
+                        new FileOutputStream(new File(uploadPath+File.separator+file.getOriginalFilename())));
                 out.write(file.getBytes());
                 out.flush();
                 out.close();
@@ -216,7 +215,7 @@ public class IndexController {
             }
             return "上传成功";
         } else {
-            return "上传失败，因为文件是空的.";
+            return "上传失败，因为文件是空的。";
         }
 	}
 	

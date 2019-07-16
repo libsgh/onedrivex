@@ -1,5 +1,6 @@
 package com.onedrivex.service;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -16,8 +17,11 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.onedrivex.api.Item;
 import com.onedrivex.api.OneDriveApi;
 import com.onedrivex.api.TokenInfo;
+import com.onedrivex.api.UploadInfo;
 import com.onedrivex.util.Constants;
+import com.onedrivex.util.SplitFile;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.Db;
 import cn.hutool.db.Entity;
@@ -255,6 +259,35 @@ public class XService {
 			Constants.globalConfig = this.getConfigMap();
 		}
 		return c;
+	}
+
+	public void upload() {
+		String rootPath = Constants.globalConfig.get("uploadPath");
+		if(StrUtil.isNotBlank(rootPath) && FileUtil.isNotEmpty(new File(rootPath))) {
+			List<File> list = FileUtil.loopFiles(rootPath);
+			list.stream().forEach(file->{
+				String tokenJson = Constants.globalConfig.get(Constants.tokenKey);
+				TokenInfo ti = JSONUtil.toBean(tokenJson, TokenInfo.class);
+				SplitFile sc = new SplitFile(file, Constants.splitFileSize);//15.625MB
+			    sc.init();
+			    String splitPath = rootPath + File.separator + "split";
+			    if(FileUtil.exist(splitPath)) {
+			    	FileUtil.mkdir(splitPath);
+			    }
+			    List<UploadInfo> uis = sc.spiltfile(splitPath);
+			    String upLoadUrl = api.createUploadSession(rootPath+File.separator+file.getName(), ti);
+			    long length = FileUtil.size(file);
+			    for (UploadInfo uploadInfo : uis) {
+			    	//分片上传文件
+			    	System.out.println(api.upload(uploadInfo, upLoadUrl, ti, length));
+				}
+			    //上传成功删除文件
+			    uis.parallelStream().forEach(f->{
+			    	FileUtil.del(f.getFile());
+			    });
+			    FileUtil.del(file);
+			});
+		}
 	}
 	
 }

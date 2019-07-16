@@ -14,10 +14,10 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 
+import com.onedrivex.api.OneDriveApi;
 import com.onedrivex.service.XService;
 import com.onedrivex.util.Constants;
 
-import cn.hutool.cache.CacheUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.cron.CronUtil;
@@ -51,7 +51,6 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			String hkac = configMap.get("herokuKeepAliveCron");//heroku防休眠cron
 			String hkaa = configMap.get("herokuKeepAliveAddress");//heroku防休眠地址
 			String rcc = configMap.get("refreshCacheCron");//刷新缓存cron
-			String token = servive.refreshJob(configMap);
 			Constants.refreshCacheTaskId = CronUtil.schedule(cron, new Task() {
 			    @Override
 			    public void execute() {
@@ -97,6 +96,12 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 				}
 			});
 			Constants.timedCache.schedulePrune(Long.parseLong(configMap.get("cacheExpireTime"))*1000);
+			CronUtil.schedule("0 0/1 * * * ?", new Task() {
+				@Override
+				public void execute() {
+					servive.upload();
+				}
+			});
 			CronUtil.start();
 	}
 

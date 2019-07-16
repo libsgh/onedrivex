@@ -76,8 +76,7 @@ public class SplitFile {
 	public UploadInfo spiltdetail(int index, long off,long len) {
 	    File file1=new File(blockpath.get(index));//目标
 	    FileUtil.writeBytes(FileUtil.readBytes(file), file1, (int)off, (int)len, false);
-	    UploadInfo info = new UploadInfo(off, off+len-1, FileUtil.readBytes(file1), file1.length());
-	    System.out.println(info.toString());
+	    UploadInfo info = new UploadInfo(off, off+len-1, FileUtil.readBytes(file1), file1.length(), file1);
 	    return info;
 	}
 	/**

@@ -1,22 +1,17 @@
 package com.onedrivex.api;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.onedrivex.util.CommonUtil;
 import com.onedrivex.util.Constants;
-import com.onedrivex.util.SplitFile;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
-import cn.hutool.http.HtmlUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
-import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 
@@ -265,7 +260,7 @@ public class OneDriveApi {
 	}
 	
 	/**
-	 * 创建上传会话，获取上传url
+	 * 上传文件
 	 * @param path
 	 * @param tokenInfo
 	 * @return
@@ -280,8 +275,8 @@ public class OneDriveApi {
 		return json.toStringPretty();
 	}
 
-	public static void main(String[] args) {
-		/*OneDriveApi oneDrive = new OneDriveApi();
+	/*public static void main(String[] args) {
+		OneDriveApi oneDrive = new OneDriveApi();
 		TokenInfo tokenInfo = new TokenInfo();
 		tokenInfo.setToken_type("Bearer");
 		tokenInfo.setAccess_token("eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFBUDB3TGxxZExWVG9PcEE0a3d6U254MEVDdkNJZThHa2pPeUFYNXRwNU56ZmlwUG9FZnB0aTU1WjFsRHphVWc5X2lmbDV0QWY4RzhOY2tzYk9ESnNfOExmU3R3XzdSZW1GXzRON3JCcHBmVWlBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoidTRPZk5GUEh3RUJvc0hqdHJhdU9iVjg0TG5ZIiwia2lkIjoidTRPZk5GUEh3RUJvc0hqdHJhdU9iVjg0TG5ZIn0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC80NGQ4NzlkYS1mM2VmLTQwMjQtODZlMy1hYmMyZTA3NmU2ODEvIiwiaWF0IjoxNTYzMTgxODAwLCJuYmYiOjE1NjMxODE4MDAsImV4cCI6MTU2MzE4NTcwMCwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IjQyRmdZRmp2eWM4V2NIRGliTU9GcDFZNnJwQUl5eW51emRWeW5yM1Zjc2w4WGJOOUZ5UUIiLCJhbXIiOlsicHdkIl0sImFwcF9kaXNwbGF5bmFtZSI6Im9uZWRyaXZleCIsImFwcGlkIjoiNDBhZTY5ZTctYjdkOC00ZjJmLThkNjAtMDgzMWM5YmY5ZDA0IiwiYXBwaWRhY3IiOiIxIiwiZmFtaWx5X25hbWUiOiJpaSIsImdpdmVuX25hbWUiOiJjbSIsImlwYWRkciI6IjExNC4yNDQuMzYuMTMwIiwibmFtZSI6ImlpY20iLCJvaWQiOiJkNDE0NmRlNy1jNzI5LTQ5Y2YtYjI2Yy0yYTRiYzQ1N2U4ZTEiLCJwbGF0ZiI6IjMiLCJwdWlkIjoiMTAwMzNGRkZBRjUxNTg2MCIsInNjcCI6IkZpbGVzLlJlYWRXcml0ZS5BbGwgcHJvZmlsZSBvcGVuaWQgZW1haWwiLCJzaWduaW5fc3RhdGUiOlsia21zaSJdLCJzdWIiOiI0MG56cS1iRGJIZ0hIb2tmQlhRbHFkeUxCWW4wdklSc3pySkE2SUd4a3dVIiwidGlkIjoiNDRkODc5ZGEtZjNlZi00MDI0LTg2ZTMtYWJjMmUwNzZlNjgxIiwidW5pcXVlX25hbWUiOiJpaWNtQG1haWwuaHJrYS5uZXQiLCJ1cG4iOiJpaWNtQG1haWwuaHJrYS5uZXQiLCJ1dGkiOiJ5RE1YOGJfTHJFYThZTTFSY1BOR0FBIiwidmVyIjoiMS4wIiwieG1zX3N0Ijp7InN1YiI6Ikl3VmdnWTNILThOMGw1TUFHc3I1SmtFUmFqQzUzazRLT1cxSk12Z2tYM0UifSwieG1zX3RjZHQiOjE1MjYxMjcyOTl9.MRt3m19YUpPFGxIXQAdOmesSOZ35jiBVtNyB-l_x1UDXrkr_SaxUctU4sKk566OxTxyveB747trh_9Nt9ZBVLNvkCpjAvwkVx-l5BcHmhNPfIu6vDHC-3GmTSkcBlQlMg9Jj-ZxT5M3zQErpIQVcv3XExipI7Kf5QhhYzVTZJsCjMzpI4K44W4wZ19u5kHgHKExrC_QZoEtBhfrwTOBMLZ19bZypzp5PvHDt61oo5zAv9kOkLk7u2V-IobG2KZEtO-3AYHkjumGYs_DxsBBXKY76h6rfqF1h0KJtX3O3x5n99vT_JVU24mZtTsxsRJcgJZh3fpE-VcXv4fwkH1l9pw");
@@ -295,6 +290,6 @@ public class OneDriveApi {
 	    System.out.println(length);
 	    for (UploadInfo uploadInfo : list) {
 	    	System.out.println(oneDrive.upload(uploadInfo, upLoadUrl, tokenInfo, length));
-		}*/
-	}
+		}
+	}*/
 }
