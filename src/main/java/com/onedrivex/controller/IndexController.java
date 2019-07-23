@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -73,7 +74,7 @@ public class IndexController {
 			model.addAttribute("message", "修改成功");
 		}
 		model.addAttribute("config", Constants.globalConfig);
-		return "classic/admin/settings";
+		return "admin/settings";
 	}
 	
 	/**
@@ -92,7 +93,7 @@ public class IndexController {
 				session.removeAttribute("isLogin");
 			}
 		}
-		return "classic/admin/setpass";
+		return "admin/setpass";
 	}
 	
 	/**
@@ -123,7 +124,7 @@ public class IndexController {
 			model.addAttribute("message", "修改成功");
 		}
 		model.addAttribute("config", Constants.globalConfig);
-		return "classic/admin/cache";
+		return "admin/cache";
 	}
 	
 	/**
@@ -135,6 +136,38 @@ public class IndexController {
 	public String clearCache() {
 		Constants.timedCache.clear();
 		return "缓存清空成功";
+	}
+	
+	/**
+	 * 系统管理（基本配置）
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/admin/upload")
+	public String admin(Model model, String local, String remote, String localPath, String uploadPath, String deleteTask, String itemId, String uploadUrl) {
+		if(local != null || remote != null) {
+			servive.upload(local, remote, false);
+			model.addAttribute("message","上传任务已经在执行");
+		}
+		if(localPath != null && localPath != null) {
+			Map<String, String> config = new HashMap<String, String>();
+			config.put("localPath", localPath);
+			config.put("uploadPath", uploadPath);
+			servive.updateConfig(config);
+			model.addAttribute("message", "配置修改成功");
+		}
+		if(deleteTask != null && itemId == null) {
+			//取消上传
+			servive.cancelTask(deleteTask, uploadUrl);
+			model.addAttribute("message", "取消上传成功");
+		}
+		if(deleteTask != null && itemId != null) {
+			servive.removeTask(itemId, deleteTask);
+			model.addAttribute("message", "远程文件删除成功");
+		}
+		model.addAttribute("config", Constants.globalConfig);
+		model.addAttribute("tasks", Constants.uploadRecordCache.iterator());
+		return "admin/upload";
 	}
 	
 	public static String getUrl(HttpServletRequest request) {
@@ -170,9 +203,9 @@ public class IndexController {
 			return "redirect:/admin";
 		 }else if(StrUtil.isNotBlank(password) && !password.equals(pwd)) {
 			 model.addAttribute("message", "密码不正确");
-			 return "classic/admin/login";
+			 return "admin/login";
 		 }else {
-			 return "classic/admin/login";
+			 return "admin/login";
 		 }
 	}
 	
@@ -222,6 +255,7 @@ public class IndexController {
 	@RequestMapping("/**")
 	public String index(Model model, HttpServletRequest request, HttpServletResponse response, Integer t, String password) {
 		String parentPath = CommonUtil.getParentPath(request.getRequestURI());
+		String theme = Constants.globalConfig.get("theme");
 		String path = URLUtil.decode(request.getRequestURI());
 		if(path.equals("/") && !Constants.globalConfig.get("onedriveRoot").equals("/")) {
 			return "redirect:"+Constants.globalConfig.get("onedriveRoot");
@@ -237,7 +271,7 @@ public class IndexController {
 			TokenInfo ti = JSONUtil.toBean(tokenInfo, TokenInfo.class);
 			Item item = servive.getFile(ti, path);
 			if((item != null && item.getFolder())||path.equals("/")) {
-				List<Item> items = servive.getDir(ti, path);
+				List<Item> items = servive.getDir(ti, path, theme.equals("classic")?false:true);
 				int count = items.size();
 				items = items.parallelStream().filter(r->!r.getName().trim().equals(".password")).collect(Collectors.toList());
 				if(count > items.size()) {
@@ -248,7 +282,7 @@ public class IndexController {
 						//1.重定向到密码输入页面
 						//2.密码提交-》写入cookie
 						if(StrUtil.isBlank(password) || !password.trim().equals(pwd.trim())) {
-							return Constants.globalConfig.get("theme")+"/password";
+							return theme+"/password";
 						}else{
 							//cookie写入密码
 							Cookie cookie = new Cookie(path.replaceAll("/", ""), SecureUtil.md5(pwd));
@@ -276,21 +310,25 @@ public class IndexController {
 	            } catch (MalformedURLException e) {
 	            }
 	            if (host.equals(url.getHost())) {
-	            	model.addAttribute("item", item);
-	            	return CommonUtil.showORedirect(model, item, Constants.globalConfig.get("theme"), ti, t);
+	            	if(!theme.equals("classic")) {
+	            		model.addAttribute("item", item);
+	            		return CommonUtil.showORedirect(model, item, theme, ti, t);
+	            	}else{
+	            		//经典主题：直接下载
+	            		return "redirect:"+item.getDownloadUrl();
+	            	}
 	            }else{
 	            	if(checkWhiteList(Constants.globalConfig.get("onedriveHotlink"), url.getHost())){
-	            		//下载
 	            		return "redirect:"+item.getDownloadUrl();
 	            	}else{
 	            		return "redirect:/unauthorized";
 	            	}
 	            }
 			}else {
-				return Constants.globalConfig.get("theme")+"/404";
+				return theme + "/404";
 			}
 		}
-		return Constants.globalConfig.get("theme")+"/list";
+		return theme + "/list";
 	}
 	
 	/**

@@ -1,16 +1,13 @@
 package com.onedrivex.api;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.onedrivex.util.CommonUtil;
 import com.onedrivex.util.Constants;
-import com.onedrivex.util.SplitFile;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
 import cn.hutool.http.HttpRequest;
@@ -253,6 +250,23 @@ public class OneDriveApi {
 	}
 	
 	/**
+	 * 删除文件
+	 * @param itemId
+	 * @return
+	 */
+	public Boolean delItem(String itemId, TokenInfo tokenInfo) {
+		HttpResponse rep = HttpRequest.delete(Constants.apiUrl + "/me/drive/items/"+itemId)
+				.header("Authorization", tokenInfo.getAuth())
+				.header("Host", "graph.microsoft.com")
+				.timeout(Constants.timeout)
+				.execute();
+		if(rep.getStatus() == 204) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
 	 * 获取上传状态
 	 * @param uploadUrl
 	 * @return
@@ -268,14 +282,13 @@ public class OneDriveApi {
 	 * @param tokenInfo
 	 * @return
 	 */
-	public String upload(UploadInfo uploadInfo, String uploadUrl, TokenInfo tokenInfo, long totalSize) {
+	public JSONObject upload(UploadInfo uploadInfo, String uploadUrl, TokenInfo tokenInfo, long totalSize) {
 		String body = HttpRequest.put(uploadUrl)
 				.header("Content-Length", totalSize+"")
 				.header("Content-Range","bytes "+uploadInfo.getBegin()+"-"+uploadInfo.getEnd()+"/"+totalSize)
 				.body(uploadInfo.getBytes())
 				.execute().body();
-		JSONObject json = JSONUtil.parseObj(body);
-		return json.toStringPretty();
+		return JSONUtil.parseObj(body);
 	}
 
 	/*public static void main(String[] args) {

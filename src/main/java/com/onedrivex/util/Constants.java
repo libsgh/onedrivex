@@ -25,6 +25,8 @@ public class Constants {
 	
 	public static TimedCache<String, Object> timedCache = CacheUtil.newTimedCache(-1);
 	
+	public static TimedCache<String, Object> uploadRecordCache = CacheUtil.newTimedCache(3600000);
+	
 	public static String dirCachePrefix = "dir_";
 	
 	public static String contentCachePrefix = "c_";

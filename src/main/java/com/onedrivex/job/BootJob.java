@@ -52,6 +52,7 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			String hkac = configMap.get("herokuKeepAliveCron");//heroku防休眠cron
 			String hkaa = configMap.get("herokuKeepAliveAddress");//heroku防休眠地址
 			String rcc = configMap.get("refreshCacheCron");//刷新缓存cron
+			servive.refreshJob();
 			Constants.refreshCacheTaskId = CronUtil.schedule(cron, new Task() {
 			    @Override
 			    public void execute() {

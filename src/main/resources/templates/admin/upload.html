@@ -1,0 +1,116 @@
+<#-- 引入布局指令的命名空间 -->
+<#import "layout.html" as main>
+<#assign ctx=req.getContextPath()>
+<#-- 调用布局指令 -->
+<@main.admin>
+<div class="mdui-container-fluid">
+
+	<div class="mdui-typo">
+	  <h1> 上传管理 <small>文件上传添加和管理</small></h1>
+	</div>
+
+	<div class="mdui-row">
+	  <form action="" method="post">
+	  	  <div class="mdui-typo">
+			<h5>自动上传 <small>服务器目录中的文件自动上传至onedrive，上传成功会删除原文件</small></h5>
+		  </div>
+		  <div class="mdui-col-xs-7">
+			<div class="mdui-textfield">
+			  <label class="mdui-textfield-label">服务器文件/文件夹</label>
+			  <input name="localPath" class="mdui-textfield-input" type="text" required="required" value="${config['localPath']}"/>
+			</div>
+		  </div>
+		  <div class="mdui-col-xs-3">
+			<div class="mdui-textfield">
+			  <label class="mdui-textfield-label">远程目录</label>
+			  <input name="uploadPath" class="mdui-textfield-input" type="text" required="required" value="${config['uploadPath']}"/>
+			</div>
+		  </div>
+		  <div class="mdui-col-xs-2" style="padding-top: 34px;">
+			<button type="submit" name="upload" value="1" class="mdui-btn mdui-btn-block mdui-color-theme-accent mdui-ripple">
+	      		<i class="mdui-icon material-icons">&#xe161;</i>
+				保存配置
+			</button>
+		  </div>
+	  </form>
+	</div>
+	<div class="mdui-row">
+	  <form action="" method="post">
+	  	<div class="mdui-typo">
+		  <h5>手动上传 <small>手动上传到onedrive</small></h5>
+		</div>
+		  <div class="mdui-col-xs-7">
+			<div class="mdui-textfield">
+			  <label class="mdui-textfield-label">服务器文件/文件夹</label>
+			  <input name="local" class="mdui-textfield-input" type="text" required="required"/>
+			</div>
+		  </div>
+		  <div class="mdui-col-xs-3">
+			<div class="mdui-textfield">
+			  <label class="mdui-textfield-label">远程目录</label>
+			  <input name="remote" class="mdui-textfield-input" type="text" value="/upload" required="required"/>
+			</div>
+		  </div>
+		  <div class="mdui-col-xs-2" style="padding-top: 34px;">
+				<button type="submit" name="upload" value="1" class="mdui-btn mdui-btn-block mdui-color-green-600 mdui-ripple">
+		      		<i class="mdui-icon material-icons">&#xe2c3;</i>
+					上传
+				</button>
+		  </div>
+	  </form>
+	</div>
+	<br>
+	<div class="mdui-typo">
+	  <h5>上传记录 <small>上传记录仅保存一小时</small></h5>
+	</div>
+
+	<div class="mdui-table-fluid">
+	  <table class="mdui-table">
+	    <thead>
+	      <tr>
+	        <th>远程路径</th>
+	        <th>上传速度</th>
+	        <th>进度</th>
+	        <th>状态</th>
+	        <th>操作</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+		  	<#if tasks?exists>
+                <#list tasks as task> 
+                   <tr>
+					<td>${task.remotePath}</td>
+					<td>${task.speed!}</td>
+					<td>${task.percent!}</td>
+					<td>
+						<#if task.status == 0>
+							等待上传
+						<#elseif task.status == 1> 
+							上传中
+						<#elseif task.status == 2>
+							上传成功
+						<#elseif task.status == 3>
+							上传失败
+						<#else>
+							取消上传
+						</#if>
+					</td>
+					<td>
+					  <form action="" method="post">
+						<#if task.itemId??>
+							<input type="hidden" name="itemId" value="${task.itemId!}" />
+							<button name="deleteTask" type="submit" class="mdui-btn mdui-btn-icon" value="${task.remotePath}" title="删除"><i class="mdui-icon material-icons">&#xe872;</i></button>
+						<#else>
+							<input type="hidden" name="uploadUrl" value="${task.uploadUrl!}" />
+							<button name="deleteTask" type="submit" class="mdui-btn mdui-btn-icon" value="${task.remotePath}" title="取消"><i class="mdui-icon material-icons">&#xe5c9;</i></button>
+						</#if>
+					  </form>
+		        	</td>
+                   </tr>
+                </#list>
+            </#if>
+	    </tbody>
+	  </table>
+	</div>
+</div>
+</@main.admin>

@@ -16,16 +16,20 @@ import org.springframework.stereotype.Service;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.onedrivex.api.Item;
 import com.onedrivex.api.OneDriveApi;
+import com.onedrivex.api.Task;
 import com.onedrivex.api.TokenInfo;
 import com.onedrivex.api.UploadInfo;
+import com.onedrivex.util.CommonUtil;
 import com.onedrivex.util.Constants;
 import com.onedrivex.util.SplitFile;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.Db;
 import cn.hutool.db.Entity;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 
 @Service
@@ -139,7 +143,7 @@ public class XService {
 	
 	//@Cacheable(key="#path", value="dir")
 	@SuppressWarnings("unchecked")
-	public List<Item> getDir(TokenInfo tokenInfo, String path){
+	public List<Item> getDir(TokenInfo tokenInfo, String path, Boolean isThumbnail){
 		List<Item> list = (List<Item>)Constants.timedCache.get(Constants.dirCachePrefix+path);
 		if(list != null) {
 			logger.debug("从缓存中读取文件夹数据\t{}", Constants.dirCachePrefix+path);
@@ -147,16 +151,18 @@ public class XService {
 			list = api.getDir(tokenInfo, path);
 			Constants.timedCache.put(Constants.dirCachePrefix+path, list);
 		}
-		list = list.parallelStream().map(r->{
-			String t = null;
-			if(!r.getFolder() && r.getFileType().equals("audio")) {
-				t = StrUtil.subBefore(api.thumbnail(tokenInfo, r.getPath(), "large"), "&width=", true);
-			}else if(!r.getFolder() && !r.getFileType().equals("audio")){
-				t = api.thumbnail(tokenInfo, r.getPath(), "large");
-			}
-			r.setThumb(t);
-			return r;
-		}).collect(Collectors.toList());
+		if(isThumbnail) {
+			list = list.parallelStream().map(r->{
+				String t = null;
+				if(!r.getFolder() && r.getFileType().equals("audio")) {
+					t = StrUtil.subBefore(api.thumbnail(tokenInfo, r.getPath(), "large"), "&width=", true);
+				}else if(!r.getFolder() && !r.getFileType().equals("audio")){
+					t = api.thumbnail(tokenInfo, r.getPath(), "large");
+				}
+				r.setThumb(t);
+				return r;
+			}).collect(Collectors.toList());
+		}
 		return list;
 	}
 	
@@ -262,12 +268,25 @@ public class XService {
 	}
 
 	public void upload() {
+		String localPath = Constants.globalConfig.get("localPath");
 		String rootPath = Constants.globalConfig.get("uploadPath");
-		if(StrUtil.isNotBlank(rootPath) && FileUtil.isNotEmpty(new File(rootPath))) {
-			List<File> list = FileUtil.loopFiles(rootPath);
+		upload(localPath, rootPath, true);
+	}
+	
+	@Async
+	public void upload(String local, String remote, Boolean isDelete) {
+		if(StrUtil.isNotBlank(local) && FileUtil.isNotEmpty(new File(local))) {
+			List<File> list = FileUtil.loopFiles(local);
 			list.stream().forEach(file->{
-				String splitPath = rootPath + File.separator + "split";
+				String splitPath = local + File.separator + "split";
 				if(!file.getParent().equals(splitPath)) {
+					String subPath = FileUtil.subPath(local, file.getPath());
+					long length = FileUtil.size(file);
+					Task task = new Task();
+					task.setRemotePath(remote+"/"+subPath);
+					task.setFileSize(length);
+					task.setStatus(0);
+					Constants.uploadRecordCache.put(remote+"/"+subPath, task);
 					String tokenJson = Constants.globalConfig.get(Constants.tokenKey);
 					TokenInfo ti = JSONUtil.toBean(tokenJson, TokenInfo.class);
 					SplitFile sc = new SplitFile(file, Constants.splitFileSize);//15.625MB
@@ -276,21 +295,63 @@ public class XService {
 						FileUtil.mkdir(splitPath);
 					}
 					List<UploadInfo> uis = sc.spiltfile(splitPath);
-					logger.debug("文件名称："+file.getParent()+File.separator+file.getName());
-					String upLoadUrl = api.createUploadSession(file.getParent()+File.separator+file.getName(), ti);
-					long length = FileUtil.size(file);
+					logger.debug("文件名称："+remote+"/"+subPath);
+					task.setHumanFileSize(CommonUtil.getFormatSize(file.length()));
+					String upLoadUrl = api.createUploadSession(remote+"/"+subPath, ti);
+					task.setUploadUrl(upLoadUrl);
 					for (UploadInfo uploadInfo : uis) {
+						Task t = ((Task)Constants.uploadRecordCache.get(remote+"/"+subPath));
+						if(t.getStatus() == 4) {
+							continue;
+						}
 						//分片上传文件
-						api.upload(uploadInfo, upLoadUrl, ti, length);
+						Long start = System.currentTimeMillis();
+						JSONObject jsonObject = api.upload(uploadInfo, upLoadUrl, ti, length);
+						String itemId = jsonObject.getStr("id");
+						if(itemId != null) {
+							task.setItemId(itemId);
+							task.setStatus(2);
+						}else {
+							task.setStatus(1);
+						}
+						Long du = (System.currentTimeMillis() - start)/1000;//秒
+						task.setUploadSize(uploadInfo.getLength());
+						task.setSpeed(CommonUtil.getFormatSize(NumberUtil.div(length+"", du+"").doubleValue())+"/S");
+						Constants.uploadRecordCache.put(remote+"/"+subPath, task);
 					}
 					//上传成功删除文件
 					uis.parallelStream().forEach(f->{
 						FileUtil.del(f.getFile());
 					});
-					FileUtil.del(file);
+					if(isDelete) {
+						FileUtil.del(file);
+					}
 				}
 			});
 		}
+		
 	}
 	
+	/**
+	 * 删除任务和文件
+	 * @param itemId
+	 * @param path
+	 */
+	public void removeTask(String itemId, String path) {
+		String tokenJson = Constants.globalConfig.get(Constants.tokenKey);
+		TokenInfo ti = JSONUtil.toBean(tokenJson, TokenInfo.class);
+		api.delItem(itemId, ti);
+		Constants.uploadRecordCache.remove(path);
+	}
+	
+	/**
+	 * 取消上传任务
+	 * @param path
+	 */
+	public void cancelTask(String path, String uploadUrl) {
+		api.delUploadSession(uploadUrl);
+		Task task = ((Task)Constants.uploadRecordCache.get(path));
+		task.setStatus(4);
+		Constants.uploadRecordCache.put(path, task);
+	}
 }
