@@ -139,6 +139,16 @@ public class IndexController {
 	}
 	
 	/**
+	 * 重置配置
+	 * @return
+	 */
+	@RequestMapping("/admin/reset")
+	public String reset() {
+		servive.reset();
+		return "redirect:/";
+	}
+	
+	/**
 	 * 系统管理（基本配置）
 	 * @param model
 	 * @return
@@ -257,9 +267,6 @@ public class IndexController {
 		String parentPath = CommonUtil.getParentPath(request.getRequestURI());
 		String theme = Constants.globalConfig.get("theme");
 		String path = URLUtil.decode(request.getRequestURI());
-		if(path.equals("/") && !Constants.globalConfig.get("onedriveRoot").equals("/")) {
-			return "redirect:"+Constants.globalConfig.get("onedriveRoot");
-		}
 		String tokenInfo = servive.getConfig(Constants.tokenKey);
 		model.addAttribute("parentPath", parentPath);
 		model.addAttribute("allPaths", CommonUtil.getAllPaths(request.getRequestURI()));
@@ -268,6 +275,9 @@ public class IndexController {
 		if(StrUtil.isBlank(tokenInfo)) {
 			return "redirect:/setup?s=1";
 		}else{
+			if(path.equals("/") && !Constants.globalConfig.get("onedriveRoot").equals("/")) {
+				return "redirect:"+Constants.globalConfig.get("onedriveRoot");
+			}
 			TokenInfo ti = JSONUtil.toBean(tokenInfo, TokenInfo.class);
 			Item item = servive.getFile(ti, path);
 			if((item != null && item.getFolder())||path.equals("/")) {
@@ -355,7 +365,7 @@ public class IndexController {
 	}
 
 	@RequestMapping("/setup")
-	public String setup(String s, Model model, String clientId, String clientSecret, String redirectUri) {
+	public String setup(HttpServletRequest request, String s, Model model, String clientId, String clientSecret, String redirectUri, String localAuthUri) {
 		if(s.equals("1")) {
 			//获取并输入cliendId secret
 			String rdu = servive.getConfig("redirectUri");
@@ -367,7 +377,7 @@ public class IndexController {
 			servive.updateConfig("redirectUri",redirectUri);
 			servive.updateConfig("clientId",clientId);
 			servive.updateConfig("clientSecret",clientSecret);
-			model.addAttribute("oauth2Url",api.oauth2(clientId, redirectUri));
+			model.addAttribute("oauth2Url",api.oauth2(clientId, redirectUri, request.getRemoteHost(), localAuthUri));
 			return "classic/setup/setup_2";
 		}else if(s.equals("3")) {
 			//安装结果
@@ -390,6 +400,7 @@ public class IndexController {
     	String redirectUri = configMap.get("redirectUri");
 		String tokenInfo = api.getToken(code, clientId, clientSecret, redirectUri);
 		servive.updateConfig(Constants.tokenKey, tokenInfo);
+		Constants.globalConfig = servive.getConfigMap();
 		return "redirect:/setup?s=3";
 	}
 }

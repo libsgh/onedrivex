@@ -1,6 +1,8 @@
 package com.onedrivex.service;
 
 import java.io.File;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +12,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +44,9 @@ public class XService {
 	
 	@Autowired
 	private DruidDataSource ds;
+	
+	@Value("${DATA_TYPE:sqlite}")
+	private String dataType;
 	
 	/**
 	 * 批量执行sql
@@ -195,13 +201,13 @@ public class XService {
 		}
 	}
 	public void refreshCacheJob(String token) {
-		logger.info("缓存刷新开始");
+		logger.debug("缓存刷新开始");
 		Long start = System.currentTimeMillis();
 		if(StrUtil.isNotBlank(token)) {
 			TokenInfo ti = JSONUtil.toBean(token, TokenInfo.class);
 			this.refreshCache(ti, "/");
 		}
-		logger.info("缓存刷新完成，耗时："+(System.currentTimeMillis()-start)+"毫秒，缓存"+Constants.timedCache.size()+"个对象");
+		logger.debug("缓存刷新完成，耗时："+(System.currentTimeMillis()-start)+"毫秒，缓存"+Constants.timedCache.size()+"个对象");
 	}
 	
 	private void refreshCache(TokenInfo ti, String path) {
@@ -311,11 +317,12 @@ public class XService {
 						if(itemId != null) {
 							task.setItemId(itemId);
 							task.setStatus(2);
+							task.setUploadSize(length);//下载完成
 						}else {
 							task.setStatus(1);
+							task.setUploadSize(uploadInfo.getEnd());
 						}
 						Long du = (System.currentTimeMillis() - start)/1000;//秒
-						task.setUploadSize(uploadInfo.getLength());
 						task.setSpeed(CommonUtil.getFormatSize(NumberUtil.div(length+"", du+"").doubleValue())+"/S");
 						Constants.uploadRecordCache.put(remote+"/"+subPath, task);
 					}
@@ -353,5 +360,23 @@ public class XService {
 		Task task = ((Task)Constants.uploadRecordCache.get(path));
 		task.setStatus(4);
 		Constants.uploadRecordCache.put(path, task);
+	}
+
+	public boolean reset() {
+		InputStream stream = getClass().getClassLoader().getResourceAsStream("data/"+dataType.toLowerCase() + "_init.sql");
+		File targetFile = new File(dataType.toLowerCase() + "_init.sql");
+		FileUtil.writeFromStream(stream, targetFile);
+		List<String> sqls = FileUtil.readLines(targetFile, Charset.forName("UTF-8"));
+		try {
+			Db.use(ds).execute("delete from config");
+		} catch (SQLException e) {
+			logger.error(e.getMessage(), e);
+		}
+		logger.debug(dataType + "初始化成功，影响行数：" + this.execBatch(sqls));
+		Constants.timedCache.clear();
+		Constants.uploadRecordCache.clear();
+		Constants.tokenCache.clear();
+		Constants.globalConfig = this.getConfigMap();
+		return true;
 	}
 }

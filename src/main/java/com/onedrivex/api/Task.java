@@ -18,6 +18,7 @@ public class Task {
 	
 	private long uploadSize;//上传大小
 	
+	@SuppressWarnings("unused")
 	private String percent;//百分比
 	
 	private String speed;//速度

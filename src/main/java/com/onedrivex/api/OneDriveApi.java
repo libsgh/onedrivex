@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.onedrivex.util.CommonUtil;
 import com.onedrivex.util.Constants;
 
@@ -30,8 +32,12 @@ public class OneDriveApi {
         return api;
 	}
 	
-	public String oauth2(String cliendId, String redirectUri) {
-		return String.format("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=%s&scope=%s&response_type=code&redirect_uri=%s", cliendId, Constants.scope, URLUtil.encode(redirectUri));
+	public String oauth2(String cliendId, String redirectUri, String host, String state) {
+		if(!host.equals("localhost")) {
+			return String.format("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=%s&scope=%s&response_type=code&redirect_uri=%s&state=%s", cliendId, Constants.scope, URLUtil.encode(redirectUri), URLUtil.encode(state));
+		}else {
+			return String.format("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=%s&scope=%s&response_type=code&redirect_uri=%s", cliendId, Constants.scope, URLUtil.encode(redirectUri));
+		}
 	}
 	public String quickStartRegUrl(String redirectUri) {
 		String ru = "https://developer.microsoft.com/en-us/graph/quick-start?appID=_appId_&appName=_appName_&redirectUrl="+redirectUri+"&platform=option-php";

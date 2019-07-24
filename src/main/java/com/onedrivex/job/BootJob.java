@@ -40,7 +40,7 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 	
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent cre) {
-			//1. 初始化数据库
+			//初始化数据库
 			InputStream stream = getClass().getClassLoader().getResourceAsStream("data/"+dataType.toLowerCase() + "_init.sql");
 			File targetFile = new File(dataType.toLowerCase() + "_init.sql");
 			FileUtil.writeFromStream(stream, targetFile);

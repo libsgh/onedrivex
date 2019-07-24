@@ -19,6 +19,7 @@
     <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white" mdui-drawer="{target: '#main-drawer', swipe: true}"><i class="mdui-icon material-icons">menu</i></span>
     <a href="./" target="_blank" class="mdui-typo-headline mdui-hidden-xs">onedrive-x</a>
     <div class="mdui-toolbar-spacer"></div>
+    <a href="${ctx}/admin/reset" onclick="return reset();"><i class="mdui-icon material-icons">&#xe8ba;</i> 重置</a>
     <a href="${ctx}/logout"><i class="mdui-icon material-icons">&#xe8ac;</i> 登出</a>
   </div>
 </header>
@@ -69,6 +70,14 @@
 <script>
 	$("a[href='${springMacroRequestContext.getRequestUri()}']").addClass("mdui-text-color-blue");
     <#if message??>mdui.snackbar({message: '${message}'});</#if>
+    function reset(){
+	    mdui.confirm("此操作会重置所有配置并需要重新安装，请谨慎使用",  function(){
+		    return true;
+	    },
+	    function(){
+		    return false;
+	    }, {"confirmText":"确认","cancelText":"取消","history":false});
+    }
 </script>
 </body>
 

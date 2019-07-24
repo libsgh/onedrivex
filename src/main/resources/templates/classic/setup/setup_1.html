@@ -33,7 +33,8 @@
 				<div class="mdui-textfield"> 
 			  		<i class="mdui-icon material-icons"></i> 
 					<label class="mdui-textfield-label">重定向url(站点访问地址+authRedirect)</label>
-			  		<input id="redirectUri" type="text" class="mdui-textfield-input" name="redirectUri" required="" value="${redirectUri!}" /> 
+			  		<input id="localAuthUri" type="hidden" class="mdui-textfield-input" name="localAuthUri" required="" value="" /> 
+			  		<input type="text" class="mdui-textfield-input" name="redirectUri" disabled value="${redirectUri!}" /> 
 			  		<div class="mdui-textfield-error">
 			   			重定向URL不能为空
 			  		</div> 
@@ -49,9 +50,7 @@
 			var pathName = window.location.pathname;
 			var pos = curWwwPath.indexOf(pathName);
 			var localhostPath = curWwwPath.substring(0,pos);
-			if('${redirectUri!}'==''){
-				document.getElementById("redirectUri").value = localhostPath+"/authRedirect";
-			}
+			document.getElementById("localAuthUri").value = localhostPath+"/authRedirect";
 	    }
 	</script>
 </@main.setup>
