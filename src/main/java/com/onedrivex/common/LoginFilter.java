@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @WebFilter(filterName = "sessionFilter",urlPatterns = {"/admin","/admin/*"})
-public class loginFilter implements Filter{
+public class LoginFilter implements Filter{
 	
 	String NO_LOGIN = "您还未登录";
 	

@@ -5,20 +5,21 @@
 <@main.nexmoe>
 <div class="mdui-container-fluid">
     <div class="nexmoe-item">
-	<img class="mdui-img-fluid mdui-center" src="${item.downloadUrl}" />
-	<br>
-	<div class="mdui-typo">
-		<div class="mdui-m-t-2 mdui-m-b-1">
-			<label class="mdui-text-color-black-secondary">下载地址：</label>
-			<code class="js-icon-code-copy" data-clipboard-text="${realUrl}" mdui-tooltip="{content: '点击复制'}">${realUrl}</code>
-		</div>
-		<div class="mdui-m-t-3 mdui-m-b-1">
-			<label class="mdui-text-color-black-secondary">HTML 引用地址：</label>
-			<code class="js-icon-code-copy" data-clipboard-text="<img src=&quot;${realUrl}&quot; />" mdui-tooltip="{content: '点击复制'}">&lt;img src="${realUrl}" /&gt;</code>
-		</div>
-		<div class="mdui-m-t-4 mdui-m-b-1">
-			<label class="mdui-text-color-black-secondary">Markdown 引用地址：</label>
-			<code class="js-icon-code-copy" data-clipboard-text="![](${realUrl})" mdui-tooltip="{content: '点击复制'}">![](${realUrl})</code>
+		<img class="mdui-img-fluid mdui-center" src="${item.downloadUrl}" />
+		<br>
+		<div class="mdui-typo">
+			<div class="mdui-m-t-2 mdui-m-b-1">
+				<label class="mdui-text-color-black-secondary">下载地址：</label>
+				<code class="js-icon-code-copy" data-clipboard-text="${realUrl}" mdui-tooltip="{content: '点击复制'}">${realUrl}</code>
+			</div>
+			<div class="mdui-m-t-3 mdui-m-b-1">
+				<label class="mdui-text-color-black-secondary">HTML 引用地址：</label>
+				<code class="js-icon-code-copy" data-clipboard-text="<img src=&quot;${realUrl}&quot; />" mdui-tooltip="{content: '点击复制'}">&lt;img src="${realUrl}" /&gt;</code>
+			</div>
+			<div class="mdui-m-t-4 mdui-m-b-1">
+				<label class="mdui-text-color-black-secondary">Markdown 引用地址：</label>
+				<code class="js-icon-code-copy" data-clipboard-text="![](${realUrl})" mdui-tooltip="{content: '点击复制'}">![](${realUrl})</code>
+			</div>
 		</div>
 	</div>
 </div>

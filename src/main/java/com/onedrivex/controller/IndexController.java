@@ -1,11 +1,19 @@
 package com.onedrivex.controller;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -262,6 +270,38 @@ public class IndexController {
         }
 	}
 	
+	@RequestMapping("/pdfViewer")
+	public void pdfViewer(HttpServletResponse res, String path) throws IOException {
+		Item item = (Item)Constants.timedCache.get(Constants.fileCachePrefix+path);
+		File file = new File(item.getName());
+		HttpUtil.downloadFile(item.getDownloadUrl(), file);
+		Path p = Paths.get(file.getAbsolutePath()); 
+	    res.setHeader("content-type",  Files.probeContentType(p));
+	    res.setContentLengthLong(file.length());
+	    byte[] buff = new byte[1024];
+	    BufferedInputStream bis = null;
+	    OutputStream os = null;
+	    try {
+	      os = res.getOutputStream();
+	      bis = new BufferedInputStream(new FileInputStream(file));
+	      int i = bis.read(buff);
+	      while (i != -1) {
+	        os.write(buff, 0, buff.length);
+	        os.flush();
+	        i = bis.read(buff);
+	      }
+	    } catch (IOException e) {
+	      e.printStackTrace();
+	    } finally {
+	      if (bis != null) {
+	        try {
+	          bis.close();
+	        } catch (IOException e) {
+	          e.printStackTrace();
+	        }
+	      }
+	    }
+	}
 	@RequestMapping("/**")
 	public String index(Model model, HttpServletRequest request, HttpServletResponse response, Integer t, String password) {
 		String parentPath = CommonUtil.getParentPath(request.getRequestURI());
