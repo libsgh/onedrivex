@@ -1,0 +1,19 @@
+<#-- 引入布局指令的命名空间 -->
+<#import "../layout.html" as main>
+<#assign ctx=req.getContextPath()>
+<#-- 调用布局指令 -->
+<@main.material>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.js"></script>
+<div class="mdui-container-fluid">
+	<div id="pdfViewer" class="mdui-center" style="height: 800px"></div>
+	<br>
+	<div class="mdui-typo">
+		<div class="mdui-m-t-2 mdui-m-b-1">
+			<label class="mdui-text-color-black-secondary">下载地址：</label>
+			<code class="js-icon-code-copy" data-clipboard-text="${realUrl}" mdui-tooltip="{content: '点击复制'}">${realUrl}</code>
+		</div>
+	</div>
+</div>
+<a href="${item.downloadUrl}" class="mdui-fab mdui-fab-fixed mdui-ripple mdui-color-theme-accent" style="z-index:99;"><i class="mdui-icon material-icons">file_download</i></a>
+<script>PDFObject.embed("${ctx}/pdfViewer?path=${item.path}", "#pdfViewer");</script>
+</@main.material>
