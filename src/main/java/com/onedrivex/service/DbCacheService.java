@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import com.alibaba.druid.pool.DruidDataSource;
 
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.io.LineHandler;
+import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.Db;
 import cn.hutool.db.Entity;
@@ -109,12 +111,18 @@ public class DbCacheService {
 	public void init() {
 		//初始化缓存数据库
 		InputStream stream = getClass().getClassLoader().getResourceAsStream("data/cache_sqlite_init.sql");
-		String sql = IoUtil.read(stream, Charset.forName("UTF-8"));
-		String[] sqls = sql.split("\n");
+		List<String> list = new ArrayList<String>();
+		IoUtil.readLines(stream, Charset.forName("UTF-8"), new LineHandler() {
+			@Override
+			public void handle(String line) {
+				list.add(line);
+			}
+		});
 		int count = 0;
 		try {
-			for (String s : sqls) {
-				count += Db.use(cds).execute(s);
+			for (String sql : list) {
+				Console.log(sql);
+				count += Db.use(cds).execute(sql);
 			}
 		} catch (Exception e) {
 		}

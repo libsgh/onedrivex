@@ -29,6 +29,7 @@ import com.onedrivex.util.SplitFile;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.io.LineHandler;
 import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
@@ -63,15 +64,18 @@ public class XService {
 	 */
 	public void init() {
 		InputStream stream = getClass().getClassLoader().getResourceAsStream("data/"+dataType.toLowerCase() + "_init.sql");
-		String sql = IoUtil.read(stream, Charset.forName("UTF-8"));
-		Console.log(sql);
-		String[] sqls = sql.split("\n");
-		Console.log(sqls);
+		List<String> list = new ArrayList<String>();
+		IoUtil.readLines(stream, Charset.forName("UTF-8"), new LineHandler() {
+			@Override
+			public void handle(String line) {
+				list.add(line);
+			}
+		});
 		int count = 0;
 		try {
-			for (String s : sqls) {
-				Console.log(s);
-				count += Db.use(ds).execute(s);
+			for (String sql : list) {
+				Console.log(sql);
+				count += Db.use(ds).execute(sql);
 			}
 		} catch (Exception e) {
 		}
