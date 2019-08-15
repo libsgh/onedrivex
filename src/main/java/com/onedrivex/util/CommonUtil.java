@@ -69,19 +69,22 @@ public class CommonUtil {
 		String ext = StrUtil.subAfter(name, ".", true).toLowerCase();
 		if(StrUtil.equalsAny(ext, new String[] {"7z","txt","ai","avi","eps","exe","flv",
 				"gif","mov","html","mp4","pdf","mp3","png","psd","rar","svg","swf","rp",
-				"tif","jpg","tar","xsl","zip","js","json","csv"})) {
+				"tif","jpg","tar","xsl","zip","js","json","csv","mkv"})) {
 			return "<i class=\"mdui-icon iconfont icon-file_"+ext+"\"></i>";
 		}
 		if(StrUtil.equalsAny(ext, new String[] {"bmp","jpg","jpeg","png","gif"})) {
-			return "<i class=\"mdui-icon material-icons mdui-text-color-theme-icon\">image</i>";
+			return "<i class=\"mdui-icon iconfont icon-file_image\"></i>";
+			//return "<i class=\"mdui-icon material-icons mdui-text-color-theme-icon\">image</i>";
 		}else if(StrUtil.equalsAny(ext, new String[] {"mp4","mkv","webm","avi","mpg", "mpeg", "rm", "rmvb", "mov", "wmv", "mkv", "asf"})) {
-			return "<i class=\"mdui-icon material-icons mdui-text-color-theme-icon\">ondemand_video</i>";
+			return "<i class=\"mdui-icon iconfont icon-file_video\"></i>";
+			//return "<i class=\"mdui-icon material-icons mdui-text-color-theme-icon\">ondemand_video</i>";
 		}else if(StrUtil.equalsAny(ext, new String[] {"ogg","mp3","wav"})) {
-			return "<i class=\"mdui-icon material-icons mdui-text-color-theme-icon\">audiotrack</i>";
+			return "<i class=\"mdui-icon iconfont icon-file_audio\"></i>";
+			//return "<i class=\"mdui-icon material-icons mdui-text-color-theme-icon\">audiotrack</i>";
 		}else if(StrUtil.equalsAny(ext, new String[] {"pdf"})) {
 			return "<i class=\"mdui-icon material-icons mdui-text-color-theme-icon\">picture_as_pdf</i>";
 		}else if(StrUtil.containsAny(ext, "html","htm","php","css","go","java","js","json","txt","sh","md")) {
-			return "<i class=\"mdui-icon material-icons mdui-text-color-theme-icon\">code</i>";
+			return "<i class=\"mdui-icon iconfont icon-file_code\"></i>";
 		}else if(StrUtil.containsAny(ext, "doc","docx")) {
 			return "<i class=\"mdui-icon iconfont icon-file_doc\"></i>";
 		}else if(StrUtil.containsAny(ext, "ppt", "pptx")) {
