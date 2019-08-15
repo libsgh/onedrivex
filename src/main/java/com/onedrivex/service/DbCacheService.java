@@ -1,7 +1,9 @@
 package com.onedrivex.service;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -107,14 +109,17 @@ public class DbCacheService {
 	public void init() {
 		//初始化缓存数据库
 		InputStream stream = getClass().getClassLoader().getResourceAsStream("data/cache_sqlite_init.sql");
-		String sql = IoUtil.read(stream, "UTF-8");
-		int c = 0;
+		List<String> sqls = new ArrayList<String>();
+		IoUtil.readLines(stream, Charset.forName("UTF-8"), sqls);
+		int count = 0;
 		try {
-			c = Db.use(cds).execute(sql);
-		} catch (SQLException e) {
+			for (String sql : sqls) {
+				count += Db.use(cds).execute(sql);
+			}
+		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
-		logger.info("缓存sqlite初始化成功，影响行数：" + c);
+		logger.info("缓存sqlite初始化成功，影响行数：" + count);
 		
 	}
 	public String getStrByKey(String key) {

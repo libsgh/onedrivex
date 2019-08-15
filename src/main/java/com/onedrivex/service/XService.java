@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,11 +62,13 @@ public class XService {
 	 */
 	public void init() {
 		InputStream stream = getClass().getClassLoader().getResourceAsStream("data/"+dataType.toLowerCase() + "_init.sql");
-		String sql = IoUtil.read(stream, Charset.forName("UTF-8"));
-		System.out.println(sql);
+		List<String> sqls = new ArrayList<String>();
+		IoUtil.readLines(stream, Charset.forName("UTF-8"), sqls);
 		int count = 0;
 		try {
-			count = Db.use(ds).execute(sql);
+			for (String sql : sqls) {
+				count += Db.use(ds).execute(sql);
+			}
 		} catch (Exception e) {
 		}
 		logger.info(dataType + "初始化成功，影响行数：" + count);
