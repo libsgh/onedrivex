@@ -119,12 +119,11 @@ public class DbCacheService {
 			}
 		});
 		int count = 0;
-		try {
-			for (String sql : list) {
-				Console.log(sql);
+		for (String sql : list) {
+			try {
 				count += Db.use(cds).execute(sql);
+			} catch (Exception e) {
 			}
-		} catch (Exception e) {
 		}
 		logger.info("缓存sqlite初始化成功，影响行数：" + count);
 		
