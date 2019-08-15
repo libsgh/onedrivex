@@ -1,9 +1,5 @@
 package com.onedrivex.job;
 
-import java.io.File;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -14,10 +10,10 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 
+import com.onedrivex.service.DbCacheService;
 import com.onedrivex.service.XService;
 import com.onedrivex.util.Constants;
 
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.task.Task;
@@ -34,18 +30,17 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 	@Autowired
 	private XService servive;
 	
+	@Autowired
+	private DbCacheService cacheServive;
+	
 	public boolean flag = false;
 	
 	public boolean u_flag = false;
 	
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent cre) {
-			//初始化数据库
-			InputStream stream = getClass().getClassLoader().getResourceAsStream("data/"+dataType.toLowerCase() + "_init.sql");
-			File targetFile = new File(dataType.toLowerCase() + "_init.sql");
-			FileUtil.writeFromStream(stream, targetFile);
-			List<String> sqls = FileUtil.readLines(targetFile, Charset.forName("UTF-8"));
-			logger.info(dataType + "初始化成功，影响行数：" + servive.execBatch(sqls));
+			servive.init();
+			cacheServive.init();
 			Map<String, String> configMap = servive.getConfigMap();
 			Constants.globalConfig = configMap;
 			String cron = configMap.get("refreshTokenCron");//令牌刷新cron
@@ -64,7 +59,7 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			    }
 			});
 			if(StrUtil.isNotBlank(hkaa)) {
-				CronUtil.schedule(hkac, new Task() {
+				Constants.herokuTaskId = CronUtil.schedule(hkac, new Task() {
 					@Override
 					public void execute() {
 						try {
@@ -97,7 +92,7 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 					}
 				}
 			});
-			Constants.timedCache.schedulePrune(Long.parseLong(configMap.get("cacheExpireTime"))*1000);
+			//Constants.timedCache.schedulePrune(Long.parseLong(configMap.get("cacheExpireTime"))*1000);
 			CronUtil.schedule("0 0/1 * * * ?", new Task() {
 				@Override
 				public void execute() {

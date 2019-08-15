@@ -19,6 +19,8 @@ import org.springframework.util.unit.DataSize;
 import com.alibaba.druid.pool.DruidDataSource;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.db.DbUtil;
+import cn.hutool.log.level.Level;
 
 @SpringBootApplication
 @EnableCaching
@@ -52,6 +54,20 @@ public class App {
 		return ds;
 	}
 	
+	@Bean("cache")
+	public DruidDataSource getCacheDtaSource() {
+		DruidDataSource ds = new DruidDataSource();
+		ApplicationHome h = new ApplicationHome(getClass());
+        File jarF = h.getSource();
+        String path = jarF.getParentFile().toString() + "/data";
+        if(!FileUtil.exist(path)) {
+        	FileUtil.mkdir(path);
+        }
+		ds.setDriverClassName("org.sqlite.JDBC");
+		ds.setUrl("jdbc:sqlite:"+path+"/cache.db");
+		return ds;
+	}
+	
 	@Bean
     public MultipartConfigElement multipartConfigElement() {
         MultipartConfigFactory factory = new MultipartConfigFactory();
@@ -63,6 +79,7 @@ public class App {
     }
 	
 	public static void main(String[] args) {
+		//DbUtil.setShowSqlGlobal(true, true, true, Level.INFO);
 		SpringApplication.run(App.class, args);
 	}
 

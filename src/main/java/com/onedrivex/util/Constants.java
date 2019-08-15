@@ -23,7 +23,7 @@ public class Constants {
 	
 	public static Map<String, String> globalConfig = new ConcurrentHashMap<String, String>();
 	
-	public static TimedCache<String, Object> timedCache = CacheUtil.newTimedCache(-1);
+	//public static TimedCache<String, Object> timedCache = CacheUtil.newTimedCache(-1);
 	
 	public static TimedCache<String, Object> uploadRecordCache = CacheUtil.newTimedCache(3600000);
 	
@@ -36,5 +36,7 @@ public class Constants {
 	public static String refreshCacheTaskId = "";
 	
 	public static long splitFileSize = 16384000;
+
+	public static String herokuTaskId = "";
 	
 }

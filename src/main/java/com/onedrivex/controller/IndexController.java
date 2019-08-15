@@ -39,6 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.onedrivex.api.Item;
 import com.onedrivex.api.OneDriveApi;
 import com.onedrivex.api.TokenInfo;
+import com.onedrivex.service.DbCacheService;
 import com.onedrivex.service.XService;
 import com.onedrivex.util.CommonUtil;
 import com.onedrivex.util.Constants;
@@ -59,6 +60,9 @@ public class IndexController {
 	private OneDriveApi api = OneDriveApi.getInstance();
 	
 	private AntPathMatcher urlMatcher = new AntPathMatcher();
+	
+	@Autowired
+	private DbCacheService cacheService;
 	
 	@Autowired
 	private XService servive;
@@ -103,6 +107,22 @@ public class IndexController {
 	}
 	
 	/**
+	 * 文件展示设置
+	 * @param model
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/admin/show")
+	public String show(Model model, HttpServletRequest request, @RequestParam(required = false) Map<String, String> config) {
+		if(config.size() > 0) {
+			servive.updateConfig(config);
+			model.addAttribute("message", "修改成功");
+		}
+		model.addAttribute("config", Constants.globalConfig);
+		return "admin/show";
+	}
+	
+	/**
 	 * 系统管理（缓存设置）
 	 * @param model
 	 * @return
@@ -126,7 +146,7 @@ public class IndexController {
 				}
 			});
 			CronUtil.restart();
-			Constants.timedCache.schedulePrune(Long.parseLong(Constants.globalConfig.get("cacheExpireTime"))*1000);
+			//Constants.timedCache.schedulePrune(Long.parseLong(Constants.globalConfig.get("cacheExpireTime"))*1000);
 			model.addAttribute("message", "修改成功");
 		}
 		model.addAttribute("config", Constants.globalConfig);
@@ -140,7 +160,7 @@ public class IndexController {
 	@RequestMapping("/admin/clearCache")
 	@ResponseBody
 	public String clearCache() {
-		Constants.timedCache.clear();
+		cacheService.clear();
 		return "缓存清空成功";
 	}
 	
@@ -269,7 +289,7 @@ public class IndexController {
 	}
 	@RequestMapping("/pdfViewer")
 	public void pdfViewer(HttpServletResponse res, String path) throws IOException {
-		Item item = (Item)Constants.timedCache.get(Constants.fileCachePrefix+path);
+		Item item = cacheService.getOneByKey(Constants.fileCachePrefix+path, Item.class);
 		File file = new File(item.getName());
 		HttpUtil.downloadFile(item.getDownloadUrl(), file);
 		Path p = Paths.get(file.getAbsolutePath()); 

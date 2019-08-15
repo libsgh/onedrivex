@@ -26,12 +26,14 @@ import com.onedrivex.util.CommonUtil;
 import com.onedrivex.util.Constants;
 import com.onedrivex.util.SplitFile;
 
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.cron.CronUtil;
 import cn.hutool.db.Db;
 import cn.hutool.db.Entity;
+import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -46,6 +48,9 @@ public class XService {
 	@Autowired
 	private DruidDataSource ds;
 	
+	@Autowired
+	private DbCacheService cacheService;
+	
 	@Value("${DATA_TYPE:sqlite}")
 	private String dataType;
 	
@@ -54,15 +59,15 @@ public class XService {
 	 * @param sqls
 	 * @return
 	 */
-	public int execBatch(List<String> sqls) {
+	public void init() {
+		InputStream stream = getClass().getClassLoader().getResourceAsStream("data/"+dataType.toLowerCase() + "_init.sql");
+		String sql = IoUtil.read(stream, Charset.forName("UTF-8"));
 		int count = 0;
-		for (String sql : sqls) {
-			try {
-				count += Db.use(ds).execute(sql);
-			} catch (Exception e) {
-			}
+		try {
+			count = Db.use(ds).execute(sql);
+		} catch (Exception e) {
 		}
-		return count;
+		logger.info(dataType + "初始化成功，影响行数：" + count);
 	}
 	
 	/*
@@ -149,14 +154,13 @@ public class XService {
 	}
 	
 	//@Cacheable(key="#path", value="dir")
-	@SuppressWarnings("unchecked")
 	public List<Item> getDir(TokenInfo tokenInfo, String path, Boolean isThumbnail){
-		List<Item> list = (List<Item>)Constants.timedCache.get(Constants.dirCachePrefix+path);
+		List<Item> list = cacheService.getListByKey(Constants.dirCachePrefix+path, Item.class);
 		if(list != null) {
 			logger.debug("从缓存中读取文件夹数据\t{}", Constants.dirCachePrefix+path);
 		}else{
 			list = api.getDir(tokenInfo, path);
-			Constants.timedCache.put(Constants.dirCachePrefix+path, list);
+			cacheService.put(Constants.dirCachePrefix+path, list);
 		}
 		if(isThumbnail) {
 			list = list.parallelStream().map(r->{
@@ -174,23 +178,23 @@ public class XService {
 	}
 	
 	public Item getFile(TokenInfo tokenInfo, String path){
-		Item item = (Item)Constants.timedCache.get(Constants.fileCachePrefix+path);
+		Item item = cacheService.getOneByKey(Constants.fileCachePrefix+path, Item.class);
 		if(item != null) {
 			logger.debug("从缓存中读取文件数据\t{}", Constants.fileCachePrefix+path);
 		}else{
 			item = api.getFile(tokenInfo, path);
-			Constants.timedCache.put(Constants.fileCachePrefix+path, item);
+			cacheService.put(Constants.fileCachePrefix+path, item);
 		}
 		return item;
 	}
 	
 	public List<Item> refreshDirCache(TokenInfo ti, String path){
 		List<Item> list = api.getDir(ti, path);
-		list.stream().parallel().forEach(r->{
-			Constants.timedCache.put(Constants.fileCachePrefix+r.getPath(), r);
+		list.stream().parallel().forEach(r -> {
+			cacheService.put(Constants.fileCachePrefix+r.getPath(), r);
 		});
 		//logger.info("刷新缓存："+ path);
-		Constants.timedCache.put(Constants.dirCachePrefix+path, list);
+		cacheService.put(Constants.dirCachePrefix+path, list);
 		return list;
 	}
 	
@@ -208,7 +212,7 @@ public class XService {
 			TokenInfo ti = JSONUtil.toBean(token, TokenInfo.class);
 			this.refreshCache(ti, "/");
 		}
-		logger.debug("缓存刷新完成，耗时："+(System.currentTimeMillis()-start)+"毫秒，缓存"+Constants.timedCache.size()+"个对象");
+		logger.debug("缓存刷新完成，耗时："+(System.currentTimeMillis()-start)+"毫秒，缓存"+cacheService.getCount()+"个对象");
 	}
 	
 	private void refreshCache(TokenInfo ti, String path) {
@@ -221,12 +225,12 @@ public class XService {
 	}
 
 	public Object getReadme(TokenInfo ti, String path) {
-		String c = (String)Constants.timedCache.get(Constants.contentCachePrefix+path);
+		String c = cacheService.getStrByKey(Constants.contentCachePrefix+path);
 		if(StrUtil.isNotBlank(c)) {
 			return c;
 		}else {
 			c = HttpUtil.downloadString(this.getFile(ti, path).getDownloadUrl(), "UTF-8");
-			Constants.timedCache.put(Constants.contentCachePrefix+path, c);
+			cacheService.put(Constants.contentCachePrefix+path, c);
 		}
 		return c;
 	}
@@ -267,6 +271,24 @@ public class XService {
 			}
 			return 0;
 		}).collect(Collectors.summingInt(r->r));
+		String hkaa = config.get("herokuKeepAliveAddress");//heroku防休眠地址
+		String hkac = config.get("herokuKeepAliveCron");//heroku防休眠cron
+		if(StrUtil.isNotBlank(hkaa) || StrUtil.isNotBlank(hkac)) {
+			CronUtil.remove(Constants.herokuTaskId);
+			Constants.herokuTaskId = CronUtil.schedule(hkac, new cn.hutool.cron.task.Task() {
+				@Override
+				public void execute() {
+					try {
+						int statusCode = HttpRequest.get(hkaa).execute().getStatus();
+						if(logger.isDebugEnabled()) {
+							logger.debug("heroku防休眠>>>状态码："+statusCode);
+						}
+					} catch (Exception e) {
+						logger.error(e.getMessage(), e);
+					}
+				}
+			});
+		}
 		if(c > 0) {
 			//更新全局变量
 			Constants.globalConfig = this.getConfigMap();
@@ -364,17 +386,13 @@ public class XService {
 	}
 
 	public boolean reset() {
-		InputStream stream = getClass().getClassLoader().getResourceAsStream("data/"+dataType.toLowerCase() + "_init.sql");
-		File targetFile = new File(dataType.toLowerCase() + "_init.sql");
-		FileUtil.writeFromStream(stream, targetFile);
-		List<String> sqls = FileUtil.readLines(targetFile, Charset.forName("UTF-8"));
 		try {
 			Db.use(ds).execute("delete from config");
 		} catch (SQLException e) {
 			logger.error(e.getMessage(), e);
 		}
-		logger.debug(dataType + "初始化成功，影响行数：" + this.execBatch(sqls));
-		Constants.timedCache.clear();
+		this.init();
+		cacheService.clear();
 		Constants.uploadRecordCache.clear();
 		Constants.tokenCache.clear();
 		Constants.globalConfig = this.getConfigMap();

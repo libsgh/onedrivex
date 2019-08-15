@@ -21,7 +21,6 @@ import com.onedrivex.api.CodeType;
 import com.onedrivex.api.Item;
 import com.onedrivex.api.TokenInfo;
 
-import cn.hutool.core.lang.Console;
 import cn.hutool.core.text.StrSpliter;
 import cn.hutool.core.util.EscapeUtil;
 import cn.hutool.core.util.StrUtil;
@@ -153,20 +152,21 @@ public class CommonUtil {
 		if(t != null) {
 			return "redirect:"+ StrUtil.subBefore(item.getThumb(), "&width=", true)+"&width="+t+"&height="+t;
 		}
-		if(item.getFileType().equals("video")
-				|| item.getFileType().equals("audio")
-				|| item.getFileType().equals("image")) {
-			return theme+"/show/"+item.getFileType();
-		}else if(StrUtil.containsAny(item.getExt(),"html","htm","php","css","go","java","js","json","txt","sh","md")) {
+		if(StrUtil.containsAny(item.getExt(), Constants.globalConfig.get("showVideo").split(" "))) {
+			return theme+"/show/video";
+		}else if(StrUtil.containsAny(item.getExt(), Constants.globalConfig.get("showAudio").split(" "))) {
+			return theme+"/show/audio";
+		}else if(StrUtil.containsAny(item.getExt(), Constants.globalConfig.get("showImage").split(" "))) {
+			return theme+"/show/image";
+		}else if(StrUtil.containsAny(item.getExt(), Constants.globalConfig.get("showCode").split(" "))) {
 			String content = HttpUtil.downloadString(item.getDownloadUrl(), "UTF-8");
 			model.addAttribute("codeType",CodeType.get(item.getExt()));
 			model.addAttribute("content", EscapeUtil.escapeHtml4(content));
 			return theme+"/show/code";
-		}else if(StrUtil.containsAny(item.getExt(),"pdf")) {
+		}else if(StrUtil.containsAny(item.getExt(), Constants.globalConfig.get("showDoc").split(" "))) {
 			return theme+"/show/pdf";
-		}else if(StrUtil.containsAny(item.getExt(),"doc", "docx", "ppt", "pptx", "xls", "xlsx")) {
+		}else if(StrUtil.containsAny(item.getExt(), Constants.globalConfig.get("showDoc").split(" "))) {
 			String onlineViewUrl = "https://view.officeapps.live.com/op/view.aspx?src=" + URLUtil.encode(request.getRequestURL().toString());
-			Console.log(onlineViewUrl);
 			return "redirect:" + onlineViewUrl;
 		}
 		return "redirect:" + item.getDownloadUrl();

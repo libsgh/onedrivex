@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS "cache" ("key" text NOT NULL,"value" text NOT NULL,PRIMARY KEY ("key"));

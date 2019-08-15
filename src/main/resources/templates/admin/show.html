@@ -1,0 +1,41 @@
+<#-- 引入布局指令的命名空间 -->
+<#import "layout.html" as main>
+<#assign ctx=req.getContextPath()>
+<#-- 调用布局指令 -->
+<@main.admin>
+<div class="mdui-container-fluid">
+
+	<div class="mdui-typo">
+	  <h1> 文件展示设置 <small>根据不同后缀进行展示。无设置后缀，直连下载</small></h1>
+	</div>
+	<form action="" method="post">
+		<div class="mdui-textfield">
+		  <h4>图片(image)</h4>
+		  <input class="mdui-textfield-input" type="text" name="showImage" value="${config['showImage']}" />
+		</div>
+		<div class="mdui-textfield">
+		  <h4>Dplayer 视频(video)</h4>
+		  <input class="mdui-textfield-input" type="text" name="showVideo" value="${config['showVideo']}" />
+		</div>
+		<div class="mdui-textfield">
+		  <h4>音频播放(audio)</h4>
+		  <input class="mdui-textfield-input" type="text" name="showAudio" value="${config['showAudio']}" />
+		</div>
+		<div class="mdui-textfield">
+		  <h4>文本/代码(code)</h4>
+		  <input class="mdui-textfield-input" type="text" name="showCode" value="${config['showCode']}" />
+		</div>
+		<div class="mdui-textfield">
+		  <h4>文档(doc)</h4>
+		  <input class="mdui-textfield-input" type="text" name="showDoc" value="${config['showDoc']}" />
+		</div>
+		<div class="mdui-textfield">
+		  <h4>pdf</h4>
+		  <input class="mdui-textfield-input" type="text" name="showPdf" value="${config['showPdf']}" />
+		</div>
+	   <button type="submit" class="mdui-btn mdui-color-theme-accent mdui-ripple mdui-float-right">
+	   	<i class="mdui-icon material-icons">&#xe161;</i> 保存
+	   </button>
+	</form>
+</div>
+</@main.admin>
