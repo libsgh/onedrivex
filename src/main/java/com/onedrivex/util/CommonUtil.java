@@ -79,17 +79,13 @@ public class CommonUtil {
 			return "<i class=\"mdui-icon material-icons mdui-text-color-theme-icon\">audiotrack</i>";
 		}else if(StrUtil.equalsAny(ext, new String[] {"pdf"})) {
 			return "<i class=\"mdui-icon material-icons mdui-text-color-theme-icon\">picture_as_pdf</i>";
-		}else if(StrUtil.containsAny(ext,
-				new String[] {"html","htm","php","css","go","java","js","json","txt","sh","md"})) {
+		}else if(StrUtil.containsAny(ext, "html","htm","php","css","go","java","js","json","txt","sh","md")) {
 			return "<i class=\"mdui-icon material-icons mdui-text-color-theme-icon\">code</i>";
-		}else if(StrUtil.containsAny(ext,
-				new String[] {"doc","docx"})) {
+		}else if(StrUtil.containsAny(ext, "doc","docx")) {
 			return "<i class=\"mdui-icon iconfont icon-file_doc\"></i>";
-		}else if(StrUtil.containsAny(ext,
-				new String[] {"ppt", "pptx"})) {
+		}else if(StrUtil.containsAny(ext, "ppt", "pptx")) {
 			return "<i class=\"mdui-icon iconfont icon-file_ppt\"></i>";
-		}else if(StrUtil.containsAny(ext,
-				new String[] {"xls", "xlsx"})) {
+		}else if(StrUtil.containsAny(ext, "xls", "xlsx")) {
 			return "<i class=\"mdui-icon iconfont icon-file_excel\"></i>";
 		}else{
 			return "<i class=\"mdui-icon iconfont icon-file_multiple\"></i>";
@@ -149,7 +145,7 @@ public class CommonUtil {
 		}
 	}
 
-	public static String showORedirect(Model model, Item item, String theme, TokenInfo ti, Integer t) {
+	public static String showORedirect(Model model, Item item, String theme, TokenInfo ti, Integer t, HttpServletRequest request) {
 		if(t != null) {
 			return "redirect:"+ StrUtil.subBefore(item.getThumb(), "&width=", true)+"&width="+t+"&height="+t;
 		}
@@ -157,16 +153,18 @@ public class CommonUtil {
 				|| item.getFileType().equals("audio")
 				|| item.getFileType().equals("image")) {
 			return theme+"/show/"+item.getFileType();
-		}else if(StrUtil.containsAny(item.getExt(),
-				new String[] {"html","htm","php","css","go","java","js","json","txt","sh","md"})) {
+		}else if(StrUtil.containsAny(item.getExt(),"html","htm","php","css","go","java","js","json","txt","sh","md")) {
 			String content = HttpUtil.downloadString(item.getDownloadUrl(), "UTF-8");
 			model.addAttribute("codeType",CodeType.get(item.getExt()));
 			model.addAttribute("content", EscapeUtil.escapeHtml4(content));
 			return theme+"/show/code";
 		}else if(StrUtil.containsAny(item.getExt(),"pdf")) {
 			return theme+"/show/pdf";
+		}else if(StrUtil.containsAny(item.getExt(),"doc", "docx", "ppt", "pptx", "xls", "xlsx")) {
+			String onlineViewUrl = "https://view.officeapps.live.com/op/view.aspx?src=" + URLUtil.encode(request.getRequestURL().toString());
+			return "redirect:" + onlineViewUrl;
 		}
-		return "redirect:"+item.getDownloadUrl();
+		return "redirect:" + item.getDownloadUrl();
 	}
 	
 	public static String getCookie(HttpServletRequest request, String cookieName){

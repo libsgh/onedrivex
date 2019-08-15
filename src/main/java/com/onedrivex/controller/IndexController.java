@@ -322,7 +322,7 @@ public class IndexController {
 	            if (host.equals(url.getHost())) {
 	            	if(!theme.equals("classic")) {
 	            		model.addAttribute("item", item);
-	            		return CommonUtil.showORedirect(model, item, theme, ti, t);
+	            		return CommonUtil.showORedirect(model, item, theme, ti, t, request);
 	            	}else{
 	            		//经典主题：直接下载
 	            		return "redirect:"+item.getDownloadUrl();
