@@ -109,15 +109,14 @@ public class DbCacheService {
 	public void init() {
 		//初始化缓存数据库
 		InputStream stream = getClass().getClassLoader().getResourceAsStream("data/cache_sqlite_init.sql");
-		List<String> sqls = new ArrayList<String>();
-		IoUtil.readLines(stream, Charset.forName("UTF-8"), sqls);
+		String sql = IoUtil.read(stream, Charset.forName("UTF-8"));
+		String[] sqls = sql.split("\n");
 		int count = 0;
 		try {
-			for (String sql : sqls) {
-				count += Db.use(cds).execute(sql);
+			for (String s : sqls) {
+				count += Db.use(cds).execute(s);
 			}
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
 		}
 		logger.info("缓存sqlite初始化成功，影响行数：" + count);
 		

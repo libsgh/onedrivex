@@ -62,13 +62,13 @@ public class XService {
 	 */
 	public void init() {
 		InputStream stream = getClass().getClassLoader().getResourceAsStream("data/"+dataType.toLowerCase() + "_init.sql");
-		List<String> sqls = new ArrayList<String>();
-		IoUtil.readLines(stream, Charset.forName("UTF-8"), sqls);
+		String sql = IoUtil.read(stream, Charset.forName("UTF-8"));
+		String[] sqls = sql.split("\n");
 		int count = 0;
 		try {
-			for (String sql : sqls) {
-				System.out.println(sql);
-				count += Db.use(ds).execute(sql);
+			for (String s : sqls) {
+				System.out.println(s);
+				count += Db.use(ds).execute(s);
 			}
 		} catch (Exception e) {
 		}
@@ -195,7 +195,7 @@ public class XService {
 	
 	public List<Item> refreshDirCache(TokenInfo ti, String path){
 		List<Item> list = api.getDir(ti, path);
-		list.stream().parallel().forEach(r -> {
+		list.stream().forEach(r -> {
 			cacheService.put(Constants.fileCachePrefix+r.getPath(), r);
 		});
 		//logger.info("刷新缓存："+ path);
