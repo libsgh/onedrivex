@@ -62,6 +62,7 @@ public class XService {
 	public void init() {
 		InputStream stream = getClass().getClassLoader().getResourceAsStream("data/"+dataType.toLowerCase() + "_init.sql");
 		String sql = IoUtil.read(stream, Charset.forName("UTF-8"));
+		System.out.println(sql);
 		int count = 0;
 		try {
 			count = Db.use(ds).execute(sql);

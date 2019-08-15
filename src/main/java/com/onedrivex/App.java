@@ -79,7 +79,7 @@ public class App {
     }
 	
 	public static void main(String[] args) {
-		//DbUtil.setShowSqlGlobal(true, true, true, Level.INFO);
+		DbUtil.setShowSqlGlobal(true, true, true, Level.INFO);
 		SpringApplication.run(App.class, args);
 	}
 
