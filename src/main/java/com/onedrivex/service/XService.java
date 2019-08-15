@@ -68,13 +68,13 @@ public class XService {
 		IoUtil.readLines(stream, Charset.forName("UTF-8"), new LineHandler() {
 			@Override
 			public void handle(String line) {
+				Console.log(line);
 				list.add(line);
 			}
 		});
 		int count = 0;
 		try {
 			for (String sql : list) {
-				Console.log(sql);
 				count += Db.use(ds).execute(sql);
 			}
 		} catch (Exception e) {
