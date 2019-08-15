@@ -163,7 +163,7 @@ public class CommonUtil {
 			model.addAttribute("codeType",CodeType.get(item.getExt()));
 			model.addAttribute("content", EscapeUtil.escapeHtml4(content));
 			return theme+"/show/code";
-		}else if(StrUtil.containsAny(item.getExt(), Constants.globalConfig.get("showDoc").split(" "))) {
+		}else if(StrUtil.containsAny(item.getExt(), Constants.globalConfig.get("showPdf").split(" "))) {
 			return theme+"/show/pdf";
 		}else if(StrUtil.containsAny(item.getExt(), Constants.globalConfig.get("showDoc").split(" "))) {
 			String onlineViewUrl = "https://view.officeapps.live.com/op/view.aspx?src=" + URLUtil.encode(request.getRequestURL().toString());
