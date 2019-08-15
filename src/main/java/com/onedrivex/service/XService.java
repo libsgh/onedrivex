@@ -67,6 +67,7 @@ public class XService {
 		int count = 0;
 		try {
 			for (String sql : sqls) {
+				System.out.println(sql);
 				count += Db.use(ds).execute(sql);
 			}
 		} catch (Exception e) {
