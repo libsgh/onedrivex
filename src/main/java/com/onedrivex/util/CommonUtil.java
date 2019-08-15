@@ -69,7 +69,7 @@ public class CommonUtil {
 		String ext = StrUtil.subAfter(name, ".", true).toLowerCase();
 		if(StrUtil.equalsAny(ext, new String[] {"7z","txt","ai","avi","eps","exe","flv",
 				"gif","mov","html","mp4","pdf","mp3","png","psd","rar","svg","swf","rp",
-				"tif","jpg","tar","xsl","zip","js","json","csv","mkv"})) {
+				"tif","jpg","tar","xsl","zip","js","json","csv"})) {
 			return "<i class=\"mdui-icon iconfont icon-file_"+ext+"\"></i>";
 		}
 		if(StrUtil.equalsAny(ext, new String[] {"bmp","jpg","jpeg","png","gif"})) {
