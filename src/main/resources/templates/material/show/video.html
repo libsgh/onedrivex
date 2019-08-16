@@ -28,7 +28,7 @@ const dp = new DPlayer({
 	lang:'zh-cn',
 	video: {
 	    url: '${item.downloadUrl}',
-	    pic: '${item.thumb}',
+	    pic: '<#if item.thumb??>${item.thumb}</#if>',
 	    type: 'auto'
 	}
 });

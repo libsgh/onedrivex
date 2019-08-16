@@ -150,6 +150,7 @@ public class IndexController {
 			model.addAttribute("message", "修改成功");
 		}
 		model.addAttribute("config", Constants.globalConfig);
+		model.addAttribute("refreshInfo", Constants.refreshInfo);
 		return "admin/cache";
 	}
 	

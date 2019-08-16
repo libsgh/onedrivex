@@ -27,10 +27,10 @@ import com.onedrivex.util.CommonUtil;
 import com.onedrivex.util.Constants;
 import com.onedrivex.util.SplitFile;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.io.LineHandler;
-import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.cron.CronUtil;
@@ -223,7 +223,8 @@ public class XService {
 			TokenInfo ti = JSONUtil.toBean(token, TokenInfo.class);
 			this.refreshCache(ti, "/");
 		}
-		logger.debug("缓存刷新完成，耗时："+(System.currentTimeMillis()-start)+"毫秒，缓存"+cacheService.getCount()+"个对象");
+		Constants.refreshInfo = "刷新时间："+DateUtil.now()+"，耗时："+(System.currentTimeMillis()-start)+"毫秒，缓存"+cacheService.getCount()+"个对象";
+		logger.debug(Constants.refreshInfo);
 	}
 	
 	private void refreshCache(TokenInfo ti, String path) {
@@ -284,7 +285,7 @@ public class XService {
 		}).collect(Collectors.summingInt(r->r));
 		String hkaa = config.get("herokuKeepAliveAddress");//heroku防休眠地址
 		String hkac = config.get("herokuKeepAliveCron");//heroku防休眠cron
-		if(StrUtil.isNotBlank(hkaa) || StrUtil.isNotBlank(hkac)) {
+		if(StrUtil.isNotBlank(hkaa) && StrUtil.isNotBlank(hkac)) {
 			CronUtil.remove(Constants.herokuTaskId);
 			Constants.herokuTaskId = CronUtil.schedule(hkac, new cn.hutool.cron.task.Task() {
 				@Override

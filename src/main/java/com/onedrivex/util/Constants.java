@@ -38,5 +38,7 @@ public class Constants {
 	public static long splitFileSize = 16384000;
 
 	public static String herokuTaskId = "";
+
+	public static String refreshInfo = "-";
 	
 }

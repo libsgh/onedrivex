@@ -136,5 +136,13 @@ public class DbCacheService {
 		}
 		return null;
 	}
+	public int count() {
+		try {
+			return  Db.use(cds).queryNumber("select count(*) from cache where 1=1").intValue();
+		} catch (SQLException e) {
+			logger.error(e.getMessage(), e);
+		}
+		return 0;
+	}
 	
 }

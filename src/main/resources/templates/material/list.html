@@ -33,7 +33,7 @@
 
 		<#list items as item>
 			<#if item.folder>
-				<li class="mdui-list-item mdui-ripple" data-sort data-sort-name="${item.name}" data-sort-date="${item.lastModifiedDateTime}" data-sort-size="${item.size}">
+				<li class="mdui-list-item mdui-ripple" data-sort data-sort-name="${item.name}" data-sort-date="${item.lastModifiedDateTime}" data-sort-size="${item.fileSize?c}">
 					<a href="${item.path}">
 					  <div class="mdui-col-xs-12 mdui-col-sm-7 mdui-text-truncate">
 						<i class="mdui-icon iconfont icon-file_folder"></i>
@@ -44,7 +44,7 @@
 				  	</a>
 				</li>
 			<#else>
-				<li class="mdui-list-item file mdui-ripple" data-sort data-sort-name="${item.name}" data-sort-date="${item.lastModifiedDateTime}" data-sort-size="${item.size}">
+				<li class="mdui-list-item file mdui-ripple" data-sort data-sort-name="${item.name}" data-sort-date="${item.lastModifiedDateTime}" data-sort-size="${item.fileSize?c}">
 					<a href="${item.path}" target="_blank">
 					  <div class="mdui-col-xs-12 mdui-col-sm-7 mdui-text-truncate">
 						${item.icon}

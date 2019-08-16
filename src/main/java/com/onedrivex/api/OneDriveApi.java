@@ -117,7 +117,8 @@ public class OneDriveApi {
 		}
 		String time = DateUtil.formatDateTime(DateUtil.parse(json.getStr("lastModifiedDateTime").toString()));
 		String downloadUrl = json.getStr("@microsoft.graph.downloadUrl")!=null?json.getStr("@microsoft.graph.downloadUrl").toString():null;
-		String size = CommonUtil.getFormatSize(Double.parseDouble(json.getStr("size").toString()));
+		String size = CommonUtil.getFormatSize(Double.parseDouble(json.getStr("size")));
+		Double fileSize = Double.parseDouble(json.getStr("size"));
 		String icon = null;
 		String id = json.getStr("id");
 		String ext = null;
@@ -133,14 +134,14 @@ public class OneDriveApi {
 			fileType = ((String)json.getByPath("$.file.mimeType")).split("/")[0];
 			ext = CommonUtil.fileType(name);
 			icon = CommonUtil.fileIco(name);
-			if(fileType.equals("audio")) {
+		/*	if(fileType.equals("audio")) {
 				t = StrUtil.subBefore(thumbnail(tokenInfo, path, "large"), "&width=", true);
 			}else{
 				t = thumbnail(tokenInfo, path, "large");
-			}
+			}*/
 		}
 		//String t = thumbnail(tokenInfo, path, "large");
-		return new Item(id, name, size, time, folder, childCount ,downloadUrl, ext, icon, path, t, fileType);
+		return new Item(id, name, size, time, folder, childCount ,downloadUrl, ext, icon, path, t, fileType, fileSize);
 	}
 	
 	/**
@@ -171,6 +172,7 @@ public class OneDriveApi {
 				String id = map.get("id").toString();
 				String downloadUrl = map.get("@microsoft.graph.downloadUrl")!=null?map.get("@microsoft.graph.downloadUrl").toString():null;
 				String size = CommonUtil.getFormatSize(Double.parseDouble(map.get("size").toString()));
+				Double fileSize = Double.parseDouble(map.get("size").toString());
 				Object folder = map.get("folder");
 				Integer childCount =0;
 				String t = null;
@@ -184,13 +186,13 @@ public class OneDriveApi {
 					fileType = ((String)JSONUtil.parse(map).getByPath("$.file.mimeType")).split("/")[0];
 					ext = CommonUtil.fileType(name);
 					icon = CommonUtil.fileIco(name);
-					if(fileType.equals("audio")) {
+					/*if(fileType.equals("audio")) {
 						t = StrUtil.subBefore(thumbnail(tokenInfo, path, "large"), "&width=", true);
 					}else{
 						t = thumbnail(tokenInfo, path, "large");
-					}
+					}*/
 				}
-				items.add(new Item(id, name, size, time, (folder==null?false:true), childCount ,downloadUrl, ext, icon, path.equals("/")?"/"+name:path+"/"+name, t, fileType));
+				items.add(new Item(id, name, size, time, (folder==null?false:true), childCount ,downloadUrl, ext, icon, path.equals("/")?"/"+name:path+"/"+name, t, fileType, fileSize));
 			}
 		}
 		Object nextLink = JSONUtil.parse(body).getByPath("$.@odata.nextLink");

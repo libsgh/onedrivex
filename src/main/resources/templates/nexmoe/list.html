@@ -67,7 +67,7 @@
 			</li>
 		</#if>
 		<#list items as item>
-			<li class="mdui-list-item mdui-ripple">
+			<li class="mdui-list-item mdui-ripple" data-sort data-sort-name="${item.name}" data-sort-date="${item.lastModifiedDateTime}" data-sort-size="${item.fileSize?c}">
 				<a href="${item.path}">
 				  <div class="mdui-col-xs-12 mdui-col-sm-7 mdui-text-truncate">
 			       <#if item.folder>
@@ -203,5 +203,5 @@
 		 $("#content").append(marked($("#readme").val()));
 	</#if>
 	</script> 
-  <a href="javascript:thumb();" class="mdui-fab mdui-fab-fixed mdui-ripple mdui-color-theme-accent"><i class="mdui-icon material-icons">format_list_bulleted</i></a> 
+  <!-- <a href="javascript:thumb();" class="mdui-fab mdui-fab-fixed mdui-ripple mdui-color-theme-accent"><i class="mdui-icon material-icons">format_list_bulleted</i></a>  -->
 </@main.nexmoe>

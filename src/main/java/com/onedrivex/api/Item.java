@@ -30,13 +30,15 @@ public class Item {
 	private String thumb;//略缩图
 	
 	private String fileType;//文件类型
+	
+	private Double fileSize;//文件大小，主要用于排序
 
 
 	public Item() {
 		super();
 	}
 
-	public Item(String id, String name, String size, String lastModifiedDateTime, Boolean folder, Integer childCount, String downloadUrl, String ext, String icon, String path, String thumb, String fileType) {
+	public Item(String id, String name, String size, String lastModifiedDateTime, Boolean folder, Integer childCount, String downloadUrl, String ext, String icon, String path, String thumb, String fileType, Double fileSize) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -50,6 +52,7 @@ public class Item {
 		this.path = path;
 		this.thumb = thumb;
 		this.fileType = fileType;
+		this.fileSize = fileSize;
 	}
 	
 	public String getId() {
@@ -148,11 +151,20 @@ public class Item {
 		this.icon = icon;
 	}
 
+	public Double getFileSize() {
+		return fileSize;
+	}
+
+	public void setFileSize(Double fileSize) {
+		this.fileSize = fileSize;
+	}
+
 	@Override
 	public String toString() {
 		return "Item [id=" + id + ", name=" + name + ", size=" + size + ", lastModifiedDateTime=" + lastModifiedDateTime
 				+ ", folder=" + folder + ", childCount=" + childCount + ", downloadUrl=" + downloadUrl + ", ext=" + ext
-				+ ", icon=" + icon + ", path=" + path + ", thumb=" + thumb + ", fileType=" + fileType + "]";
+				+ ", icon=" + icon + ", path=" + path + ", thumb=" + thumb + ", fileType=" + fileType + ", fileSize="
+				+ fileSize + "]";
 	}
 
 }
