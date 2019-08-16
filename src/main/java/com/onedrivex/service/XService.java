@@ -196,7 +196,6 @@ public class XService {
 			item = api.getFile(tokenInfo, path);
 			cacheService.put(Constants.fileCachePrefix+path, item);
 		}
-		Console.log(item);
 		return item;
 	}
 	
