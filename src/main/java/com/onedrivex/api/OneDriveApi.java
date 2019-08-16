@@ -184,11 +184,11 @@ public class OneDriveApi {
 					fileType = ((String)JSONUtil.parse(map).getByPath("$.file.mimeType")).split("/")[0];
 					ext = CommonUtil.fileType(name);
 					icon = CommonUtil.fileIco(name);
-					/*if(fileType.equals("audio")) {
+					if(fileType.equals("audio")) {
 						t = StrUtil.subBefore(thumbnail(tokenInfo, path, "large"), "&width=", true);
 					}else{
 						t = thumbnail(tokenInfo, path, "large");
-					}*/
+					}
 				}
 				items.add(new Item(id, name, size, time, (folder==null?false:true), childCount ,downloadUrl, ext, icon, path.equals("/")?"/"+name:path+"/"+name, t, fileType));
 			}
