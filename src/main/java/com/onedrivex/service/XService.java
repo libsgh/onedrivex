@@ -27,6 +27,7 @@ import com.onedrivex.util.CommonUtil;
 import com.onedrivex.util.Constants;
 import com.onedrivex.util.SplitFile;
 
+import cn.hutool.core.date.BetweenFormater;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
@@ -223,7 +224,7 @@ public class XService {
 			TokenInfo ti = JSONUtil.toBean(token, TokenInfo.class);
 			this.refreshCache(ti, "/");
 		}
-		Constants.refreshInfo = "刷新时间："+DateUtil.now()+"，耗时："+(System.currentTimeMillis()-start)+"毫秒，缓存"+cacheService.getCount()+"个对象";
+		Constants.refreshInfo = "刷新时间："+DateUtil.now()+"，耗时："+ new BetweenFormater((System.currentTimeMillis()-start), BetweenFormater.Level.SECOND, 2).format()+"，缓存"+cacheService.getCount()+"个对象";
 		logger.debug(Constants.refreshInfo);
 	}
 	
