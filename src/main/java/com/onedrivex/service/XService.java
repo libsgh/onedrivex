@@ -359,7 +359,11 @@ public class XService {
 							task.setUploadSize(uploadInfo.getEnd());
 						}
 						Long du = (System.currentTimeMillis() - start)/1000;//秒
-						task.setSpeed(CommonUtil.getFormatSize(NumberUtil.div(length+"", du+"").doubleValue())+"/S");
+						try {
+							task.setSpeed(CommonUtil.getFormatSize(NumberUtil.div(length+"", du+"").doubleValue())+"/S");
+						} catch (Exception e) {
+							task.setSpeed("-");
+						}
 						Constants.uploadRecordCache.put(remote+"/"+subPath, task);
 					}
 					//上传成功删除文件
