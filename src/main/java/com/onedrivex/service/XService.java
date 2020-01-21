@@ -434,8 +434,7 @@ public class XService {
 			logger.debug("文件名称："+remote+"/"+subPath);
 			String upLoadUrl = api.createUploadSession(remote+"/"+subPath, ti);
 			for (UploadInfo uploadInfo : uis) {
-				JSONObject jsonObject = api.upload(uploadInfo, upLoadUrl, ti, length);
-				logger.info(jsonObject.toStringPretty());
+				api.upload(uploadInfo, upLoadUrl, ti, length);
 			}
 			//上传成功删除文件
 			uis.parallelStream().forEach(f->{
