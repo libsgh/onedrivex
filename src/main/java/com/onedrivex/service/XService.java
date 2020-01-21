@@ -416,7 +416,7 @@ public class XService {
 		return true;
 	}
 
-	public void uoloadSync(File file) {
+	public void uploadSync(File file) {
 		String local = Constants.globalConfig.get("localPath");
 		String remote = Constants.globalConfig.get("uploadPath");
 		String splitPath = local + File.separator + "split";
@@ -434,7 +434,11 @@ public class XService {
 			logger.debug("文件名称："+remote+"/"+subPath);
 			String upLoadUrl = api.createUploadSession(remote+"/"+subPath, ti);
 			for (UploadInfo uploadInfo : uis) {
-				api.upload(uploadInfo, upLoadUrl, ti, length);
+				try {
+					api.upload(uploadInfo, upLoadUrl, ti, length);
+				} catch (Exception e) {
+					api.upload(uploadInfo, upLoadUrl, ti, length);
+				}
 			}
 			//上传成功删除文件
 			uis.parallelStream().forEach(f->{
