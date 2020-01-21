@@ -435,9 +435,6 @@ public class XService {
 			String upLoadUrl = api.createUploadSession(remote+"/"+subPath, ti);
 			for (UploadInfo uploadInfo : uis) {
 				Task t = ((Task)Constants.uploadRecordCache.get(remote+"/"+subPath));
-				if(t.getStatus() == 4) {
-					continue;
-				}
 				JSONObject jsonObject = api.upload(uploadInfo, upLoadUrl, ti, length);
 				logger.info(jsonObject.toStringPretty());
 			}
