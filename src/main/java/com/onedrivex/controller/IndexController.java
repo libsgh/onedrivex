@@ -308,7 +308,7 @@ public class IndexController {
 				out.write(file.getBytes());
 				out.flush();
 				out.close();
-				servive.uoloadSync(f);
+				servive.uploadSync(f);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 				return "上传失败," + e.getMessage();
