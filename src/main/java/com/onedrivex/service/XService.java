@@ -415,4 +415,37 @@ public class XService {
 		Constants.globalConfig = this.getConfigMap();
 		return true;
 	}
+
+	public void uoloadSync(File file) {
+		String local = Constants.globalConfig.get("localPath");
+		String remote = Constants.globalConfig.get("uploadPath");
+		String splitPath = local + File.separator + "split";
+		if(!file.getParent().equals(splitPath)) {
+			String subPath = FileUtil.subPath(local, file.getPath());
+			long length = FileUtil.size(file);
+			String tokenJson = Constants.globalConfig.get(Constants.tokenKey);
+			TokenInfo ti = JSONUtil.toBean(tokenJson, TokenInfo.class);
+			SplitFile sc = new SplitFile(file, Constants.splitFileSize);//15.625MB
+			sc.init();
+			if(FileUtil.exist(splitPath)) {
+				FileUtil.mkdir(splitPath);
+			}
+			List<UploadInfo> uis = sc.spiltfile(splitPath);
+			logger.debug("文件名称："+remote+"/"+subPath);
+			String upLoadUrl = api.createUploadSession(remote+"/"+subPath, ti);
+			for (UploadInfo uploadInfo : uis) {
+				Task t = ((Task)Constants.uploadRecordCache.get(remote+"/"+subPath));
+				if(t.getStatus() == 4) {
+					continue;
+				}
+				JSONObject jsonObject = api.upload(uploadInfo, upLoadUrl, ti, length);
+				logger.info(jsonObject.toStringPretty());
+			}
+			//上传成功删除文件
+			uis.parallelStream().forEach(f->{
+				FileUtil.del(f.getFile());
+			});
+			FileUtil.del(file);
+		}
+	}
 }

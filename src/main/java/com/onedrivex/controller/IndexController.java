@@ -259,7 +259,7 @@ public class IndexController {
 	}
 	
 	/**
-	 * 退出登陆
+	 * 文件上传，异步
 	 * @param request
 	 * @return
 	 */
@@ -288,6 +288,40 @@ public class IndexController {
             return "上传失败，因为文件是空的。";
         }
 	}
+	
+	/**
+	 * 文件上传，同步
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/file/upload/sync")
+	@ResponseBody
+	public String uploadSync(@RequestParam("file") MultipartFile file, @RequestParam(value="uploadPath", required = false) String uploadPath) {
+		if (!file.isEmpty()) {
+			try {
+				if(!FileUtil.exist(uploadPath)) {
+					FileUtil.mkdir(uploadPath);
+				}
+				File f = new File(uploadPath+File.separator+file.getOriginalFilename());
+				BufferedOutputStream out = new BufferedOutputStream(
+						new FileOutputStream(f));
+				out.write(file.getBytes());
+				out.flush();
+				out.close();
+				servive.uoloadSync(f);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+				return "上传失败," + e.getMessage();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return "上传失败," + e.getMessage();
+			}
+			return "上传成功";
+		} else {
+			return "上传失败，因为文件是空的。";
+		}
+	}
+	
 	@RequestMapping("/pdfViewer")
 	public void pdfViewer(HttpServletResponse res, String path) throws IOException {
 		Item item = cacheService.getOneByKey(Constants.fileCachePrefix+path, Item.class);
