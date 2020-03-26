@@ -69,7 +69,9 @@
 </div>
 <script>
 	$("a[href='${springMacroRequestContext.getRequestUri()}']").addClass("mdui-text-color-blue");
-    <#if message??>mdui.snackbar({message: '${message}'});</#if>
+    <#if message??>mdui.snackbar({message: '${message}',onClosed:function(){
+		window.location.href = '${springMacroRequestContext.getRequestUri()}';
+	}});</#if>
     function reset(){
 	    mdui.confirm("此操作会重置所有配置并需要重新安装，请谨慎使用",  function(){
 		    return true;
