@@ -298,9 +298,9 @@ public class IndexController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/file/upload/sync")
+	@RequestMapping("/file/upload/async")
 	@ResponseBody
-	public String uploadSync(@RequestParam("file") MultipartFile file, @RequestParam(value="uploadPath", required = false) String uploadPath) {
+	public String uploadASync(@RequestParam("file") MultipartFile file, @RequestParam(value="uploadPath", required = false) String uploadPath) {
 		if (!file.isEmpty()) {
 			try {
 				if(!FileUtil.exist(uploadPath)) {
@@ -312,7 +312,7 @@ public class IndexController {
 				out.write(file.getBytes());
 				out.flush();
 				out.close();
-				servive.uploadSync(f);
+				servive.uploadASync(f);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 				return "上传失败," + e.getMessage();

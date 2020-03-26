@@ -428,8 +428,8 @@ public class XService {
 		Constants.globalConfig = this.getConfigMap();
 		return true;
 	}
-
-	public void uploadSync(File file) {
+	@Async
+	public void uploadASync(File file) {
 		String local = Constants.globalConfig.get("localPath");
 		String remote = Constants.globalConfig.get("uploadPath");
 		String splitPath = local + File.separator + "split";
