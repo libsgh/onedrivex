@@ -235,7 +235,7 @@ public class OneDriveApi {
 							.contentType("Content-Type")
 							.execute();
 		if(rep.getStatus() == 409) {
-			return null;
+			return createUploadSession(path, tokenInfo);
 		}else {
 			JSONObject json = JSONUtil.parseObj(rep.body());
 			return json.getStr("uploadUrl");
