@@ -428,7 +428,6 @@ public class XService {
 		Constants.globalConfig = this.getConfigMap();
 		return true;
 	}
-	@Async
 	public void uploadASync(File file) {
 		String local = Constants.globalConfig.get("localPath");
 		String remote = Constants.globalConfig.get("uploadPath");
