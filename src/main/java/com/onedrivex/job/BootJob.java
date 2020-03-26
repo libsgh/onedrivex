@@ -11,6 +11,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 
 import com.onedrivex.service.DbCacheService;
+import com.onedrivex.service.TaskService;
 import com.onedrivex.service.XService;
 import com.onedrivex.util.Constants;
 
@@ -33,13 +34,19 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 	@Autowired
 	private DbCacheService cacheServive;
 	
+	@Autowired
+	private TaskService taskService;
+	
 	public boolean flag = false;
 	
 	public boolean u_flag = false;
 	
+	public boolean r_flag = false;
+	
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent cre) {
 			servive.init();
+			taskService.init();
 			cacheServive.init();
 			Map<String, String> configMap = servive.getConfigMap();
 			Constants.globalConfig = configMap;
@@ -106,6 +113,23 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 						logger.error(e.getMessage(), e);
 					}finally {
 						u_flag = false;
+					}
+				}
+			});
+			//每小时清空一次任务列表
+			CronUtil.schedule("0 0 0/1 * * ?", new Task() {
+				@Override
+				public void execute() {
+					if(r_flag) {
+						return;
+					}
+					try {
+						r_flag = true;
+						taskService.clear();
+					} catch (Exception e) {
+						logger.error(e.getMessage(), e);
+					}finally {
+						r_flag = false;
 					}
 				}
 			});

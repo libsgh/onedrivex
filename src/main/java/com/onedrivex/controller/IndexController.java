@@ -40,6 +40,7 @@ import com.onedrivex.api.Item;
 import com.onedrivex.api.OneDriveApi;
 import com.onedrivex.api.TokenInfo;
 import com.onedrivex.service.DbCacheService;
+import com.onedrivex.service.TaskService;
 import com.onedrivex.service.XService;
 import com.onedrivex.util.CommonUtil;
 import com.onedrivex.util.Constants;
@@ -63,6 +64,9 @@ public class IndexController {
 	
 	@Autowired
 	private DbCacheService cacheService;
+	
+	@Autowired
+	private TaskService taskService;
 	
 	@Autowired
 	private XService servive;
@@ -203,7 +207,7 @@ public class IndexController {
 			model.addAttribute("message", "远程文件删除成功");
 		}
 		model.addAttribute("config", Constants.globalConfig);
-		model.addAttribute("tasks", Constants.uploadRecordCache.iterator());
+		model.addAttribute("tasks", taskService.taskList());
 		return "admin/upload";
 	}
 	

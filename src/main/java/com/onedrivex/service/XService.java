@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +54,14 @@ public class XService {
 	@Autowired
 	private DruidDataSource ds;
 	
+	@Resource(name = "task")
+	private DruidDataSource tds;
+	
 	@Autowired
 	private DbCacheService cacheService;
+	
+	@Autowired
+	private TaskService taskService;
 	
 	@Value("${DATA_TYPE:sqlite}")
 	private String dataType;
@@ -328,7 +336,8 @@ public class XService {
 					task.setRemotePath(remote+"/"+subPath);
 					task.setFileSize(length);
 					task.setStatus(0);
-					Constants.uploadRecordCache.put(remote+"/"+subPath, task);
+					taskService.put(remote+"/"+subPath, task);
+					//Constants.uploadRecordCache.put(remote+"/"+subPath, task);
 					String tokenJson = Constants.globalConfig.get(Constants.tokenKey);
 					TokenInfo ti = JSONUtil.toBean(tokenJson, TokenInfo.class);
 					SplitFile sc = new SplitFile(file, Constants.splitFileSize);//15.625MB
@@ -342,7 +351,8 @@ public class XService {
 					String upLoadUrl = api.createUploadSession(remote+"/"+subPath, ti);
 					task.setUploadUrl(upLoadUrl);
 					for (UploadInfo uploadInfo : uis) {
-						Task t = ((Task)Constants.uploadRecordCache.get(remote+"/"+subPath));
+						//Task t = ((Task)Constants.uploadRecordCache.get(remote+"/"+subPath));
+						Task t = taskService.get(remote+"/"+subPath);
 						if(t.getStatus() == 4) {
 							continue;
 						}
@@ -364,7 +374,7 @@ public class XService {
 						} catch (Exception e) {
 							task.setSpeed("-");
 						}
-						Constants.uploadRecordCache.put(remote+"/"+subPath, task);
+						taskService.put(remote+"/"+subPath, task);
 					}
 					//上传成功删除文件
 					uis.parallelStream().forEach(f->{
@@ -388,7 +398,8 @@ public class XService {
 		String tokenJson = Constants.globalConfig.get(Constants.tokenKey);
 		TokenInfo ti = JSONUtil.toBean(tokenJson, TokenInfo.class);
 		api.delItem(itemId, ti);
-		Constants.uploadRecordCache.remove(path);
+		taskService.remove(path);
+		//Constants.uploadRecordCache.remove(path);
 	}
 	
 	/**
@@ -397,9 +408,11 @@ public class XService {
 	 */
 	public void cancelTask(String path, String uploadUrl) {
 		api.delUploadSession(uploadUrl);
-		Task task = ((Task)Constants.uploadRecordCache.get(path));
+		//Task task = ((Task)Constants.uploadRecordCache.get(path));
+		Task task = taskService.get(path);
 		task.setStatus(4);
-		Constants.uploadRecordCache.put(path, task);
+		taskService.put(path, task);
+		//Constants.uploadRecordCache.put(path, task);
 	}
 
 	public boolean reset() {
@@ -410,7 +423,7 @@ public class XService {
 		}
 		this.init();
 		cacheService.clear();
-		Constants.uploadRecordCache.clear();
+		//Constants.uploadRecordCache.clear();
 		Constants.tokenCache.clear();
 		Constants.globalConfig = this.getConfigMap();
 		return true;
@@ -447,4 +460,5 @@ public class XService {
 			FileUtil.del(file);
 		}
 	}
+
 }

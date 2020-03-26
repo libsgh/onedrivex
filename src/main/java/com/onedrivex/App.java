@@ -66,6 +66,20 @@ public class App {
 		return ds;
 	}
 	
+	@Bean("task")
+	public DruidDataSource getTaskDtaSource() {
+		DruidDataSource ds = new DruidDataSource();
+		ApplicationHome h = new ApplicationHome(getClass());
+		File jarF = h.getSource();
+		String path = jarF.getParentFile().toString() + "/data";
+		if(!FileUtil.exist(path)) {
+			FileUtil.mkdir(path);
+		}
+		ds.setDriverClassName("org.sqlite.JDBC");
+		ds.setUrl("jdbc:sqlite:"+path+"/task.db");
+		return ds;
+	}
+	
 	@Bean
     public MultipartConfigElement multipartConfigElement() {
         MultipartConfigFactory factory = new MultipartConfigFactory();
