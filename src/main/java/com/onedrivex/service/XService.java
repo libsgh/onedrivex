@@ -429,6 +429,7 @@ public class XService {
 		return true;
 	}
 	public void uploadASync(File file) {
+		OneDriveApi a = OneDriveApi.getInstance();
 		String local = Constants.globalConfig.get("localPath");
 		String remote = Constants.globalConfig.get("uploadPath");
 		String splitPath = local + File.separator + "split";
@@ -444,12 +445,12 @@ public class XService {
 			}
 			List<UploadInfo> uis = sc.spiltfile(splitPath);
 			logger.debug("文件名称："+remote+"/"+subPath);
-			String upLoadUrl = api.createUploadSession(remote+"/"+subPath, ti);
+			String upLoadUrl = a.createUploadSession(remote+"/"+subPath, ti);
 			for (UploadInfo uploadInfo : uis) {
 				try {
-					api.upload(uploadInfo, upLoadUrl, ti, length);
+					a.upload(uploadInfo, upLoadUrl, ti, length);
 				} catch (Exception e) {
-					api.upload(uploadInfo, upLoadUrl, ti, length);
+					a.upload(uploadInfo, upLoadUrl, ti, length);
 				}
 			}
 			//上传成功删除文件
