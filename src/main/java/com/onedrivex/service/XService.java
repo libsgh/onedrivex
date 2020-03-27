@@ -448,9 +448,14 @@ public class XService {
 			String upLoadUrl = a.createUploadSession(remote+"/"+subPath, ti);
 			for (UploadInfo uploadInfo : uis) {
 				try {
-					a.upload(uploadInfo, upLoadUrl, ti, length);
+					if(StrUtil.isBlank(upLoadUrl)) {
+						Thread.sleep(10000);
+						uploadASync(file);
+					}else {
+						a.upload(uploadInfo, upLoadUrl, ti, length);
+					}
 				} catch (Exception e) {
-					a.upload(uploadInfo, upLoadUrl, ti, length);
+					logger.debug(e.getMessage(), e);
 				}
 			}
 			//上传成功删除文件
