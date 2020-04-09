@@ -54,6 +54,7 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			String hkac = configMap.get("herokuKeepAliveCron");//heroku防休眠cron
 			String hkaa = configMap.get("herokuKeepAliveAddress");//heroku防休眠地址
 			String rcc = configMap.get("refreshCacheCron");//刷新缓存cron
+			String openCache = configMap.get("openCache");
 			servive.refreshJob();
 			Constants.refreshCacheTaskId = CronUtil.schedule(cron, new Task() {
 			    @Override
@@ -82,23 +83,25 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			}
 			//刷新所有缓存
 			//servive.refreshAllCache(token);
-			CronUtil.schedule(rcc, new Task() {
-				@Override
-				public void execute() {
-					if(flag) {
-						return;
+			if(openCache.equals("0")) {
+				CronUtil.schedule(rcc, new Task() {
+					@Override
+					public void execute() {
+						if(flag) {
+							return;
+						}
+						try {
+							flag = true;
+							String tokenJson = servive.getConfig(Constants.tokenKey);
+							servive.refreshCacheJob(tokenJson);
+						} catch (Exception e) {
+							logger.error(e.getMessage(), e);
+						}finally {
+							flag = false;
+						}
 					}
-					try {
-						flag = true;
-						String tokenJson = servive.getConfig(Constants.tokenKey);
-						servive.refreshCacheJob(tokenJson);
-					} catch (Exception e) {
-						logger.error(e.getMessage(), e);
-					}finally {
-						flag = false;
-					}
-				}
-			});
+				});
+			}
 			//Constants.timedCache.schedulePrune(Long.parseLong(configMap.get("cacheExpireTime"))*1000);
 			CronUtil.schedule("0 0/1 * * * ?", new Task() {
 				@Override

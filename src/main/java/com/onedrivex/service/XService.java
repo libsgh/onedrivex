@@ -175,12 +175,17 @@ public class XService {
 	
 	//@Cacheable(key="#path", value="dir")
 	public List<Item> getDir(TokenInfo tokenInfo, String path, Boolean isThumbnail){
-		List<Item> list = cacheService.getListByKey(Constants.dirCachePrefix+path, Item.class);
+		List<Item> list = null;
+		if(Constants.globalConfig.get("openCache").equals("0")) {
+			list = cacheService.getListByKey(Constants.dirCachePrefix+path, Item.class);
+		}
 		if(list != null) {
 			logger.debug("从缓存中读取文件夹数据\t{}", Constants.dirCachePrefix+path);
 		}else{
 			list = api.getDir(tokenInfo, path);
-			cacheService.put(Constants.dirCachePrefix+path, list);
+			if(Constants.globalConfig.get("openCache").equals("0")) {
+				cacheService.put(Constants.dirCachePrefix+path, list);
+			}
 		}
 		if(isThumbnail) {
 			list = list.parallelStream().map(r->{
@@ -198,12 +203,17 @@ public class XService {
 	}
 	
 	public Item getFile(TokenInfo tokenInfo, String path){
-		Item item = cacheService.getOneByKey(Constants.fileCachePrefix+path, Item.class);
+		Item item = null;
+		if(Constants.globalConfig.get("openCache").equals("0")) {
+			item = cacheService.getOneByKey(Constants.fileCachePrefix+path, Item.class);
+		}
 		if(item != null) {
 			logger.debug("从缓存中读取文件数据\t{}", Constants.fileCachePrefix+path);
 		}else{
 			item = api.getFile(tokenInfo, path);
-			cacheService.put(Constants.fileCachePrefix+path, item);
+			if(Constants.globalConfig.get("openCache").equals("0")) {
+				cacheService.put(Constants.fileCachePrefix+path, item);
+			}
 		}
 		return item;
 	}
@@ -246,12 +256,17 @@ public class XService {
 	}
 
 	public Object getReadme(TokenInfo ti, String path) {
-		String c = cacheService.getStrByKey(Constants.contentCachePrefix+path);
+		String c = "";
+		if(Constants.globalConfig.get("openCache").equals("0")) {
+			c = cacheService.getStrByKey(Constants.contentCachePrefix+path);
+		}
 		if(StrUtil.isNotBlank(c)) {
 			return c;
 		}else {
 			c = HttpUtil.downloadString(this.getFile(ti, path).getDownloadUrl(), "UTF-8");
-			cacheService.put(Constants.contentCachePrefix+path, c);
+			if(Constants.globalConfig.get("openCache").equals("0")) {
+				cacheService.put(Constants.contentCachePrefix+path, c);
+			}
 		}
 		return c;
 	}
