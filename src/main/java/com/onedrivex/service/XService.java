@@ -148,6 +148,7 @@ public class XService {
     			logger.debug("access_token刷新成功！");
     		}
     		this.updateConfig(Constants.tokenKey, newToken);
+    		Constants.globalConfig = this.getConfigMap();
     		return newToken;
     	}
     	return "";
@@ -170,6 +171,7 @@ public class XService {
 				logger.debug("access_token刷新成功\t{}", newToken);
 			}
 			this.updateConfig(Constants.tokenKey, newToken);
+			Constants.globalConfig = this.getConfigMap();
 		}
 	}
 	
