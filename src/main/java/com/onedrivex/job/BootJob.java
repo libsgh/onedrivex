@@ -56,7 +56,7 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			String rcc = configMap.get("refreshCacheCron");//刷新缓存cron
 			String openCache = configMap.get("openCache");
 			servive.refreshJob();
-			Constants.refreshCacheTaskId = CronUtil.schedule(cron, new Task() {
+			CronUtil.schedule(cron, new Task() {
 			    @Override
 			    public void execute() {
 			    	try {

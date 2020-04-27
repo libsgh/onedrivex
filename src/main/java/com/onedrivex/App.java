@@ -19,6 +19,7 @@ import org.springframework.util.unit.DataSize;
 import com.alibaba.druid.pool.DruidDataSource;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.cron.CronUtil;
 
 @SpringBootApplication
 @EnableCaching
@@ -92,6 +93,7 @@ public class App {
 	
 	public static void main(String[] args) {
 		//DbUtil.setShowSqlGlobal(true, true, true, Level.INFO);
+		CronUtil.setMatchSecond(true);
 		SpringApplication.run(App.class, args);
 	}
 
