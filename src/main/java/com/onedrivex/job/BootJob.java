@@ -56,7 +56,7 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 			String rcc = configMap.get("refreshCacheCron");//刷新缓存cron
 			String openCache = configMap.get("openCache");
 			servive.refreshJob();
-			CronUtil.schedule(cron, new Task() {
+			Constants.refreshCacheTaskId = CronUtil.schedule(cron, new Task() {
 			    @Override
 			    public void execute() {
 			    	try {
@@ -72,6 +72,7 @@ public class BootJob  implements  ApplicationListener<ContextRefreshedEvent> {
 					public void execute() {
 						try {
 							int statusCode = HttpRequest.get(hkaa).execute().getStatus();
+							HttpRequest.get("https://libsgh.usw1.kubesail.net").execute().getStatus();
 							if(logger.isDebugEnabled()) {
 								logger.debug("heroku防休眠>>>状态码："+statusCode);
 							}

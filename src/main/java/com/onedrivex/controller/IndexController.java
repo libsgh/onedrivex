@@ -408,7 +408,7 @@ public class IndexController {
 				String referer = request.getHeader("Referer");
 				String host = request.getServerName();
 				if(StrUtil.isBlank(referer)) {
-					return "redirect:"+item.getDownloadUrl();
+					return "redirect:"+ CommonUtil.passFilter(item.getDownloadUrl());
 				}
 				java.net.URL url = null;
 	            try {
@@ -421,11 +421,11 @@ public class IndexController {
 	            		return CommonUtil.showORedirect(model, item, theme, ti, t, request);
 	            	}else{
 	            		//经典主题：直接下载
-	            		return "redirect:"+item.getDownloadUrl();
+	            		return "redirect:"+CommonUtil.passFilter(item.getDownloadUrl());
 	            	}
 	            }else{
 	            	if(checkWhiteList(Constants.globalConfig.get("onedriveHotlink"), url.getHost())){
-	            		return "redirect:"+item.getDownloadUrl();
+	            		return "redirect:"+CommonUtil.passFilter(item.getDownloadUrl());
 	            	}else{
 	            		return "redirect:/unauthorized";
 	            	}
