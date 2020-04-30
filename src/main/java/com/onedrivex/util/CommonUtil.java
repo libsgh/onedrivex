@@ -185,8 +185,8 @@ public class CommonUtil {
 	        return null;
 	 }
 	public static String passFilter(String url){
-		System.out.println(url);
 		String aa = url.replaceAll("xbsfcursotamandareg12br-my.sharepoint.com", "libsgh.usw1.kubesail.net");
+		System.out.println(aa);
 		return aa;
 	}
 	
