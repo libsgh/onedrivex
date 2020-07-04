@@ -474,6 +474,9 @@ public class IndexController {
 			servive.updateConfig("clientId",clientId);
 			servive.updateConfig("clientSecret",clientSecret);
 			model.addAttribute("oauth2Url",api.oauth2(clientId, redirectUri, request.getRemoteHost(), localAuthUri));
+			System.out.println(redirectUri);
+			System.out.println(clientId);
+			System.out.println(api.oauth2(clientId, redirectUri, request.getRemoteHost(), localAuthUri));
 			return "classic/setup/setup_2";
 		}else if(s.equals("3")) {
 			//安装结果
